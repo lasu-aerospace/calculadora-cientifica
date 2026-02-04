@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumatorias - Calculadora Científica</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="index.html">← Volver</a></h3>
+        <h1>Sumatorias</h1>
+    </header>
+
+    <main>
+        <hr>
+        <section class="section">
+            <h2>Definición</h2>
+            <h1 class="math-block">$$ \sum_{i=a}^{b}f(i):=\text{fold}_{+}(\{f(i)|i\in\mathbb{Z},a\le i\le b\}) $$</h1>
+            <p>La sumatoria es el operador que asigna a una familia finita de elementos indexados el resultado de aplicar repetidamente la operación suma, en cualquier orden, partiendo del elemento neutro. Cuando \( a \) o \( b \) no existen o son infinitos, la sumatoria se extiende hasta donde abarquen los datos.</p>
+        </section>
+
+        <section class="section">
+            <h2>Propiedades</h2>
+            <table>
+                <thead>
+                  <tr>
+                    <th>Propiedad</th>
+                    <th>Expresión</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Linealidad</td>
+                    <td>$$ \sum_{i=a}^b(f(i)+g(i))=\sum_{i=a}^bf(i)+\sum_{i=a}^bg(i),\quad\sum_{i=a}^bcf(i)=c\sum_{i=a}^bf(i) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Aditividad del dominio</td>
+                    <td>$$ \sum_{i=a}^bf(i)=\sum_{i=a}^kf(i)+\sum_{i=k+1}^bf(i) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Invarianza por reordenamiento</td>
+                    <td>$$ \sum_{i=1}^Nx_i=\sum_{i=1}^Nx_{\pi(i)} $$</td>
+                  </tr>
+                  <tr>
+                    <td>Neutralidad del cero</td>
+                    <td>$$ \sum_{i}x_i=\sum_i(x_i+0) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Monotonía</td>
+                    <td>$$ \forall i/f(i)\ge g(i):\sum_{i=a}^bf(i)\ge\sum_{i=a}^bg(i) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Acotación</td>
+                    <td>$$ |f(i)|\le M:\left|\sum_{i=a}^bf(i)\right|\le M(b-a+1) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Cambio de índice</td>
+                    <td>$$ \forall j=i+k:\sum_{i=a}^bf(i)=\sum_{j=a+k}^{b+k}f(j-k) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Distributividad sobre intervalos vacíos</td>
+                    <td>$$ \forall b\lt a:\sum_{i=a}^bf(i)=0 $$</td>
+                  </tr>
+                  <tr>
+                    <td>Compatibilidad con límites</td>
+                    <td>$$ \sum_{i=1}^\infty f(i)=\lim_{N\to\infty}\sum_{i=1}^Nf(i) $$</td>
+                  </tr>
+                  <tr>
+                    <td>Estructura algebraica subyacente</td>
+                    <td>La sumatoria está bien definida si:
+                      <ul>
+                        <li>la operación es asociativa,</li>
+                        <li>existe elemento neutro,</li>
+                        <li>y el conjunto es finito (o convergente).</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones</h2>
+            <p>La sumatoria tiene numerosas aplicaciones en diversas áreas, tales como:</p>
+            <ul>
+                <li>Trabajo mecánico discreto.</li>
+                <li>Centro de masa.</li>
+                <li>Carga total en una estructura.</li>
+                <li>Consumo energético acumulado.</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Resolución</h2>
+            <p>Dados \( N \) puntos experimentales: \( (x_{N_0},y_{N_0}), (x_{N_{0+1}},y_{N_{0+1}}),\dots,(x_{N},y_{N}) \) queremos ajustar una recta \( y=mx+b \).</p>
+            <p>El error cuadrático total (\( R^2 \)):</p>
+            <p class="math-block">$$ S(m,b)=\sum_{i=1}^N(y_i-(mx_i+b))^2 $$</p>
+            <p>Derivamos e igualamos a cero:</p>
+            <p class="math-block">$$ \frac{\delta S}{\delta m}=0,\quad\frac{\delta S}{\delta b}=0 $$</p>
+            <p>Esto lleva al sistema normal:</p>
+            <p class="math-block">$$ \begin{cases} m\sum x_i^2+b\sum x_i=\sum x_iy_i \\ m\sum x_i+bN=\sum y_i \end{cases} $$</p>
+            <p>Resolviendo el sistema:</p>
+            <p class="math-block">$$ m=\frac{N\sum x_iy_i-\sum x_i\sum y_i}{N\sum x_i^2-(\sum x_i)^2} $$</p>
+            <p class="math-block">$$ b=\frac{\sum y_i-m\sum x_i}{N} $$</p>
+            <h2>Ejemplo numérico</h2>
+            <p>Dado el conjunto \( (1,2),(2,3),(3,5) \):</p>
+            <p class="math-block">$$ \sum x_i=6,\quad\sum y_i=10,\quad\sum x_i^2=14,\quad\sum x_iy_i=23,\quad N=3 $$</p>
+            <p>Pendiente:</p>
+            <p class="math-block">$$ m=\frac{3\cdot23-6\cdot10}{3\cdot14-36}=\frac{69-60}{42-36}=\frac{9}{6}=\frac{3}{2}=1.5 $$</p>
+            <p>Ordenada:</p>
+            <p class="math-block">$$ b=\frac{10-1-5\cdot6}{3}=\frac{1}{3} $$</p>
+            <p>Resultado:</p>
+            <p class="math-block">$$ \boxed{y=1.5x+0.33} $$</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( \sum \) : Símbolo de sumatoria.</li>
+                <li>\( i=a \) : Iteración inicial.</li>
+                <li>\( b \) : Iteración final.</li>
+                <li>\( f(i) \) : Función a sumar.</li>
+            </ul>
+        </section>
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
+    </footer>
+
+</body>
+</html>

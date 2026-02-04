@@ -133,20 +133,17 @@
     right: -45px;
 }
 
-
-
-
 body {
     background-color: #303030;
     color: #ffffff;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
 }
 
 main {
-    max-width: 800px;
+    max-width: 70%;
     margin: auto;
     text-align: left;
     padding: 20px;
