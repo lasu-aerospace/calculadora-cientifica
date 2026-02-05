@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerodinámica - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h3 style="text-align: left;"><a href="modph.html">← Volver</a></h3>
+        <h1>Aerodinámica</h1>
+    </header>
+    <main>
+        <hr>
+        <section class="section">
+            <h2>Introducción</h2>
+            <p>La aerodinámica estudia el movimiento del aire y su interacción con cuerpos sólidos. Es fundamental para diseño de aviones, cohetes, automóviles, edificios y turbinas eólicas.</p>
+        </section>
+
+        <section class="section">
+            <h2>Fuerza de Arrastre</h2>
+            <p class="math-block">$$ F_D = \frac{1}{2}\rho v^2 C_D A $$</p>
+            <p>Donde:</p>
+            <ul>
+                <li>\(\rho\): Densidad del fluido (kg/m³)</li>
+                <li>\(v\): Velocidad relativa (m/s)</li>
+                <li>\(C_D\): Coeficiente de arrastre (adimensional)</li>
+                <li>\(A\): Área frontal (m²)</li>
+            </ul>
+            
+            <h3>Coeficientes de arrastre típicos</h3>
+            <table>
+                <thead><tr><th>Objeto</th><th>\(C_D\)</th></tr></thead>
+                <tbody>
+                    <tr><td>Esfera</td><td>0.47</td></tr>
+                    <tr><td>Cubo</td><td>1.05</td></tr>
+                    <tr><td>Cilindro</td><td>0.82</td></tr>
+                    <tr><td>Perfil aerodinámico</td><td>0.04-0.10</td></tr>
+                    <tr><td>Automóvil deportivo</td><td>0.25-0.35</td></tr>
+                    <tr><td>Paracaídas</td><td>1.3-1.5</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Fuerza de Sustentación</h2>
+            <p class="math-block">$$ F_L = \frac{1}{2}\rho v^2 C_L A $$</p>
+            <p>El coeficiente \(C_L\) depende del ángulo de ataque \(\alpha\).</p>
+            
+            <h3>Relación sustentación/arrastre</h3>
+            <p class="math-block">$$ L/D = \frac{C_L}{C_D} $$</p>
+            <p>Razones típicas: avión comercial ~17, planeador ~40, ave ~20.</p>
+        </section>
+
+        <section class="section">
+            <h2>Número de Reynolds</h2>
+            <p class="math-block">$$ Re = \frac{\rho v L}{\mu} = \frac{vL}{\nu} $$</p>
+            <p>Caracteriza el flujo: laminar (Re < 2300) o turbulento (Re > 4000).</p>
+            
+            <table>
+                <thead><tr><th>Flujo</th><th>Reynolds</th><th>Características</th></tr></thead>
+                <tbody>
+                    <tr><td>Laminar</td><td>< 2,300</td><td>Capas ordenadas, bajo arrastre</td></tr>
+                    <tr><td>Transición</td><td>2,300-4,000</td><td>Inestable</td></tr>
+                    <tr><td>Turbulento</td><td>> 4,000</td><td>Caótico, alto arrastre pero mejor mezcla</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Número de Mach</h2>
+            <p class="math-block">$$ M = \frac{v}{a} = \frac{v}{\sqrt{\gamma RT}} $$</p>
+            <p>Donde \(a\) es la velocidad del sonido (~340 m/s al nivel del mar).</p>
+            
+            <ul>
+                <li>Subsónico: M < 0.8</li>
+                <li>Transónico: 0.8 < M < 1.2</li>
+                <li>Supersónico: 1.2 < M < 5</li>
+                <li>Hipersónico: M > 5</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Capa Límite</h2>
+            <p>Región cerca de la superficie donde la velocidad cambia de cero (en superficie) a velocidad del flujo libre.</p>
+            
+            <h3>Espesor de capa límite</h3>
+            <p class="math-block">$$ \delta \approx \frac{5x}{\sqrt{Re_x}} $$</p>
+            <p>Para flujo laminar sobre placa plana.</p>
+            
+            <h3>Separación de capa límite</h3>
+            <p>Ocurre cuando hay gradiente adverso de presión. Causa pérdida de sustentación (stall) y aumento de arrastre.</p>
+        </section>
+
+        <section class="section">
+            <h2>Turbulencia</h2>
+            <p>Flujo caótico con fluctuaciones de velocidad en tiempo y espacio.</p>
+            
+            <h3>Cascada de energía</h3>
+            <p>Energía se transfiere de vórtices grandes a pequeños hasta disiparse por viscosidad.</p>
+            
+            <h3>Ecuaciones RANS</h3>
+            <p>Reynolds-Averaged Navier-Stokes para modelar turbulencia:</p>
+            <p class="math-block">$$ \frac{\partial \bar{u}_i}{\partial t} + \bar{u}_j\frac{\partial \bar{u}_i}{\partial x_j} = -\frac{1}{\rho}\frac{\partial \bar{p}}{\partial x_i} + \nu\nabla^2\bar{u}_i - \frac{\partial}{\partial x_j}(\overline{u'_i u'_j}) $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Vórtices</h2>
+            <p>Estructuras rotacionales en fluidos.</p>
+            
+            <h3>Vórtices de punta de ala</h3>
+            <p>Creados por diferencia de presión entre superficies superior/inferior. Inducen arrastre (arrastre inducido).</p>
+            <p class="math-block">$$ D_i = \frac{L^2}{\frac{1}{2}\rho v^2 \pi b^2 e} $$</p>
+            <p>Donde \(b\) es envergadura y \(e\) factor de Oswald (~0.7-0.9).</p>
+            
+            <h3>Calle de vórtices de von Kármán</h3>
+            <p>Patrón de vórtices alternados detrás de cilindros. Frecuencia dada por:</p>
+            <p class="math-block">$$ St = \frac{fD}{v} \approx 0.2 $$</p>
+            <p>(Número de Strouhal)</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo: Caída de paracaidista</h2>
+            <p>Datos: masa 80 kg, área 0.7 m², \(C_D = 1.4\), \(\rho = 1.225\) kg/m³.</p>
+            <p>Velocidad terminal cuando arrastre = peso:</p>
+            <p class="math-block">$$ v_t = \sqrt{\frac{2mg}{\rho C_D A}} = \sqrt{\frac{2(80)(9.8)}{1.225(1.4)(0.7)}} \approx 49 \text{ m/s} $$</p>
+            <p>Con paracaídas abierto (\(A = 25\) m², \(C_D = 1.5\)):</p>
+            <p class="math-block">$$ v_t \approx 5.2 \text{ m/s (seguro para aterrizaje)} $$</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones</h2>
+            <ul>
+                <li><strong>Aviación:</strong> Diseño de alas, fuselajes, optimización</li>
+                <li><strong>Automovilismo:</strong> Reducción de arrastre, downforce</li>
+                <li><strong>Deportes:</strong> Ciclismo, natación, esquí</li>
+                <li><strong>Energía eólica:</strong> Diseño de turbinas</li>
+                <li><strong>Arquitectura:</strong> Vientos en edificios altos</li>
+                <li><strong>Cohetes:</strong> Minimizar arrastre en ascenso</li>
+            </ul>
+        </section>
+
+        <hr>
+    </main>
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+</body>
+</html>
