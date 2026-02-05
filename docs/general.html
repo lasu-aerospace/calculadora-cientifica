@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatividad General - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="relatividad.html">← Volver</a></h3>
+        <h1>Relatividad General</h1>
+    </header>
+
+    <main>
+        <hr>
+        
+        <section class="section">
+            <h2>Introducción</h2>
+            <p>La Relatividad General, publicada por Einstein en 1915, es una teoría geométrica de la gravitación que reemplaza la teoría newtoniana. En lugar de concebir la gravedad como una fuerza, Einstein la describe como la curvatura del espacio-tiempo causada por la presencia de masa y energía.</p>
+            <p>Esta teoría no solo explica todos los fenómenos gravitacionales conocidos, sino que predice nuevos efectos verificados experimentalmente: ondas gravitacionales, agujeros negros, expansión del universo y lentes gravitacionales.</p>
+        </section>
+
+        <section class="section">
+            <h2>Principio de Equivalencia</h2>
+            <p>El fundamento conceptual de la Relatividad General es el Principio de Equivalencia, que existe en dos formas:</p>
+
+            <h3>Principio de Equivalencia Débil</h3>
+            <p class="math-block">$$ m_{\text{inercial}} = m_{\text{gravitacional}} $$</p>
+            <p>La masa inercial (resistencia a la aceleración) es idéntica a la masa gravitacional (carga que responde a campos gravitacionales). Esto explica por qué todos los objetos caen con la misma aceleración en un campo gravitacional.</p>
+
+            <h3>Principio de Equivalencia Fuerte (de Einstein)</h3>
+            <p class="math-block">$$ \text{Gravedad uniforme} \equiv \text{Aceleración constante} $$</p>
+            <p>No hay experimento local que permita distinguir entre estar en un campo gravitacional uniforme y estar en un sistema de referencia acelerado. Un observador en un ascensor no puede determinar si está:</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>En reposo en la superficie terrestre (gravedad)</li>
+                    <li>Acelerando hacia arriba en el espacio profundo con \( a = g \)</li>
+                </ul>
+            </section>
+            <p>Esta equivalencia llevó a Einstein a la conclusión de que la gravedad debe describirse mediante la geometría del espacio-tiempo.</p>
+        </section>
+
+        <section class="section">
+            <h2>Ecuaciones de Campo de Einstein</h2>
+            <p class="math-block">$$ G_{\mu\nu} + \Lambda g_{\mu\nu} = \frac{8\pi G}{c^4}T_{\mu\nu} $$</p>
+            <p>Esta ecuación fundamental relaciona la curvatura del espacio-tiempo (lado izquierdo) con el contenido de materia y energía (lado derecho). Es un sistema de 10 ecuaciones diferenciales parciales no lineales acopladas.</p>
+
+            <h3>Componentes de la ecuación</h3>
+            <section class="math-block">
+                <ul>
+                    <li>\( G_{\mu\nu} \): Tensor de Einstein (curvatura del espacio-tiempo)</li>
+                    <li>\( g_{\mu\nu} \): Tensor métrico (geometría del espacio-tiempo)</li>
+                    <li>\( \Lambda \): Constante cosmológica (energía del vacío)</li>
+                    <li>\( T_{\mu\nu} \): Tensor energía-momento (materia y energía)</li>
+                    <li>\( G \): Constante gravitacional = 6.674×10⁻¹¹ m³/(kg·s²)</li>
+                    <li>\( c \): Velocidad de la luz = 2.998×10⁸ m/s</li>
+                </ul>
+            </section>
+
+            <h3>Tensor de Einstein</h3>
+            <p class="math-block">$$ G_{\mu\nu} = R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} $$</p>
+            <p>Donde:</p>
+            <section class="math-block">
+                <ul>
+                    <li>\( R_{\mu\nu} \): Tensor de Ricci (contracción del tensor de curvatura de Riemann)</li>
+                    <li>\( R \): Escalar de curvatura de Ricci (\( R = g^{\mu\nu}R_{\mu\nu} \))</li>
+                </ul>
+            </section>
+
+            <h3>Interpretación</h3>
+            <p class="math-block">$$ \text{Geometría del espacio-tiempo} \leftrightarrow \text{Distribución de masa-energía} $$</p>
+            <p>La famosa frase de John Wheeler resume la teoría: <em>"El espacio-tiempo le dice a la materia cómo moverse, la materia le dice al espacio-tiempo cómo curvarse."</em></p>
+        </section>
+
+        <section class="section">
+            <h2>Métrica de Schwarzschild</h2>
+            <p>Solución de las ecuaciones de Einstein para el espacio-tiempo alrededor de una masa esférica no rotante:</p>
+            <p class="math-block">$$ ds^2 = -\left(1-\frac{r_s}{r}\right)c^2dt^2 + \left(1-\frac{r_s}{r}\right)^{-1}dr^2 + r^2(d\theta^2 + \sin^2\theta d\phi^2) $$</p>
+            <p>Donde \( r_s = \frac{2GM}{c^2} \) es el radio de Schwarzschild (ver <a href="astrofisica.html">página de Astrofísica</a>).</p>
+
+            <h3>Características importantes</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>Describe el campo gravitacional de estrellas, planetas y agujeros negros</li>
+                    <li>Para \( r \gg r_s \): recupera la gravedad newtoniana</li>
+                    <li>En \( r = r_s \): horizonte de eventos de un agujero negro</li>
+                    <li>Para \( r < r_s \): interior del agujero negro (singularidad en \( r = 0 \))</li>
+                    <li>Es estática y esféricamente simétrica</li>
+                </ul>
+            </section>
+
+            <h3>Órbitas circulares estables</h3>
+            <p>La órbita circular estable más interna (ISCO) ocurre en:</p>
+            <p class="math-block">$$ r_{\text{ISCO}} = 3r_s = \frac{6GM}{c^2} $$</p>
+            <p>Dentro de este radio, no pueden existir órbitas circulares estables. Los objetos caen inevitablemente hacia el agujero negro.</p>
+        </section>
+
+        <section class="section">
+            <h2>Dilatación Gravitacional del Tiempo</h2>
+            <p class="math-block">$$ \frac{dt_\infty}{dt_r} = \sqrt{1 - \frac{r_s}{r}} = \sqrt{1 - \frac{2GM}{rc^2}} $$</p>
+            <p>El tiempo transcurre más lentamente en presencia de campos gravitacionales intensos. Un reloj cerca de una masa masiva "va más lento" comparado con un reloj en el infinito (lejos de cualquier masa).</p>
+
+            <h3>Comparación con relatividad especial</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <p><strong>Relatividad Especial:</strong> Dilatación por movimiento relativo (efecto cinemático)</p>
+                <p><strong>Relatividad General:</strong> Dilatación por campo gravitacional (efecto geométrico)</p>
+                <p>Ambos efectos son independientes y se suman en situaciones como satélites GPS.</p>
+            </section>
+
+            <h3>En la superficie de objetos masivos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Objeto</th>
+                        <th>Factor de dilatación</th>
+                        <th>Retraso por día</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tierra (superficie)</td>
+                        <td>0.999999999</td>
+                        <td>~0.7 μs</td>
+                    </tr>
+                    <tr>
+                        <td>Sol (superficie)</td>
+                        <td>0.999998</td>
+                        <td>~67 s</td>
+                    </tr>
+                    <tr>
+                        <td>Enana blanca</td>
+                        <td>~0.9995</td>
+                        <td>~43 s</td>
+                    </tr>
+                    <tr>
+                        <td>Estrella de neutrones</td>
+                        <td>~0.7</td>
+                        <td>~7 horas</td>
+                    </tr>
+                    <tr>
+                        <td>Horizonte de agujero negro</td>
+                        <td>0</td>
+                        <td>Infinito</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: GPS y correcciones relativistas</h2>
+            <p>Los satélites GPS orbitan a ≈20,200 km de altura con velocidad orbital de ≈3,900 m/s. Requieren dos correcciones relativistas:</p>
+
+            <h3>1. Relatividad Especial (cinemática):</h3>
+            <p>Los relojes en movimiento van más lentos. Para \( v = 3900 \) m/s:</p>
+            <p class="math-block">$$ \Delta t_{\text{RE}} \approx -\frac{v^2}{2c^2}t = -\frac{(3900)^2}{2(3\times10^8)^2} \times 86400 \approx -7 \text{ μs/día} $$</p>
+            <p>Los relojes satelitales se atrasan 7 microsegundos por día.</p>
+
+            <h3>2. Relatividad General (gravitacional):</h3>
+            <p>Los relojes en campo gravitacional más débil van más rápido. A altura \( h \):</p>
+            <p class="math-block">$$ \Delta t_{\text{RG}} \approx \frac{GM}{c^2}\left(\frac{1}{R_\oplus} - \frac{1}{R_\oplus + h}\right)t $$</p>
+            <p class="math-block">$$ \Delta t_{\text{RG}} \approx \frac{(6.674\times10^{-11})(5.972\times10^{24})}{(3\times10^8)^2}\left(\frac{1}{6.371\times10^6} - \frac{1}{2.637\times10^7}\right) \times 86400 $$</p>
+            <p class="math-block">$$ \Delta t_{\text{RG}} \approx +45 \text{ μs/día} $$</p>
+            <p>Los relojes satelitales se adelantan 45 microsegundos por día.</p>
+
+            <h3>Efecto neto:</h3>
+            <p class="math-block">$$ \Delta t_{\text{total}} = +45 - 7 = +38 \text{ μs/día} $$</p>
+            <p>Sin estas correcciones, el GPS acumularía errores de ~10 km por día. Cada microsegundo de error temporal corresponde a ~300 metros de error espacial (\( c \times 1\text{μs} \)).</p>
+        </section>
+
+        <section class="section">
+            <h2>Desplazamiento al Rojo Gravitacional</h2>
+            <p class="math-block">$$ \frac{\Delta \lambda}{\lambda_0} = \frac{\lambda_{\text{obs}} - \lambda_{\text{em}}}{\lambda_{\text{em}}} = \frac{GM}{rc^2} \approx \frac{gh}{c^2} $$</p>
+            <p>La luz que escapa de un campo gravitacional pierde energía, aumentando su longitud de onda (desplazamiento hacia el rojo). Esto es equivalente a la dilatación temporal: fotones emitidos desde relojes "lentos" tienen menor frecuencia.</p>
+
+            <h3>Experimento de Pound-Rebka (1959)</h3>
+            <p>Primera verificación terrestre de la Relatividad General. Rayos gamma emitidos desde el sótano de un edificio de 22.6 m de altura en Harvard mostraron un desplazamiento al rojo:</p>
+            <p class="math-block">$$ \frac{\Delta \lambda}{\lambda} = \frac{gh}{c^2} = \frac{(9.8)(22.6)}{(3\times10^8)^2} \approx 2.46 \times 10^{-15} $$</p>
+            <p>Aunque minúsculo, fue medido con precisión del 1%, confirmando la predicción de Einstein.</p>
+        </section>
+
+        <section class="section">
+            <h2>Precesión del Perihelio</h2>
+            <p>La Relatividad General predice una pequeña precesión adicional en las órbitas elípticas:</p>
+            <p class="math-block">$$ \Delta\phi = \frac{6\pi GM}{a(1-e^2)c^2} \text{ radianes por órbita} $$</p>
+            <p>Donde \( a \) es el semieje mayor y \( e \) la excentricidad de la órbita.</p>
+
+            <h3>Mercurio</h3>
+            <p>La precesión observada del perihelio de Mercurio es de 574 segundos de arco por siglo. La mecánica newtoniana explica 531'' mediante perturbaciones planetarias, dejando un residuo inexplicado de 43'' por siglo.</p>
+            <p>La Relatividad General predice exactamente estos 43''/siglo adicionales:</p>
+            <p class="math-block">$$ \Delta\phi_{\text{Mercurio}} \approx 43'' \text{ por siglo} $$</p>
+            <p>Este fue uno de los primeros éxitos de la teoría de Einstein y una de las evidencias más convincentes de su corrección.</p>
+        </section>
+
+        <section class="section">
+            <h2>Deflexión de la Luz</h2>
+            <p>La luz se curva al pasar cerca de objetos masivos. Un rayo de luz rozando el Sol se desvía:</p>
+            <p class="math-block">$$ \Delta\theta = \frac{4GM}{c^2R} $$</p>
+            <p>Para el Sol (\( M_\odot = 1.989 \times 10^{30} \) kg, \( R_\odot = 6.96 \times 10^8 \) m):</p>
+            <p class="math-block">$$ \Delta\theta = \frac{4(6.674\times10^{-11})(1.989\times10^{30})}{(3\times10^8)^2(6.96\times10^8)} \approx 8.48 \times 10^{-6} \text{ rad} \approx 1.75'' $$</p>
+
+            <h3>Expedición de Eddington (1919)</h3>
+            <p>Durante el eclipse solar total de 1919, Arthur Eddington midió la posición de estrellas cerca del Sol, confirmando la deflexión de 1.75'' predicha por Einstein (el doble de la predicción newtoniana de 0.875''). Este experimento catapultó a Einstein a la fama mundial.</p>
+
+            <h3>Lentes gravitacionales</h3>
+            <p>Galaxias y cúmulos galácticos masivos actúan como lentes, produciendo múltiples imágenes, arcos y anillos de Einstein. Este efecto se usa para:</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>Mapear la distribución de materia oscura</li>
+                    <li>Amplificar galaxias distantes (telescopio natural)</li>
+                    <li>Medir masas de cúmulos galácticos</li>
+                    <li>Detectar exoplanetas mediante microlente gravitacional</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>Ondas Gravitacionales</h2>
+            <p>Perturbaciones en la curvatura del espacio-tiempo que se propagan a la velocidad de la luz, predichas por Einstein en 1916 y detectadas directamente por LIGO en 2015.</p>
+
+            <h3>Ecuación de onda linearizada</h3>
+            <p>En el límite de campos débiles, las ecuaciones de Einstein se reducen a:</p>
+            <p class="math-block">$$ \Box h_{\mu\nu} = -\frac{16\pi G}{c^4}T_{\mu\nu} $$</p>
+            <p>Donde \( \Box = -\frac{1}{c^2}\frac{\partial^2}{\partial t^2} + \nabla^2 \) es el operador d'Alembertiano y \( h_{\mu\nu} \) es la perturbación métrica.</p>
+
+            <h3>Fórmula del cuadrupolo</h3>
+            <p>La potencia radiada por un sistema con momento cuadrupolar \( Q_{ij} \) es:</p>
+            <p class="math-block">$$ P = \frac{G}{5c^5}\left\langle\frac{d^3Q_{ij}}{dt^3}\frac{d^3Q_{ij}}{dt^3}\right\rangle $$</p>
+
+            <h3>Fusión de agujeros negros (GW150914)</h3>
+            <p>Primera detección directa: dos agujeros negros de ~36 y ~29 masas solares fusionándose a ~1.3 mil millones de años luz.</p>
+            <section class="math-block">
+                <ul>
+                    <li>Energía radiada: ~3 masas solares convertidas en ondas gravitacionales</li>
+                    <li>Potencia máxima: \( \sim 10^{49} \) W (más que todas las estrellas del universo observable)</li>
+                    <li>Deformación medida: \( h \sim 10^{-21} \) (menor que el diámetro de un protón)</li>
+                    <li>Frecuencia: 35-250 Hz (en el rango audible)</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>Agujeros Negros</h2>
+            <p>Regiones del espacio-tiempo donde la curvatura es tan extrema que nada puede escapar desde dentro del horizonte de eventos.</p>
+
+            <h3>Tipos según rotación y carga</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Rotación</th>
+                        <th>Carga</th>
+                        <th>Métrica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Schwarzschild</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>Más simple</td>
+                    </tr>
+                    <tr>
+                        <td>Reissner-Nordström</td>
+                        <td>No</td>
+                        <td>Sí</td>
+                        <td>Con carga eléctrica</td>
+                    </tr>
+                    <tr>
+                        <td>Kerr</td>
+                        <td>Sí</td>
+                        <td>No</td>
+                        <td>Rotante (más realista)</td>
+                    </tr>
+                    <tr>
+                        <td>Kerr-Newman</td>
+                        <td>Sí</td>
+                        <td>Sí</td>
+                        <td>Caso general</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Horizonte de eventos</h3>
+            <p>Superficie unidireccional: todo puede entrar, nada puede salir. Para Schwarzschild:</p>
+            <p class="math-block">$$ r_s = \frac{2GM}{c^2} $$</p>
+
+            <h3>Singularidad</h3>
+            <p>Punto de curvatura infinita en \( r = 0 \) (Schwarzschild) o anillo en el plano ecuatorial (Kerr). La física actual (sin gravedad cuántica) no puede describir las singularidades.</p>
+
+            <h3>Ergoesfera (agujeros negros rotantes)</h3>
+            <p>Región fuera del horizonte donde el arrastre del espacio-tiempo es tan fuerte que nada puede permanecer estático. Se puede extraer energía rotacional mediante el proceso de Penrose.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones y Verificaciones</h2>
+            <ul>
+                <li><strong>GPS:</strong> Requiere correcciones relativistas generales y especiales</li>
+                <li><strong>Ondas gravitacionales:</strong> LIGO, Virgo, KAGRA detectan fusiones de objetos compactos</li>
+                <li><strong>Agujeros negros:</strong> Primera imagen de M87* (2019), Sagittarius A* (2022)</li>
+                <li><strong>Púlsares binarios:</strong> PSR B1913+16 pierde energía orbital por radiación gravitacional</li>
+                <li><strong>Lentes gravitacionales:</strong> Mapeo de materia oscura en cúmulos galácticos</li>
+                <li><strong>Cosmología:</strong> Expansión del universo, energía oscura, Big Bang</li>
+                <li><strong>Sondas espaciales:</strong> Efecto Shapiro (retraso temporal de señales)</li>
+                <li><strong>Astronomía gravitacional:</strong> Nueva ventana al universo complementaria a luz</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( G \): Constante gravitacional = 6.674×10⁻¹¹ m³/(kg·s²)</li>
+                <li>\( c \): Velocidad de la luz = 2.998×10⁸ m/s</li>
+                <li>\( G_{\mu\nu} \): Tensor de Einstein (curvatura)</li>
+                <li>\( g_{\mu\nu} \): Tensor métrico</li>
+                <li>\( T_{\mu\nu} \): Tensor energía-momento</li>
+                <li>\( R_{\mu\nu} \): Tensor de Ricci</li>
+                <li>\( R \): Escalar de curvatura</li>
+                <li>\( \Lambda \): Constante cosmológica</li>
+                <li>\( r_s \): Radio de Schwarzschild</li>
+                <li>\( M \): Masa del objeto</li>
+                <li>\( h_{\mu\nu} \): Perturbación métrica (ondas gravitacionales)</li>
+                <li>Índices griegos \( \mu, \nu \): 0,1,2,3 (tiempo + 3 espacio)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Comparación: Newton vs Einstein</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Gravedad Newtoniana</th>
+                        <th>Relatividad General</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Naturaleza</td>
+                        <td>Fuerza instantánea a distancia</td>
+                        <td>Curvatura del espacio-tiempo</td>
+                    </tr>
+                    <tr>
+                        <td>Velocidad</td>
+                        <td>Acción instantánea</td>
+                        <td>Propagación a velocidad \( c \)</td>
+                    </tr>
+                    <tr>
+                        <td>Espacio y tiempo</td>
+                        <td>Absolutos e independientes</td>
+                        <td>Unificados, relativos, dinámicos</td>
+                    </tr>
+                    <tr>
+                        <td>Ecuación</td>
+                        <td>\( F = \frac{GMm}{r^2} \)</td>
+                        <td>\( G_{\mu\nu} = \frac{8\pi G}{c^4}T_{\mu\nu} \)</td>
+                    </tr>
+                    <tr>
+                        <td>Órbitas</td>
+                        <td>Elipses cerradas</td>
+                        <td>Precesión del perihelio</td>
+                    </tr>
+                    <tr>
+                        <td>Luz</td>
+                        <td>No afectada</td>
+                        <td>Se curva (deflexión, lentes)</td>
+                    </tr>
+                    <tr>
+                        <td>Tiempo</td>
+                        <td>Fluye uniformemente</td>
+                        <td>Dilatación gravitacional</td>
+                    </tr>
+                    <tr>
+                        <td>Ondas</td>
+                        <td>No existen</td>
+                        <td>Ondas gravitacionales</td>
+                    </tr>
+                    <tr>
+                        <td>Límite</td>
+                        <td>No hay colapso infinito</td>
+                        <td>Agujeros negros, singularidades</td>
+                    </tr>
+                    <tr>
+                        <td>Validez</td>
+                        <td>Campos débiles, \( v \ll c \)</td>
+                        <td>Cualquier campo, cualquier \( v \)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leyes de Newton - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="ph.html">← Volver</a></h3>
+        <h1>Leyes de Newton</h1>
+    </header>
+
+    <main>
+        <hr>
+        
+        <section class="section">
+            <h2>Los Fundamentos de la Dinámica</h2>
+            <p>Las tres leyes del movimiento formuladas por Isaac Newton en 1687 constituyen la base de la mecánica clásica. Estas leyes describen la relación entre el movimiento de un objeto y las fuerzas que actúan sobre él, permitiendo predecir el comportamiento de sistemas desde partículas microscópicas hasta planetas en órbita.</p>
+        </section>
+
+        <section class="section">
+            <h2>Primera Ley: Ley de la Inercia</h2>
+            <p class="math-block">$$ \text{Si } \sum \vec{F} = \vec{0} \quad \Rightarrow \quad \vec{v} = \text{constante} $$</p>
+            <p>Todo cuerpo permanece en su estado de reposo o de movimiento rectilíneo uniforme a menos que una fuerza neta actúe sobre él. Esta ley establece el concepto de <strong>inercia</strong>: la tendencia de los objetos a mantener su estado de movimiento.</p>
+            
+            <section class="aplicaciones" style="background-color: #494949;">
+                <h3>Implicaciones</h3>
+                <ul>
+                    <li>Un objeto en reposo permanece en reposo si no actúan fuerzas sobre él</li>
+                    <li>Un objeto en movimiento continúa moviéndose con velocidad constante (magnitud y dirección) si la fuerza neta es cero</li>
+                    <li>La inercia es proporcional a la masa: objetos más masivos resisten más los cambios en su movimiento</li>
+                    <li>Define los <strong>sistemas de referencia inerciales</strong>: aquellos en los que se cumple esta ley</li>
+                </ul>
+            </section>
+
+            <h3>Equilibrio de fuerzas</h3>
+            <p>Cuando múltiples fuerzas actúan sobre un objeto y su suma vectorial es cero, el objeto está en equilibrio:</p>
+            <p class="math-block">$$ \vec{F}_1 + \vec{F}_2 + \vec{F}_3 + \cdots = \vec{0} $$</p>
+            <p>El equilibrio puede ser:</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li><strong>Estático:</strong> el objeto está en reposo (\( \vec{v} = \vec{0} \))</li>
+                    <li><strong>Dinámico:</strong> el objeto se mueve con velocidad constante (\( \vec{v} = \text{cte} \))</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Bloque en equilibrio sobre plano inclinado</h2>
+            <p>Un bloque de masa \( m = 10 \) kg descansa sobre un plano inclinado de 30° con coeficiente de fricción estático \( \mu_s = 0.6 \). ¿Está en equilibrio?</p>
+            <p>Las fuerzas actuantes son:</p>
+            <section class="math-block">
+                <ul>
+                    <li>Peso: \( \vec{W} = mg = (10)(9.8) = 98 \) N (vertical hacia abajo)</li>
+                    <li>Normal: \( \vec{N} \) (perpendicular al plano)</li>
+                    <li>Fricción: \( \vec{f}_s \) (paralela al plano, hacia arriba)</li>
+                </ul>
+            </section>
+            <p>Descomponiendo el peso:</p>
+            <p class="math-block">$$ W_\parallel = mg\sin(30°) = 98 \times 0.5 = 49 \text{ N} $$</p>
+            <p class="math-block">$$ W_\perp = mg\cos(30°) = 98 \times 0.866 = 84.87 \text{ N} $$</p>
+            <p>En dirección perpendicular: \( N = W_\perp = 84.87 \) N</p>
+            <p>La fricción máxima es:</p>
+            <p class="math-block">$$ f_{s,\text{max}} = \mu_s N = 0.6 \times 84.87 = 50.92 \text{ N} $$</p>
+            <p>Como \( f_{s,\text{max}} = 50.92 \text{ N} > W_\parallel = 49 \text{ N} \), la fricción puede equilibrar la componente paralela del peso. El bloque está en equilibrio estático.</p>
+        </section>
+
+        <section class="section">
+            <h2>Segunda Ley: Ley de la Fuerza</h2>
+            <p class="math-block">$$ \vec{F}_{\text{neta}} = m\vec{a} \quad \text{o} \quad \vec{F} = \frac{d\vec{p}}{dt} $$</p>
+            <p>La aceleración de un objeto es directamente proporcional a la fuerza neta que actúa sobre él e inversamente proporcional a su masa. Esta es la ecuación fundamental de la dinámica.</p>
+            
+            <h3>Forma en términos del momento lineal</h3>
+            <p>La formulación más general usa el momento lineal \( \vec{p} = m\vec{v} \):</p>
+            <p class="math-block">$$ \vec{F} = \frac{d\vec{p}}{dt} = \frac{d(m\vec{v})}{dt} = m\frac{d\vec{v}}{dt} = m\vec{a} $$</p>
+            <p>Esta forma es válida incluso cuando la masa varía (cohetes, por ejemplo).</p>
+
+            <h3>Componentes cartesianas</h3>
+            <p>En un sistema de coordenadas cartesianas:</p>
+            <p class="math-block">$$ \begin{cases} F_x = ma_x \\ F_y = ma_y \\ F_z = ma_z \end{cases} $$</p>
+
+            <h3>Unidades</h3>
+            <p>En el Sistema Internacional (SI):</p>
+            <section class="math-block">
+                <ul>
+                    <li>Fuerza: Newton (N) = kg·m/s²</li>
+                    <li>Masa: kilogramo (kg)</li>
+                    <li>Aceleración: metros por segundo cuadrado (m/s²)</li>
+                </ul>
+            </section>
+            <p>Definición: 1 N es la fuerza necesaria para acelerar 1 kg a 1 m/s².</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Aceleración de un automóvil</h2>
+            <p>Un automóvil de masa 1200 kg experimenta una fuerza motriz de 3600 N y una fuerza de resistencia (fricción + aire) de 600 N. ¿Cuál es su aceleración?</p>
+            <p class="math-block">$$ F_{\text{neta}} = F_{\text{motor}} - F_{\text{resistencia}} = 3600 - 600 = 3000 \text{ N} $$</p>
+            <p class="math-block">$$ a = \frac{F_{\text{neta}}}{m} = \frac{3000}{1200} = 2.5 \text{ m/s}^2 $$</p>
+            <p>Si el auto parte del reposo, su velocidad después de 10 segundos será:</p>
+            <p class="math-block">$$ v = v_0 + at = 0 + (2.5)(10) = 25 \text{ m/s} = 90 \text{ km/h} $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Tercera Ley: Ley de Acción y Reacción</h2>
+            <p class="math-block">$$ \vec{F}_{AB} = -\vec{F}_{BA} $$</p>
+            <p>Cuando un objeto A ejerce una fuerza sobre un objeto B, el objeto B ejerce simultáneamente una fuerza de igual magnitud y dirección opuesta sobre A. Estas fuerzas son llamadas <strong>par de acción-reacción</strong>.</p>
+
+            <section class="aplicaciones" style="background-color: #494949;">
+                <h3>Características importantes</h3>
+                <ul>
+                    <li>Las fuerzas del par acción-reacción actúan sobre <strong>objetos diferentes</strong></li>
+                    <li>Tienen la misma magnitud: \( |\vec{F}_{AB}| = |\vec{F}_{BA}| \)</li>
+                    <li>Tienen direcciones opuestas: apuntan en sentidos contrarios</li>
+                    <li>Actúan simultáneamente: no hay retraso temporal</li>
+                    <li>Son del mismo tipo (gravitacional, eléctrica, de contacto, etc.)</li>
+                    <li><strong>NO se cancelan</strong> porque actúan sobre cuerpos distintos</li>
+                </ul>
+            </section>
+
+            <h3>Ejemplos cotidianos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Acción</th>
+                        <th>Reacción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>La Tierra atrae a la Luna</td>
+                        <td>La Luna atrae a la Tierra</td>
+                    </tr>
+                    <tr>
+                        <td>Empujas una pared hacia adelante</td>
+                        <td>La pared te empuja hacia atrás</td>
+                    </tr>
+                    <tr>
+                        <td>Tus pies empujan el suelo hacia atrás</td>
+                        <td>El suelo te impulsa hacia adelante (caminar)</td>
+                    </tr>
+                    <tr>
+                        <td>El cohete expulsa gases hacia abajo</td>
+                        <td>Los gases impulsan el cohete hacia arriba</td>
+                    </tr>
+                    <tr>
+                        <td>La hélice empuja el aire hacia atrás</td>
+                        <td>El aire impulsa el avión hacia adelante</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Propulsión de un cohete</h2>
+            <p>Un cohete de masa inicial 5000 kg expulsa gases a razón de 50 kg/s con velocidad relativa de 2000 m/s. ¿Cuál es el empuje del cohete?</p>
+            <p>Usando la tercera ley y la conservación del momento:</p>
+            <p class="math-block">$$ F_{\text{empuje}} = \left|\frac{dm}{dt}\right| v_{\text{rel}} = (50)(2000) = 100{,}000 \text{ N} $$</p>
+            <p>Si despreciamos la gravedad temporalmente, la aceleración inicial es:</p>
+            <p class="math-block">$$ a = \frac{F}{m} = \frac{100{,}000}{5000} = 20 \text{ m/s}^2 $$</p>
+            <p>Esta aceleración aumenta con el tiempo a medida que disminuye la masa del cohete, permitiendo alcanzar velocidades enormes (ecuación de Tsiolkovsky).</p>
+        </section>
+
+        <section class="section">
+            <h2>Fuerzas comunes en mecánica</h2>
+            
+            <h3>Fuerza gravitacional</h3>
+            <p>Entre dos masas \( m_1 \) y \( m_2 \) separadas por una distancia \( r \):</p>
+            <p class="math-block">$$ F_g = G\frac{m_1 m_2}{r^2} $$</p>
+            <p>Donde \( G = 6.674 \times 10^{-11} \) N·m²/kg² es la constante de gravitación universal.</p>
+            <p>En la superficie terrestre, el peso es: \( W = mg \), donde \( g = 9.8 \) m/s².</p>
+
+            <h3>Fuerza normal</h3>
+            <p>Fuerza perpendicular ejercida por una superficie sobre un objeto en contacto. En una superficie horizontal:</p>
+            <p class="math-block">$$ N = mg $$</p>
+            <p>En un plano inclinado con ángulo \( \theta \):</p>
+            <p class="math-block">$$ N = mg\cos\theta $$</p>
+
+            <h3>Fuerza de fricción</h3>
+            <p>Fuerza que se opone al movimiento relativo entre superficies en contacto:</p>
+            <section class="math-block">
+                <ul>
+                    <li><strong>Fricción estática:</strong> \( f_s \leq \mu_s N \) (antes de que el objeto se mueva)</li>
+                    <li><strong>Fricción cinética:</strong> \( f_k = \mu_k N \) (cuando el objeto se mueve)</li>
+                </ul>
+            </section>
+            <p>Donde \( \mu_s \) y \( \mu_k \) son los coeficientes de fricción estático y cinético, respectivamente. Generalmente \( \mu_s > \mu_k \).</p>
+
+            <h3>Fuerza de tensión</h3>
+            <p>Fuerza transmitida a través de una cuerda, cable o cadena cuando se tira de sus extremos. La tensión \( T \) es la misma en todos los puntos de una cuerda ideal (sin masa y sin fricción).</p>
+
+            <h3>Fuerza elástica (Ley de Hooke)</h3>
+            <p class="math-block">$$ F = -kx $$</p>
+            <p>Donde \( k \) es la constante elástica del resorte y \( x \) es la deformación respecto a su longitud natural. El signo negativo indica que la fuerza restauradora se opone a la deformación.</p>
+        </section>
+
+        <section class="section">
+            <h2>Diagrama de cuerpo libre (DCL)</h2>
+            <p>El método fundamental para resolver problemas de dinámica consiste en:</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ol>
+                    <li><strong>Aislar el objeto:</strong> Considerar solo un cuerpo a la vez</li>
+                    <li><strong>Identificar todas las fuerzas:</strong> Dibujar vectores desde el centro de masa</li>
+                    <li><strong>Elegir un sistema de coordenadas:</strong> Típicamente alineado con el movimiento</li>
+                    <li><strong>Descomponer fuerzas:</strong> Proyectar en ejes coordenados si es necesario</li>
+                    <li><strong>Aplicar la Segunda Ley:</strong> \( \sum \vec{F} = m\vec{a} \) en cada dirección</li>
+                    <li><strong>Resolver el sistema de ecuaciones:</strong> Obtener aceleraciones y fuerzas desconocidas</li>
+                </ol>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Sistema completo</h2>
+            <p>Dos bloques de masas \( m_1 = 5 \) kg y \( m_2 = 3 \) kg están conectados por una cuerda sobre una polea sin fricción. \( m_1 \) está sobre una mesa horizontal con \( \mu_k = 0.2 \), y \( m_2 \) cuelga verticalmente. Hallar la aceleración del sistema.</p>
+            
+            <h3>Análisis del bloque \( m_1 \) (horizontal):</h3>
+            <p class="math-block">$$ \sum F_x: T - f_k = m_1 a $$</p>
+            <p class="math-block">$$ \sum F_y: N - m_1 g = 0 \quad \Rightarrow \quad N = m_1 g = 49 \text{ N} $$</p>
+            <p class="math-block">$$ f_k = \mu_k N = 0.2 \times 49 = 9.8 \text{ N} $$</p>
+            <p>Ecuación 1: \( T - 9.8 = 5a \)</p>
+
+            <h3>Análisis del bloque \( m_2 \) (vertical):</h3>
+            <p class="math-block">$$ \sum F_y: m_2 g - T = m_2 a $$</p>
+            <p class="math-block">$$ 29.4 - T = 3a $$</p>
+            <p>Ecuación 2: \( T = 29.4 - 3a \)</p>
+
+            <h3>Resolver el sistema:</h3>
+            <p>Sustituyendo la Ecuación 2 en la Ecuación 1:</p>
+            <p class="math-block">$$ (29.4 - 3a) - 9.8 = 5a $$</p>
+            <p class="math-block">$$ 19.6 = 8a \quad \Rightarrow \quad a = 2.45 \text{ m/s}^2 $$</p>
+            <p>La tensión es:</p>
+            <p class="math-block">$$ T = 29.4 - 3(2.45) = 29.4 - 7.35 = 22.05 \text{ N} $$</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones de las Leyes de Newton</h2>
+            <ul>
+                <li><strong>Ingeniería estructural:</strong> Cálculo de fuerzas en puentes, edificios y máquinas</li>
+                <li><strong>Aeronáutica:</strong> Diseño de aviones, análisis de sustentación y resistencia del aire</li>
+                <li><strong>Automovilismo:</strong> Optimización de frenado, aceleración y comportamiento en curvas</li>
+                <li><strong>Biomecánica:</strong> Análisis del movimiento humano, diseño de prótesis</li>
+                <li><strong>Astronáutica:</strong> Trayectorias de cohetes, órbitas satelitales, maniobras espaciales</li>
+                <li><strong>Seguridad vial:</strong> Diseño de sistemas de retención, análisis de colisiones</li>
+                <li><strong>Deportes:</strong> Optimización de técnicas en atletismo, ciclismo, natación</li>
+                <li><strong>Robótica:</strong> Control de movimiento, planificación de trayectorias</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( \vec{F} \): Vector fuerza (N = kg·m/s²)</li>
+                <li>\( m \): Masa (kg)</li>
+                <li>\( \vec{a} \): Vector aceleración (m/s²)</li>
+                <li>\( \vec{v} \): Vector velocidad (m/s)</li>
+                <li>\( \vec{p} \): Momento lineal (kg·m/s)</li>
+                <li>\( g \): Aceleración gravitacional = 9.8 m/s²</li>
+                <li>\( G \): Constante de gravitación universal = 6.674×10⁻¹¹ N·m²/kg²</li>
+                <li>\( N \): Fuerza normal (N)</li>
+                <li>\( T \): Tensión (N)</li>
+                <li>\( f \): Fuerza de fricción (N)</li>
+                <li>\( \mu_s \): Coeficiente de fricción estática</li>
+                <li>\( \mu_k \): Coeficiente de fricción cinética</li>
+                <li>\( k \): Constante elástica (N/m)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Tabla resumen de las Leyes de Newton</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ley</th>
+                        <th>Enunciado</th>
+                        <th>Ecuación</th>
+                        <th>Concepto clave</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Primera Ley</td>
+                        <td>Un objeto permanece en su estado de movimiento a menos que actúe una fuerza neta</td>
+                        <td>\( \sum \vec{F} = \vec{0} \Rightarrow \vec{v} = \text{cte} \)</td>
+                        <td>Inercia</td>
+                    </tr>
+                    <tr>
+                        <td>Segunda Ley</td>
+                        <td>La fuerza neta sobre un objeto es igual a la masa por la aceleración</td>
+                        <td>\( \vec{F} = m\vec{a} = \frac{d\vec{p}}{dt} \)</td>
+                        <td>Dinámica</td>
+                    </tr>
+                    <tr>
+                        <td>Tercera Ley</td>
+                        <td>Toda acción tiene una reacción igual y opuesta</td>
+                        <td>\( \vec{F}_{AB} = -\vec{F}_{BA} \)</td>
+                        <td>Acción-Reacción</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Coeficientes de fricción típicos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Materiales</th>
+                        <th>\( \mu_s \) (estático)</th>
+                        <th>\( \mu_k \) (cinético)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Acero sobre acero</td>
+                        <td>0.74</td>
+                        <td>0.57</td>
+                    </tr>
+                    <tr>
+                        <td>Aluminio sobre acero</td>
+                        <td>0.61</td>
+                        <td>0.47</td>
+                    </tr>
+                    <tr>
+                        <td>Caucho sobre concreto (seco)</td>
+                        <td>1.0</td>
+                        <td>0.8</td>
+                    </tr>
+                    <tr>
+                        <td>Caucho sobre concreto (mojado)</td>
+                        <td>0.7</td>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <td>Madera sobre madera</td>
+                        <td>0.5</td>
+                        <td>0.3</td>
+                    </tr>
+                    <tr>
+                        <td>Vidrio sobre vidrio</td>
+                        <td>0.94</td>
+                        <td>0.4</td>
+                    </tr>
+                    <tr>
+                        <td>Teflón sobre teflón</td>
+                        <td>0.04</td>
+                        <td>0.04</td>
+                    </tr>
+                    <tr>
+                        <td>Hielo sobre hielo</td>
+                        <td>0.1</td>
+                        <td>0.03</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>

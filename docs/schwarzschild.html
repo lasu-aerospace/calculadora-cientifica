@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio de Schwarzschild - Calculadora Científica</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="astrofisica.html">← Volver</a></h3>
+        <h1>Radio de Schwarzschild</h1>
+    </header>
+
+    <main>
+        <hr>
+
+        <section class="section">
+        <p class="math-block">$$ r_s = \frac{2GM}{c^2} $$</p>
+        <p>El radio de Schwarzschild representa el horizonte de eventos de un agujero negro: la frontera más allá de la cual ni siquiera la luz puede escapar. Derivado de las ecuaciones de campo de Einstein, este radio crítico depende únicamente de la masa \( M \) del objeto, la constante gravitacional \( G \) y la velocidad de la luz \( c \).</p>
+        
+        <section class="aplicaciones" style="background-color: #494949;">
+            <h3>Interpretación física</h3>
+            <p>Para cualquier masa \( M \), si comprimimos toda su materia dentro de una esfera de radio \( r_s \), la curvatura del espacio-tiempo se vuelve tan extrema que forma un agujero negro. No es que la gravedad sea "infinita", sino que la geometría del espacio-tiempo cambia radicalmente.</p>
+        </section>
+
+        <h3>Cálculo del radio de Schwarzschild</h3>
+        <p>Para un objeto de masa \( M \), el radio de Schwarzschild se calcula como:</p>
+        <p class="math-block">$$ r_s = \frac{2GM}{c^2} \approx 2.95 \times 10^{-27} M \text{ (metros)} $$</p>
+        <p>donde \( M \) se expresa en kilogramos. Para simplificar, podemos usar:</p>
+        <p class="math-block">$$ r_s \approx 3.0 \left(\frac{M}{M_\odot}\right) \text{ km} $$</p>
+        <p>donde \( M_\odot = 1.989 \times 10^{30} \) kg es la masa solar.</p>
+
+        <table>
+            <caption>Radio de Schwarzschild de Objetos Celestes</caption>
+            <thead>
+                <tr>
+                    <th>Objeto</th>
+                    <th>Masa (masas solares)</th>
+                    <th>Radio real</th>
+                    <th>Radio de Schwarzschild</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tierra</td>
+                    <td>3.0 × 10⁻⁶</td>
+                    <td>6,371 km</td>
+                    <td>8.9 mm</td>
+                </tr>
+                <tr>
+                    <td>Sol</td>
+                    <td>1.0</td>
+                    <td>696,000 km</td>
+                    <td>3.0 km</td>
+                </tr>
+                <tr>
+                    <td>Agujero negro estelar</td>
+                    <td>10</td>
+                    <td>—</td>
+                    <td>30 km</td>
+                </tr>
+                <tr>
+                    <td>Sagittarius A*</td>
+                    <td>4.3 × 10⁶</td>
+                    <td>—</td>
+                    <td>12.9 millones km</td>
+                </tr>
+                <tr>
+                    <td>M87* (fotografiado)</td>
+                    <td>6.5 × 10⁹</td>
+                    <td>—</td>
+                    <td>19,500 millones km</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="aplicaciones">
+        <h2>Ejemplo práctico: ¿Podría el Sol convertirse en agujero negro?</h2>
+        <p>Calculemos el radio de Schwarzschild del Sol:</p>
+        <p class="math-block">$$ r_s = \frac{2 \times 6.674 \times 10^{-11} \times 1.989 \times 10^{30}}{(3.0 \times 10^8)^2} $$</p>
+        <p class="math-block">$$ r_s = \frac{2.653 \times 10^{20}}{9.0 \times 10^{16}} \approx 2,950 \text{ metros} = 2.95 \text{ km} $$</p>
+        <p>El Sol tendría que comprimirse a menos de 3 km de radio (¡más pequeño que una ciudad!) para formar un agujero negro. Su radio actual es de 696,000 km, por lo que está muy lejos de este límite. Las estrellas como el Sol terminan como enanas blancas, no como agujeros negros. Solo estrellas con masa superior a ~25 masas solares pueden colapsar en agujeros negros.</p>
+    </section>
+
+    <section class="aplicaciones">
+        <h2>Aplicaciones modernas</h2>
+        <ul>
+            <li><strong>GPS y navegación satelital:</strong> Los satélites GPS orbitan según las leyes de Kepler, pero requieren correcciones relativistas del orden de microsegundos al día para mantener la precisión.</li>
+            <li><strong>Detección de exoplanetas:</strong> La tercera ley de Kepler permite calcular la masa de estrellas lejanas observando el período orbital de sus planetas.</li>
+            <li><strong>Ondas gravitacionales:</strong> La fusión de agujeros negros detectada por LIGO involucra órbitas que espiralizan desde radios kepleranos hasta el horizonte de eventos.</li>
+            <li><strong>Disco de acreción:</strong> El material que cae hacia un agujero negro forma un disco que emite radiación intensa, observable en rayos X. Este material sigue órbitas modificadas por la relatividad general.</li>
+            <li><strong>Fotografía de M87*:</strong> La primera imagen de un agujero negro muestra el anillo de fotones orbitando justo fuera del horizonte de eventos, validando las predicciones del radio de Schwarzschild.</li>
+        </ul>
+    </section>
+
+    <section class="aplicaciones">
+        <h2>Notación</h2>
+        <ul>
+            <li>\( G = 6.674 \times 10^{-11} \) m³/(kg·s²): Constante de gravitación universal.</li>
+            <li>\( c = 2.998 \times 10^8 \) m/s: Velocidad de la luz en el vacío.</li>
+            <li>\( M \): Masa del cuerpo central (Sol, agujero negro, etc.).</li>
+            <li>\( m \): Masa del cuerpo orbital (planeta, satélite).</li>
+            <li>\( a \): Semieje mayor de la órbita elíptica.</li>
+            <li>\( e \): Excentricidad de la órbita \( (0 \leq e < 1) \).</li>
+            <li>\( T \): Período orbital.</li>
+            <li>\( r_s \): Radio de Schwarzschild (horizonte de eventos).</li>
+            <li>\( L \): Momento angular.</li>
+            <li>\( M_\odot = 1.989 \times 10^{30} \) kg: Masa solar.</li>
+            <li>UA: Unidad Astronómica = 1.496 × 10⁸ km (distancia Tierra-Sol).</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Tablas de referencia</h2>
+        
+        <table>
+            <caption>Constantes astrofísicas fundamentales</caption>
+            <thead>
+                <tr>
+                    <th>Constante</th>
+                    <th>Símbolo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Constante gravitacional</td>
+                    <td>\( G \)</td>
+                    <td>\( 6.674 \times 10^{-11} \) m³/(kg·s²)</td>
+                </tr>
+                <tr>
+                    <td>Velocidad de la luz</td>
+                    <td>\( c \)</td>
+                    <td>\( 2.998 \times 10^8 \) m/s</td>
+                </tr>
+                <tr>
+                    <td>Masa solar</td>
+                    <td>\( M_\odot \)</td>
+                    <td>\( 1.989 \times 10^{30} \) kg</td>
+                </tr>
+                <tr>
+                    <td>Radio solar</td>
+                    <td>\( R_\odot \)</td>
+                    <td>696,000 km</td>
+                </tr>
+                <tr>
+                    <td>Unidad astronómica</td>
+                    <td>UA</td>
+                    <td>\( 1.496 \times 10^8 \) km</td>
+                </tr>
+                <tr>
+                    <td>Año luz</td>
+                    <td>ly</td>
+                    <td>\( 9.461 \times 10^{12} \) km</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <caption>Tipos de agujeros negros</caption>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Rango de masa</th>
+                    <th>Radio de Schwarzschild típico</th>
+                    <th>Origen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Primordial</td>
+                    <td>< 1 M⊕</td>
+                    <td>< 9 mm</td>
+                    <td>Hipotético (Big Bang)</td>
+                </tr>
+                <tr>
+                    <td>Estelar</td>
+                    <td>5 - 100 M☉</td>
+                    <td>15 - 300 km</td>
+                    <td>Colapso de estrellas masivas</td>
+                </tr>
+                <tr>
+                    <td>Intermedio</td>
+                    <td>10² - 10⁵ M☉</td>
+                    <td>300 km - 300,000 km</td>
+                    <td>Cúmulos estelares (teoría)</td>
+                </tr>
+                <tr>
+                    <td>Supermasivo</td>
+                    <td>10⁶ - 10¹⁰ M☉</td>
+                    <td>3 - 30 mil millones km</td>
+                    <td>Centros galácticos</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+        <hr>
+    </main>
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
+    </footer>
+
+</body>
+</html>

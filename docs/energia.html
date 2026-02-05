@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energía - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="ph.html">← Volver</a></h3>
+        <h1>Energía</h1>
+    </header>
+
+    <main>
+        <hr>
+        
+        <section class="section">
+            <h2>Definición</h2>
+            <p>La energía es la capacidad de un sistema para realizar trabajo o transferir calor. Es una propiedad escalar fundamental del universo que se manifiesta en múltiples formas y se conserva en sistemas cerrados. La energía no se crea ni se destruye, solo se transforma de una forma a otra.</p>
+        </section>
+
+        <section class="section">
+            <h2>Energía Cinética</h2>
+            <p class="math-block">$$ K = \frac{1}{2}mv^2 $$</p>
+            <p>La energía cinética es la energía asociada al movimiento de un objeto. Depende cuadráticamente de la velocidad: duplicar la velocidad cuadruplica la energía cinética.</p>
+            
+            <h3>Derivación desde el trabajo</h3>
+            <p>Aplicando la segunda ley de Newton y el teorema trabajo-energía:</p>
+            <p class="math-block">$$ W = \int \vec{F} \cdot d\vec{r} = \int ma \, dx = m\int v \, dv = \frac{1}{2}mv^2 - \frac{1}{2}mv_0^2 = \Delta K $$</p>
+
+            <h3>Energía cinética rotacional</h3>
+            <p>Para un cuerpo rígido que rota con velocidad angular \( \omega \):</p>
+            <p class="math-block">$$ K_{\text{rot}} = \frac{1}{2}I\omega^2 $$</p>
+            <p>Donde \( I \) es el momento de inercia respecto al eje de rotación.</p>
+
+            <h3>Energía cinética relativista</h3>
+            <p>A velocidades cercanas a la luz:</p>
+            <p class="math-block">$$ K = (\gamma - 1)mc^2 \quad \text{donde} \quad \gamma = \frac{1}{\sqrt{1-v^2/c^2}} $$</p>
+            <p>Para \( v \ll c \), se recupera la expresión clásica mediante expansión en serie.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Energía cinética de un vehículo</h2>
+            <p>Un automóvil de 1500 kg viaja a 100 km/h. ¿Cuál es su energía cinética?</p>
+            <p>Primero convertimos la velocidad a m/s:</p>
+            <p class="math-block">$$ v = 100 \frac{\text{km}}{\text{h}} \times \frac{1000 \text{ m}}{1 \text{ km}} \times \frac{1 \text{ h}}{3600 \text{ s}} = 27.78 \text{ m/s} $$</p>
+            <p class="math-block">$$ K = \frac{1}{2}(1500)(27.78)^2 = \frac{1}{2}(1500)(771.73) = 578{,}797.5 \text{ J} \approx 579 \text{ kJ} $$</p>
+            <p>Si frena hasta detenerse, esta energía debe disiparse (principalmente como calor en los frenos). Si la velocidad se duplica a 200 km/h, la energía cinética se cuadruplica a aproximadamente 2316 kJ, explicando por qué los accidentes a alta velocidad son mucho más destructivos.</p>
+        </section>
+
+        <section class="section">
+            <h2>Energía Potencial</h2>
+            <p>La energía potencial es la energía almacenada en un sistema debido a su configuración o posición. Está asociada a fuerzas conservativas.</p>
+
+            <h3>Energía potencial gravitacional</h3>
+            <p>Cerca de la superficie terrestre (campo gravitacional uniforme):</p>
+            <p class="math-block">$$ U_g = mgh $$</p>
+            <p>Donde \( h \) es la altura respecto a un nivel de referencia y \( g = 9.8 \) m/s².</p>
+            
+            <p>Forma general (campo gravitacional no uniforme):</p>
+            <p class="math-block">$$ U_g = -\frac{GMm}{r} $$</p>
+            <p>Donde \( r \) es la distancia entre los centros de masa. El signo negativo indica que la energía potencial es cero en \( r = \infty \) y disminuye (se vuelve más negativa) al acercarse.</p>
+
+            <h3>Energía potencial elástica</h3>
+            <p>Para un resorte con constante elástica \( k \) deformado una distancia \( x \) de su posición de equilibrio:</p>
+            <p class="math-block">$$ U_e = \frac{1}{2}kx^2 $$</p>
+            <p>Esta expresión se deriva de la ley de Hooke \( F = -kx \) integrando:</p>
+            <p class="math-block">$$ U_e = -\int_0^x F \, dx = \int_0^x kx \, dx = \frac{1}{2}kx^2 $$</p>
+
+            <h3>Energía potencial eléctrica</h3>
+            <p>Entre dos cargas puntuales \( q_1 \) y \( q_2 \) separadas por una distancia \( r \):</p>
+            <p class="math-block">$$ U_e = k_e\frac{q_1 q_2}{r} $$</p>
+            <p>Donde \( k_e = 8.99 \times 10^9 \) N·m²/C² es la constante de Coulomb.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Montaña rusa</h2>
+            <p>Un carrito de montaña rusa de 500 kg se encuentra en el punto más alto a 50 m de altura con velocidad de 5 m/s. ¿Qué velocidad alcanza al descender a 10 m de altura?</p>
+            
+            <h3>Estado inicial (h = 50 m):</h3>
+            <p class="math-block">$$ E_i = K_i + U_i = \frac{1}{2}(500)(5)^2 + (500)(9.8)(50) $$</p>
+            <p class="math-block">$$ E_i = 6{,}250 + 245{,}000 = 251{,}250 \text{ J} $$</p>
+
+            <h3>Estado final (h = 10 m):</h3>
+            <p class="math-block">$$ E_f = K_f + U_f = \frac{1}{2}(500)v_f^2 + (500)(9.8)(10) $$</p>
+            <p class="math-block">$$ E_f = 250v_f^2 + 49{,}000 $$</p>
+
+            <h3>Por conservación de energía:</h3>
+            <p class="math-block">$$ 251{,}250 = 250v_f^2 + 49{,}000 $$</p>
+            <p class="math-block">$$ 250v_f^2 = 202{,}250 \quad \Rightarrow \quad v_f^2 = 809 $$</p>
+            <p class="math-block">$$ v_f = \sqrt{809} \approx 28.44 \text{ m/s} \approx 102.4 \text{ km/h} $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Trabajo</h2>
+            <p class="math-block">$$ W = \int_A^B \vec{F} \cdot d\vec{r} = \int_A^B F \cos\theta \, dr $$</p>
+            <p>El trabajo es la energía transferida a un objeto mediante una fuerza a lo largo de un desplazamiento. Es una magnitud escalar que puede ser positiva, negativa o cero.</p>
+
+            <h3>Casos especiales</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li><strong>Fuerza constante y movimiento rectilíneo:</strong> \( W = F \cdot d \cdot \cos\theta \)</li>
+                    <li><strong>Fuerza perpendicular al desplazamiento:</strong> \( W = 0 \) (ej: fuerza centrípeta)</li>
+                    <li><strong>Fuerza en la dirección del movimiento:</strong> \( W = F \cdot d \) (trabajo positivo)</li>
+                    <li><strong>Fuerza opuesta al movimiento:</strong> \( W = -F \cdot d \) (trabajo negativo)</li>
+                </ul>
+            </section>
+
+            <h3>Teorema trabajo-energía</h3>
+            <p class="math-block">$$ W_{\text{neto}} = \Delta K = K_f - K_i $$</p>
+            <p>El trabajo neto realizado sobre un objeto es igual al cambio en su energía cinética.</p>
+
+            <h3>Potencia</h3>
+            <p class="math-block">$$ P = \frac{dW}{dt} = \vec{F} \cdot \vec{v} $$</p>
+            <p>La potencia es la rapidez con la que se realiza trabajo o se transfiere energía. Unidad SI: Watt (W) = J/s.</p>
+        </section>
+
+        <section class="section">
+            <h2>Conservación de la Energía Mecánica</h2>
+            <p class="math-block">$$ E_{\text{mec}} = K + U = \text{constante} $$</p>
+            <p>En ausencia de fuerzas no conservativas (fricción, resistencia del aire), la energía mecánica total se conserva:</p>
+            <p class="math-block">$$ K_i + U_i = K_f + U_f $$</p>
+            <p class="math-block">$$ \frac{1}{2}mv_i^2 + U_i = \frac{1}{2}mv_f^2 + U_f $$</p>
+
+            <section class="aplicaciones" style="background-color: #494949;">
+                <h3>Fuerzas conservativas</h3>
+                <p>Una fuerza es conservativa si el trabajo que realiza es independiente de la trayectoria, dependiendo solo de las posiciones inicial y final. Ejemplos:</p>
+                <ul>
+                    <li>Fuerza gravitacional</li>
+                    <li>Fuerza elástica (resortes ideales)</li>
+                    <li>Fuerza eléctrica (campo electrostático)</li>
+                </ul>
+            </section>
+
+            <section class="aplicaciones" style="background-color: #494949;">
+                <h3>Fuerzas no conservativas</h3>
+                <p>El trabajo depende de la trayectoria y disipa energía mecánica (generalmente como calor):</p>
+                <ul>
+                    <li>Fricción</li>
+                    <li>Resistencia del aire</li>
+                    <li>Tensión en cuerdas con fricción</li>
+                </ul>
+            </section>
+
+            <h3>Conservación con fuerzas no conservativas</h3>
+            <p>Cuando actúan fuerzas no conservativas:</p>
+            <p class="math-block">$$ E_i + W_{\text{nc}} = E_f $$</p>
+            <p class="math-block">$$ K_i + U_i + W_{\text{nc}} = K_f + U_f $$</p>
+            <p>Donde \( W_{\text{nc}} \) es el trabajo realizado por fuerzas no conservativas (típicamente negativo si disipa energía).</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Péndulo simple</h2>
+            <p>Un péndulo de longitud \( L = 2 \) m con masa \( m = 0.5 \) kg se suelta desde un ángulo de 60° respecto a la vertical. ¿Cuál es su velocidad en el punto más bajo?</p>
+            <p>Tomando el punto más bajo como referencia (\( h = 0 \)):</p>
+            
+            <h3>Estado inicial (altura máxima):</h3>
+            <p>La altura inicial es:</p>
+            <p class="math-block">$$ h_i = L - L\cos(60°) = L(1 - \cos 60°) = 2(1 - 0.5) = 1 \text{ m} $$</p>
+            <p class="math-block">$$ E_i = K_i + U_i = 0 + mgh_i = (0.5)(9.8)(1) = 4.9 \text{ J} $$</p>
+
+            <h3>Estado final (punto más bajo):</h3>
+            <p class="math-block">$$ E_f = K_f + U_f = \frac{1}{2}mv_f^2 + 0 = \frac{1}{2}(0.5)v_f^2 = 0.25v_f^2 $$</p>
+
+            <h3>Por conservación:</h3>
+            <p class="math-block">$$ 4.9 = 0.25v_f^2 \quad \Rightarrow \quad v_f = \sqrt{19.6} \approx 4.43 \text{ m/s} $$</p>
+            <p>Nota: la velocidad en el punto más bajo es independiente de la masa, solo depende de la altura inicial.</p>
+        </section>
+
+        <section class="section">
+            <h2>Energía en colisiones</h2>
+            <p>En colisiones, se conserva el momento lineal, pero la energía cinética puede o no conservarse.</p>
+
+            <h3>Colisiones elásticas</h3>
+            <p>Se conservan tanto el momento como la energía cinética:</p>
+            <p class="math-block">$$ \begin{cases} m_1\vec{v}_{1i} + m_2\vec{v}_{2i} = m_1\vec{v}_{1f} + m_2\vec{v}_{2f} \\ \frac{1}{2}m_1v_{1i}^2 + \frac{1}{2}m_2v_{2i}^2 = \frac{1}{2}m_1v_{1f}^2 + \frac{1}{2}m_2v_{2f}^2 \end{cases} $$</p>
+
+            <h3>Colisiones inelásticas</h3>
+            <p>Se conserva el momento pero no la energía cinética. La diferencia se disipa como calor, sonido y deformación:</p>
+            <p class="math-block">$$ m_1\vec{v}_{1i} + m_2\vec{v}_{2i} = m_1\vec{v}_{1f} + m_2\vec{v}_{2f} $$</p>
+            <p class="math-block">$$ \Delta K = K_f - K_i < 0 $$</p>
+
+            <h3>Colisiones perfectamente inelásticas</h3>
+            <p>Los objetos quedan unidos después del choque:</p>
+            <p class="math-block">$$ m_1\vec{v}_{1i} + m_2\vec{v}_{2i} = (m_1 + m_2)\vec{v}_f $$</p>
+            <p>Máxima pérdida de energía cinética compatible con la conservación del momento.</p>
+
+            <h3>Coeficiente de restitución</h3>
+            <p class="math-block">$$ e = \frac{|v_{2f} - v_{1f}|}{|v_{1i} - v_{2i}|} $$</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>\( e = 1 \): Colisión perfectamente elástica</li>
+                    <li>\( 0 < e < 1 \): Colisión inelástica</li>
+                    <li>\( e = 0 \): Colisión perfectamente inelástica</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Colisión de vehículos</h2>
+            <p>Un automóvil de 1200 kg viajando a 20 m/s colisiona frontalmente con un camión de 3000 kg que viaja en sentido opuesto a 15 m/s. Si quedan enganchados, ¿cuál es la velocidad final?</p>
+            
+            <h3>Conservación del momento (tomando positivo hacia la derecha):</h3>
+            <p class="math-block">$$ m_1v_1 + m_2v_2 = (m_1 + m_2)v_f $$</p>
+            <p class="math-block">$$ (1200)(20) + (3000)(-15) = (1200 + 3000)v_f $$</p>
+            <p class="math-block">$$ 24{,}000 - 45{,}000 = 4200v_f $$</p>
+            <p class="math-block">$$ v_f = \frac{-21{,}000}{4200} = -5 \text{ m/s} $$</p>
+            <p>Los vehículos se mueven juntos a 5 m/s hacia la izquierda (dirección del camión).</p>
+
+            <h3>Energía cinética perdida:</h3>
+            <p class="math-block">$$ K_i = \frac{1}{2}(1200)(20)^2 + \frac{1}{2}(3000)(15)^2 = 240{,}000 + 337{,}500 = 577{,}500 \text{ J} $$</p>
+            <p class="math-block">$$ K_f = \frac{1}{2}(4200)(5)^2 = 52{,}500 \text{ J} $$</p>
+            <p class="math-block">$$ \Delta K = 52{,}500 - 577{,}500 = -525{,}000 \text{ J} $$</p>
+            <p>Se perdieron 525 kJ (91% de la energía inicial), disipados como deformación, calor y sonido.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones de la conservación de energía</h2>
+            <ul>
+                <li><strong>Ingeniería civil:</strong> Diseño de represas hidroeléctricas, cálculo de alturas de caída</li>
+                <li><strong>Mecánica de vuelo:</strong> Análisis de trayectorias balísticas, alcance de proyectiles</li>
+                <li><strong>Parques de atracciones:</strong> Diseño de montañas rusas y otros juegos mecánicos</li>
+                <li><strong>Energías renovables:</strong> Conversión de energía eólica, solar e hidroeléctrica</li>
+                <li><strong>Biomecánica deportiva:</strong> Optimización de saltos, lanzamientos y carreras</li>
+                <li><strong>Seguridad vehicular:</strong> Diseño de zonas de deformación programada</li>
+                <li><strong>Astronáutica:</strong> Cálculo de velocidades de escape, asistencia gravitacional</li>
+                <li><strong>Termodinámica:</strong> Máquinas térmicas, refrigeración, motores</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( K \): Energía cinética (J = kg·m²/s²)</li>
+                <li>\( U \): Energía potencial (J)</li>
+                <li>\( E \): Energía total (J)</li>
+                <li>\( W \): Trabajo (J)</li>
+                <li>\( P \): Potencia (W = J/s)</li>
+                <li>\( m \): Masa (kg)</li>
+                <li>\( v \): Velocidad (m/s)</li>
+                <li>\( g \): Aceleración gravitacional = 9.8 m/s²</li>
+                <li>\( h \): Altura (m)</li>
+                <li>\( k \): Constante elástica (N/m)</li>
+                <li>\( x \): Deformación de un resorte (m)</li>
+                <li>\( G \): Constante gravitacional = 6.674×10⁻¹¹ N·m²/kg²</li>
+                <li>\( e \): Coeficiente de restitución (adimensional)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Tabla de formas de energía</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de energía</th>
+                        <th>Fórmula</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cinética</td>
+                        <td>\( K = \frac{1}{2}mv^2 \)</td>
+                        <td>Energía del movimiento</td>
+                    </tr>
+                    <tr>
+                        <td>Potencial gravitacional</td>
+                        <td>\( U_g = mgh \) o \( U_g = -\frac{GMm}{r} \)</td>
+                        <td>Energía de posición en campo gravitacional</td>
+                    </tr>
+                    <tr>
+                        <td>Potencial elástica</td>
+                        <td>\( U_e = \frac{1}{2}kx^2 \)</td>
+                        <td>Energía almacenada en resortes/deformaciones</td>
+                    </tr>
+                    <tr>
+                        <td>Potencial eléctrica</td>
+                        <td>\( U_e = k_e\frac{q_1q_2}{r} \)</td>
+                        <td>Energía de configuración de cargas</td>
+                    </tr>
+                    <tr>
+                        <td>Cinética rotacional</td>
+                        <td>\( K_{\text{rot}} = \frac{1}{2}I\omega^2 \)</td>
+                        <td>Energía de rotación</td>
+                    </tr>
+                    <tr>
+                        <td>Térmica</td>
+                        <td>\( Q = mc\Delta T \)</td>
+                        <td>Energía asociada a temperatura</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Conversiones de energía</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Unidad</th>
+                        <th>Equivalencia en Joules (J)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 kilojoule (kJ)</td>
+                        <td>10³ J</td>
+                    </tr>
+                    <tr>
+                        <td>1 caloría (cal)</td>
+                        <td>4.184 J</td>
+                    </tr>
+                    <tr>
+                        <td>1 kilocaloría (kcal)</td>
+                        <td>4184 J</td>
+                    </tr>
+                    <tr>
+                        <td>1 electronvoltio (eV)</td>
+                        <td>1.602 × 10⁻¹⁹ J</td>
+                    </tr>
+                    <tr>
+                        <td>1 kilovatio-hora (kWh)</td>
+                        <td>3.6 × 10⁶ J</td>
+                    </tr>
+                    <tr>
+                        <td>1 BTU</td>
+                        <td>1055 J</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leyes de Kepler - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="astrofisica.html">← Volver</a></h3>
+        <h1>Leyes de Kepler</h1>
+    </header>
+
+    <main>
+        <hr>
+
+        <section class="section">
+            <p>Johannes Kepler revolucionó nuestra comprensión del sistema solar al descubrir tres leyes empíricas que describen el movimiento planetario. Estas leyes surgieron del análisis meticuloso de las observaciones de Tycho Brahe y sentaron las bases para la ley de gravitación universal de Newton.</p>
+            
+            <h3>Primera Ley: Ley de las Órbitas</h3>
+            <p class="math-block">$$ r = \frac{a(1-e^2)}{1+e\cos\theta} $$</p>
+            <p>Los planetas describen órbitas elípticas con el Sol en uno de sus focos. La ecuación polar de la elipse relaciona la distancia \( r \) del planeta al Sol con el ángulo \( \theta \), donde \( a \) es el semieje mayor y \( e \) es la excentricidad.</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li><strong>Excentricidad \( e=0 \):</strong> Órbita circular perfecta.</li>
+                    <li><strong>Excentricidad \( 0 < e < 1 \):</strong> Órbita elíptica (todos los planetas).</li>
+                    <li><strong>Excentricidad \( e=1 \):</strong> Órbita parabólica (escape).</li>
+                    <li><strong>Excentricidad \( e > 1 \):</strong> Órbita hiperbólica (paso único).</li>
+                </ul>
+            </section>
+
+            <h3>Segunda Ley: Ley de las Áreas</h3>
+            <p class="math-block">$$ \frac{dA}{dt} = \frac{L}{2m} = \text{constante} $$</p>
+            <p>El vector que une el Sol con un planeta barre áreas iguales en tiempos iguales. Esta ley es consecuencia directa de la conservación del momento angular \( L \), donde \( m \) es la masa del planeta. Matemáticamente, el área barrida por unidad de tiempo es constante.</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <p><strong>Implicación práctica:</strong> Los planetas se mueven más rápido cuando están cerca del Sol (perihelio) y más lento cuando están lejos (afelio). La Tierra, por ejemplo, alcanza su máxima velocidad orbital de aproximadamente 30.3 km/s en enero y su mínima de 29.3 km/s en julio.</p>
+            </section>
+
+            <h3>Tercera Ley: Ley de los Períodos</h3>
+            <p class="math-block">$$ T^2 = \frac{4\pi^2}{GM}a^3 $$</p>
+            <p>El cuadrado del período orbital \( T \) es proporcional al cubo del semieje mayor \( a \). Esta ley permite calcular la masa del cuerpo central \( M \) si conocemos el período y el radio orbital. La constante de proporcionalidad depende únicamente de la masa del Sol \( M \) y la constante gravitacional \( G \).</p>
+            
+            <table>
+                <caption>Verificación de la Tercera Ley de Kepler</caption>
+                <thead>
+                    <tr>
+                        <th>Planeta</th>
+                        <th>Semieje mayor \( a \) (UA)</th>
+                        <th>Período \( T \) (años)</th>
+                        <th>\( T^2/a^3 \)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mercurio</td>
+                        <td>0.387</td>
+                        <td>0.241</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td>Venus</td>
+                        <td>0.723</td>
+                        <td>0.615</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td>Tierra</td>
+                        <td>1.000</td>
+                        <td>1.000</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td>Marte</td>
+                        <td>1.524</td>
+                        <td>1.881</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td>Júpiter</td>
+                        <td>5.203</td>
+                        <td>11.86</td>
+                        <td>1.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Cálculo del período de Marte</h2>
+            <p>Sabiendo que Marte orbita a una distancia promedio de \( a = 1.524 \) UA del Sol, calculemos su período orbital:</p>
+            <p class="math-block">$$ T = \sqrt{\frac{4\pi^2}{GM}a^3} $$</p>
+            <p>Usando unidades astronómicas donde \( G=4\pi^2 \) UA³/(M☉·año²):</p>
+            <p class="math-block">$$ T = \sqrt{(1.524)^3} = \sqrt{3.54} \approx 1.88 \text{ años} $$</p>
+            <p>Este resultado coincide con las observaciones: Marte tarda aproximadamente 687 días terrestres (1.88 años) en completar una órbita alrededor del Sol.</p>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>

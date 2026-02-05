@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caída Libre - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="index.html">← Volver</a></h3>
+        <h1>Caída Libre y Cinemática</h1>
+    </header>
+
+    <main>
+        <hr>
+        
+        <section class="section">
+            <h2>Definición</h2>
+            <p>La caída libre es el movimiento vertical de un objeto bajo la sola influencia de la gravedad, despreciando la resistencia del aire. Es un caso particular de movimiento rectilíneo uniformemente acelerado (MRUA) con aceleración constante \( g = 9.8 \) m/s² dirigida hacia abajo.</p>
+            <p>Galileo Galilei demostró en el siglo XVII que, en ausencia de resistencia del aire, todos los objetos caen con la misma aceleración independientemente de su masa. Una pluma y un martillo caen al mismo ritmo en el vacío, como se comprobó experimentalmente en la Luna durante la misión Apolo 15.</p>
+        </section>
+
+        <section class="section">
+            <h2>Ecuaciones de Cinemática</h2>
+            <p>Para movimiento rectilíneo con aceleración constante, disponemos de cuatro ecuaciones fundamentales que relacionan cinco variables: posición \( y \), velocidad \( v \), aceleración \( a \), tiempo \( t \) y condiciones iniciales \( y_0, v_0 \).</p>
+
+            <h3>Ecuación 1: Velocidad en función del tiempo</h3>
+            <p class="math-block">$$ v = v_0 + at $$</p>
+            <p>La velocidad varía linealmente con el tiempo. En caída libre: \( a = -g \) (tomando positivo hacia arriba).</p>
+
+            <h3>Ecuación 2: Posición en función del tiempo</h3>
+            <p class="math-block">$$ y = y_0 + v_0t + \frac{1}{2}at^2 $$</p>
+            <p>La posición sigue una trayectoria parabólica en el tiempo. Esta ecuación permite calcular la altura en cualquier instante.</p>
+
+            <h3>Ecuación 3: Velocidad en función de la posición</h3>
+            <p class="math-block">$$ v^2 = v_0^2 + 2a(y - y_0) $$</p>
+            <p>Relaciona velocidad y posición sin necesidad del tiempo. Útil cuando se conoce la altura pero no el tiempo transcurrido.</p>
+
+            <h3>Ecuación 4: Posición promedio</h3>
+            <p class="math-block">$$ y = y_0 + \frac{v_0 + v}{2}t $$</p>
+            <p>La posición también puede calcularse usando la velocidad promedio \( \bar{v} = \frac{v_0 + v}{2} \).</p>
+
+            <section class="aplicaciones" style="background-color: #494949;">
+                <h3>Convención de signos para caída libre</h3>
+                <p>Se adopta típicamente el eje vertical con positivo hacia arriba:</p>
+                <ul>
+                    <li>Aceleración gravitacional: \( a = -g = -9.8 \) m/s² (hacia abajo)</li>
+                    <li>Velocidad inicial hacia arriba: \( v_0 > 0 \)</li>
+                    <li>Velocidad inicial hacia abajo: \( v_0 < 0 \)</li>
+                    <li>Posición por encima del origen: \( y > 0 \)</li>
+                    <li>Posición por debajo del origen: \( y < 0 \)</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>Caída Libre desde el Reposo</h2>
+            <p>Un objeto se deja caer desde una altura \( h \) sin velocidad inicial (\( v_0 = 0 \)).</p>
+
+            <h3>Velocidad al caer</h3>
+            <p>Usando la ecuación 3 con \( v_0 = 0 \), \( y_0 = h \) y \( y = 0 \):</p>
+            <p class="math-block">$$ v^2 = 2g(h - 0) \quad \Rightarrow \quad v = \sqrt{2gh} $$</p>
+            <p>La velocidad al impactar el suelo depende únicamente de la altura de caída.</p>
+
+            <h3>Tiempo de caída</h3>
+            <p>Usando la ecuación 1:</p>
+            <p class="math-block">$$ v = gt \quad \Rightarrow \quad t = \frac{v}{g} = \sqrt{\frac{2h}{g}} $$</p>
+            
+            <h3>Posición en función del tiempo</h3>
+            <p class="math-block">$$ y(t) = h - \frac{1}{2}gt^2 $$</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Objeto cayendo desde un edificio</h2>
+            <p>Una pelota se deja caer desde la azotea de un edificio de 80 m de altura. Calcular:</p>
+            <ol>
+                <li>El tiempo que tarda en llegar al suelo</li>
+                <li>La velocidad con la que impacta</li>
+                <li>La velocidad y posición en \( t = 2 \) s</li>
+            </ol>
+
+            <h3>Solución:</h3>
+            <p><strong>1. Tiempo de caída:</strong></p>
+            <p class="math-block">$$ y = y_0 - \frac{1}{2}gt^2 $$</p>
+            <p class="math-block">$$ 0 = 80 - \frac{1}{2}(9.8)t^2 $$</p>
+            <p class="math-block">$$ t = \sqrt{\frac{2 \times 80}{9.8}} = \sqrt{16.33} \approx 4.04 \text{ s} $$</p>
+
+            <p><strong>2. Velocidad de impacto:</strong></p>
+            <p class="math-block">$$ v = \sqrt{2gh} = \sqrt{2(9.8)(80)} = \sqrt{1568} \approx 39.6 \text{ m/s} $$</p>
+            <p>O usando \( v = gt \): \( v = 9.8 \times 4.04 = 39.6 \) m/s ✓</p>
+
+            <p><strong>3. En \( t = 2 \) s:</strong></p>
+            <p>Velocidad:</p>
+            <p class="math-block">$$ v = gt = 9.8 \times 2 = 19.6 \text{ m/s (hacia abajo)} $$</p>
+            <p>Posición:</p>
+            <p class="math-block">$$ y = 80 - \frac{1}{2}(9.8)(2)^2 = 80 - 19.6 = 60.4 \text{ m} $$</p>
+            <p>A los 2 segundos, la pelota está a 60.4 m del suelo, cayendo a 19.6 m/s.</p>
+        </section>
+
+        <section class="section">
+            <h2>Lanzamiento Vertical hacia Arriba</h2>
+            <p>Un objeto se lanza verticalmente hacia arriba con velocidad inicial \( v_0 > 0 \).</p>
+
+            <h3>Altura máxima</h3>
+            <p>En la altura máxima, la velocidad es cero (\( v = 0 \)). Usando la ecuación 3:</p>
+            <p class="math-block">$$ 0 = v_0^2 - 2gh_{\text{max}} $$</p>
+            <p class="math-block">$$ h_{\text{max}} = \frac{v_0^2}{2g} $$</p>
+
+            <h3>Tiempo para alcanzar la altura máxima</h3>
+            <p class="math-block">$$ 0 = v_0 - gt_{\text{subida}} \quad \Rightarrow \quad t_{\text{subida}} = \frac{v_0}{g} $$</p>
+
+            <h3>Tiempo total de vuelo</h3>
+            <p>Si el objeto regresa al nivel inicial:</p>
+            <p class="math-block">$$ t_{\text{total}} = 2t_{\text{subida}} = \frac{2v_0}{g} $$</p>
+
+            <h3>Velocidad al regresar</h3>
+            <p>El objeto regresa con la misma rapidez pero sentido opuesto:</p>
+            <p class="math-block">$$ v_{\text{regreso}} = -v_0 $$</p>
+            <p>Esta simetría es característica del movimiento bajo gravedad uniforme.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Lanzamiento vertical</h2>
+            <p>Se lanza una pelota verticalmente hacia arriba con velocidad inicial de 30 m/s desde el nivel del suelo. Determinar:</p>
+            <ol>
+                <li>La altura máxima alcanzada</li>
+                <li>El tiempo para alcanzar la altura máxima</li>
+                <li>El tiempo total de vuelo</li>
+                <li>La altura a los 2 segundos</li>
+            </ol>
+
+            <h3>Solución:</h3>
+            <p><strong>1. Altura máxima:</strong></p>
+            <p class="math-block">$$ h_{\text{max}} = \frac{v_0^2}{2g} = \frac{(30)^2}{2(9.8)} = \frac{900}{19.6} \approx 45.92 \text{ m} $$</p>
+
+            <p><strong>2. Tiempo para altura máxima:</strong></p>
+            <p class="math-block">$$ t_{\text{subida}} = \frac{v_0}{g} = \frac{30}{9.8} \approx 3.06 \text{ s} $$</p>
+
+            <p><strong>3. Tiempo total:</strong></p>
+            <p class="math-block">$$ t_{\text{total}} = 2t_{\text{subida}} = 2(3.06) \approx 6.12 \text{ s} $$</p>
+
+            <p><strong>4. Altura a los 2 segundos:</strong></p>
+            <p class="math-block">$$ y = v_0t - \frac{1}{2}gt^2 = 30(2) - \frac{1}{2}(9.8)(2)^2 $$</p>
+            <p class="math-block">$$ y = 60 - 19.6 = 40.4 \text{ m} $$</p>
+            <p>A los 2 segundos, la pelota aún está subiendo a 40.4 m de altura.</p>
+        </section>
+
+        <section class="section">
+            <h2>Movimiento de Proyectiles</h2>
+            <p>El movimiento parabólico es una extensión bidimensional de la caída libre, donde el objeto tiene velocidad inicial horizontal y vertical.</p>
+
+            <h3>Descomposición del movimiento</h3>
+            <p>El movimiento se analiza como la superposición de dos movimientos independientes:</p>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li><strong>Horizontal (eje x):</strong> Movimiento rectilíneo uniforme (MRU) con \( v_x = v_0\cos\theta = \text{constante} \)</li>
+                    <li><strong>Vertical (eje y):</strong> Caída libre (MRUA) con \( a_y = -g \)</li>
+                </ul>
+            </section>
+
+            <h3>Ecuaciones del movimiento</h3>
+            <p><strong>Componente horizontal:</strong></p>
+            <p class="math-block">$$ x = v_0\cos\theta \cdot t $$</p>
+
+            <p><strong>Componente vertical:</strong></p>
+            <p class="math-block">$$ y = v_0\sin\theta \cdot t - \frac{1}{2}gt^2 $$</p>
+            <p class="math-block">$$ v_y = v_0\sin\theta - gt $$</p>
+
+            <h3>Parámetros importantes</h3>
+            <p><strong>Altura máxima:</strong></p>
+            <p class="math-block">$$ h_{\text{max}} = \frac{(v_0\sin\theta)^2}{2g} $$</p>
+
+            <p><strong>Alcance horizontal (para mismo nivel):</strong></p>
+            <p class="math-block">$$ R = \frac{v_0^2\sin(2\theta)}{g} $$</p>
+            <p>El alcance máximo se logra con \( \theta = 45° \), donde \( \sin(2\theta) = 1 \).</p>
+
+            <p><strong>Tiempo de vuelo (para mismo nivel):</strong></p>
+            <p class="math-block">$$ t_{\text{vuelo}} = \frac{2v_0\sin\theta}{g} $$</p>
+
+            <h3>Ecuación de la trayectoria</h3>
+            <p>Eliminando \( t \) de las ecuaciones paramétricas:</p>
+            <p class="math-block">$$ y = x\tan\theta - \frac{gx^2}{2v_0^2\cos^2\theta} $$</p>
+            <p>Esta es una parábola en el plano \( xy \).</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Tiro parabólico</h2>
+            <p>Un proyectil se lanza desde el suelo con velocidad inicial de 50 m/s y ángulo de 37° respecto a la horizontal. Calcular:</p>
+            <ol>
+                <li>Las componentes de la velocidad inicial</li>
+                <li>La altura máxima</li>
+                <li>El alcance horizontal</li>
+                <li>El tiempo de vuelo</li>
+            </ol>
+
+            <h3>Solución:</h3>
+            <p><strong>1. Componentes de velocidad:</strong></p>
+            <p class="math-block">$$ v_{0x} = 50\cos(37°) = 50(0.8) = 40 \text{ m/s} $$</p>
+            <p class="math-block">$$ v_{0y} = 50\sin(37°) = 50(0.6) = 30 \text{ m/s} $$</p>
+
+            <p><strong>2. Altura máxima:</strong></p>
+            <p class="math-block">$$ h_{\text{max}} = \frac{(30)^2}{2(9.8)} = \frac{900}{19.6} \approx 45.92 \text{ m} $$</p>
+
+            <p><strong>3. Alcance horizontal:</strong></p>
+            <p class="math-block">$$ R = \frac{(50)^2\sin(2 \times 37°)}{9.8} = \frac{2500\sin(74°)}{9.8} $$</p>
+            <p class="math-block">$$ R = \frac{2500(0.961)}{9.8} \approx 245.2 \text{ m} $$</p>
+
+            <p><strong>4. Tiempo de vuelo:</strong></p>
+            <p class="math-block">$$ t_{\text{vuelo}} = \frac{2(30)}{9.8} \approx 6.12 \text{ s} $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Comparación con resistencia del aire</h2>
+            <p>En la realidad, la resistencia del aire modifica significativamente el movimiento, especialmente a altas velocidades o con objetos de baja densidad.</p>
+
+            <h3>Fuerza de arrastre</h3>
+            <p class="math-block">$$ F_D = \frac{1}{2}\rho v^2 C_D A $$</p>
+            <p>Donde:</p>
+            <section class="math-block">
+                <ul>
+                    <li>\( \rho \): densidad del aire ≈ 1.225 kg/m³</li>
+                    <li>\( v \): velocidad del objeto</li>
+                    <li>\( C_D \): coeficiente de arrastre (forma del objeto)</li>
+                    <li>\( A \): área de sección transversal</li>
+                </ul>
+            </section>
+
+            <h3>Velocidad terminal</h3>
+            <p>Cuando la fuerza de arrastre iguala al peso, la aceleración neta es cero:</p>
+            <p class="math-block">$$ v_t = \sqrt{\frac{2mg}{\rho C_D A}} $$</p>
+            <p>Ejemplos de velocidades terminales:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Objeto</th>
+                        <th>Velocidad terminal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Paracaidista (sin paracaídas)</td>
+                        <td>~55 m/s (200 km/h)</td>
+                    </tr>
+                    <tr>
+                        <td>Paracaidista (con paracaídas)</td>
+                        <td>~5 m/s (18 km/h)</td>
+                    </tr>
+                    <tr>
+                        <td>Pelota de béisbol</td>
+                        <td>~42 m/s (150 km/h)</td>
+                    </tr>
+                    <tr>
+                        <td>Gota de lluvia</td>
+                        <td>~9 m/s (32 km/h)</td>
+                    </tr>
+                    <tr>
+                        <td>Hoja seca</td>
+                        <td>~1 m/s (3.6 km/h)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones prácticas</h2>
+            <ul>
+                <li><strong>Balística forense:</strong> Reconstrucción de trayectorias de proyectiles en investigaciones</li>
+                <li><strong>Deportes:</strong> Optimización de lanzamientos en atletismo, golf, baloncesto</li>
+                <li><strong>Ingeniería civil:</strong> Diseño de fuentes ornamentales, sistemas de riego</li>
+                <li><strong>Aeronáutica:</strong> Cálculo de trayectorias de bombardeo, lanzamiento de suministros</li>
+                <li><strong>Seguridad laboral:</strong> Análisis de caídas desde alturas, diseño de protecciones</li>
+                <li><strong>Videojuegos:</strong> Física de motores gráficos para movimiento realista</li>
+                <li><strong>Astronomía:</strong> Trayectorias de meteoritos, eyecciones volcánicas en cuerpos celestes</li>
+                <li><strong>Bomberos:</strong> Cálculo de alcance de chorros de agua</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( y \): Posición vertical (m)</li>
+                <li>\( x \): Posición horizontal (m)</li>
+                <li>\( v \): Velocidad (m/s)</li>
+                <li>\( v_0 \): Velocidad inicial (m/s)</li>
+                <li>\( a \): Aceleración (m/s²)</li>
+                <li>\( g \): Aceleración gravitacional = 9.8 m/s²</li>
+                <li>\( t \): Tiempo (s)</li>
+                <li>\( h \): Altura (m)</li>
+                <li>\( \theta \): Ángulo de lanzamiento (grados o radianes)</li>
+                <li>\( R \): Alcance horizontal (m)</li>
+                <li>\( v_t \): Velocidad terminal (m/s)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Tabla resumen de ecuaciones cinemáticas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ecuación</th>
+                        <th>Fórmula</th>
+                        <th>Variables conocidas</th>
+                        <th>Variable calculada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>\( v = v_0 + at \)</td>
+                        <td>\( v_0, a, t \)</td>
+                        <td>\( v \)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>\( y = y_0 + v_0t + \frac{1}{2}at^2 \)</td>
+                        <td>\( y_0, v_0, a, t \)</td>
+                        <td>\( y \)</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>\( v^2 = v_0^2 + 2a(y-y_0) \)</td>
+                        <td>\( v_0, a, y, y_0 \)</td>
+                        <td>\( v \)</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>\( y = y_0 + \frac{v_0+v}{2}t \)</td>
+                        <td>\( y_0, v_0, v, t \)</td>
+                        <td>\( y \)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Tabla de caída libre (desde reposo)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tiempo (s)</th>
+                        <th>Velocidad (m/s)</th>
+                        <th>Distancia caída (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>9.8</td>
+                        <td>4.9</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>19.6</td>
+                        <td>19.6</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>29.4</td>
+                        <td>44.1</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>39.2</td>
+                        <td>78.4</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>49.0</td>
+                        <td>122.5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>
