@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrices - Calculadora Científica</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <header>
+        <h3 style="text-align: left;"><a href="math.html">← Volver</a></h3>
+        <h1>Matrices</h1>
+    </header>
+
+    <main>
+        <hr>
+        
+        <section class="section">
+            <h2>Definición</h2>
+            <p>Una matriz es un arreglo rectangular de números, símbolos o expresiones organizados en filas y columnas. Las matrices son fundamentales en álgebra lineal, física, ingeniería, computación gráfica y ciencia de datos.</p>
+            <p>Una matriz \( A \) de dimensión \( m \times n \) (m filas, n columnas):</p>
+            <p class="math-block">$$ A = \begin{pmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{pmatrix} $$</p>
+            <p>El elemento en la fila \( i \), columna \( j \) se denota \( a_{ij} \) o \( A_{ij} \).</p>
+        </section>
+
+        <section class="section">
+            <h2>Tipos de Matrices</h2>
+
+            <h3>Matriz cuadrada</h3>
+            <p>Tiene igual número de filas y columnas (\( m = n \)):</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{pmatrix} \quad (3 \times 3) $$</p>
+
+            <h3>Matriz identidad</h3>
+            <p>Matriz cuadrada con unos en la diagonal principal y ceros en el resto:</p>
+            <p class="math-block">$$ I_n = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$</p>
+            <p>Propiedad: \( AI = IA = A \) para cualquier matriz \( A \).</p>
+
+            <h3>Matriz diagonal</h3>
+            <p>Solo tiene elementos no nulos en la diagonal principal:</p>
+            <p class="math-block">$$ D = \begin{pmatrix} d_1 & 0 & 0 \\ 0 & d_2 & 0 \\ 0 & 0 & d_3 \end{pmatrix} = \text{diag}(d_1, d_2, d_3) $$</p>
+
+            <h3>Matriz triangular superior</h3>
+            <p>Todos los elementos debajo de la diagonal son cero:</p>
+            <p class="math-block">$$ U = \begin{pmatrix} u_{11} & u_{12} & u_{13} \\ 0 & u_{22} & u_{23} \\ 0 & 0 & u_{33} \end{pmatrix} $$</p>
+
+            <h3>Matriz triangular inferior</h3>
+            <p>Todos los elementos arriba de la diagonal son cero:</p>
+            <p class="math-block">$$ L = \begin{pmatrix} l_{11} & 0 & 0 \\ l_{21} & l_{22} & 0 \\ l_{31} & l_{32} & l_{33} \end{pmatrix} $$</p>
+
+            <h3>Matriz simétrica</h3>
+            <p>Igual a su transpuesta: \( A = A^T \) o \( a_{ij} = a_{ji} \):</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 5 \\ 3 & 5 & 6 \end{pmatrix} $$</p>
+
+            <h3>Matriz antisimétrica (o hemisimétrica)</h3>
+            <p>\( A = -A^T \) o \( a_{ij} = -a_{ji} \). La diagonal es siempre cero:</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 0 & 2 & -3 \\ -2 & 0 & 5 \\ 3 & -5 & 0 \end{pmatrix} $$</p>
+
+            <h3>Matriz ortogonal</h3>
+            <p>\( A^T A = AA^T = I \), o equivalentemente \( A^{-1} = A^T \).</p>
+            <p>Las columnas (y filas) forman una base ortonormal.</p>
+
+            <h3>Matriz hermitiana</h3>
+            <p>\( A = A^* \) donde \( A^* = \overline{A^T} \) es la conjugada transpuesta.</p>
+            <p>Generalización compleja de matriz simétrica.</p>
+        </section>
+
+        <section class="section">
+            <h2>Operaciones Básicas</h2>
+
+            <h3>Suma de matrices</h3>
+            <p>Solo se pueden sumar matrices de las mismas dimensiones:</p>
+            <p class="math-block">$$ (A + B)_{ij} = a_{ij} + b_{ij} $$</p>
+            <p>Ejemplo:</p>
+            <p class="math-block">$$ \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} + \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix} = \begin{pmatrix} 6 & 8 \\ 10 & 12 \end{pmatrix} $$</p>
+
+            <h3>Multiplicación por escalar</h3>
+            <p class="math-block">$$ (cA)_{ij} = c \cdot a_{ij} $$</p>
+            <p>Ejemplo:</p>
+            <p class="math-block">$$ 3\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} = \begin{pmatrix} 3 & 6 \\ 9 & 12 \end{pmatrix} $$</p>
+
+            <h3>Multiplicación de matrices</h3>
+            <p>El producto \( AB \) existe solo si el número de columnas de \( A \) iguala el número de filas de \( B \).</p>
+            <p>Si \( A \) es \( m \times n \) y \( B \) es \( n \times p \), entonces \( C = AB \) es \( m \times p \):</p>
+            <p class="math-block">$$ c_{ij} = \sum_{k=1}^n a_{ik}b_{kj} $$</p>
+            <p>Ejemplo:</p>
+            <p class="math-block">$$ \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix} = \begin{pmatrix} 1(5)+2(7) & 1(6)+2(8) \\ 3(5)+4(7) & 3(6)+4(8) \end{pmatrix} = \begin{pmatrix} 19 & 22 \\ 43 & 50 \end{pmatrix} $$</p>
+
+            <h4>Propiedades de la multiplicación</h4>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li><strong>Asociativa:</strong> \( (AB)C = A(BC) \)</li>
+                    <li><strong>Distributiva:</strong> \( A(B+C) = AB + AC \), \( (A+B)C = AC + BC \)</li>
+                    <li><strong>NO conmutativa:</strong> En general \( AB \neq BA \)</li>
+                    <li><strong>Elemento identidad:</strong> \( AI = IA = A \)</li>
+                </ul>
+            </section>
+
+            <h3>Transpuesta</h3>
+            <p>Intercambia filas por columnas:</p>
+            <p class="math-block">$$ (A^T)_{ij} = a_{ji} $$</p>
+            <p>Ejemplo:</p>
+            <p class="math-block">$$ \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}^T = \begin{pmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{pmatrix} $$</p>
+            <p>Propiedades:</p>
+            <section class="math-block">
+                <ul>
+                    <li>\( (A^T)^T = A \)</li>
+                    <li>\( (A+B)^T = A^T + B^T \)</li>
+                    <li>\( (AB)^T = B^T A^T \)</li>
+                    <li>\( (cA)^T = cA^T \)</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>Determinante</h2>
+            <p>Escalar asociado a matrices cuadradas que codifica información sobre la invertibilidad y el volumen.</p>
+
+            <h3>Determinante 2×2</h3>
+            <p class="math-block">$$ \det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc $$</p>
+
+            <h3>Determinante 3×3 (regla de Sarrus)</h3>
+            <p class="math-block">$$ \det\begin{pmatrix} a & b & c \\ d & e & f \\ g & h & i \end{pmatrix} = aei + bfg + cdh - ceg - afh - bdi $$</p>
+
+            <h3>Desarrollo por cofactores</h3>
+            <p>Para matriz \( n \times n \), desarrollando por la fila \( i \):</p>
+            <p class="math-block">$$ \det(A) = \sum_{j=1}^n (-1)^{i+j}a_{ij}M_{ij} $$</p>
+            <p>Donde \( M_{ij} \) es el menor (determinante de la submatriz eliminando fila \( i \) y columna \( j \)).</p>
+
+            <h3>Propiedades del determinante</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>\( \det(AB) = \det(A)\det(B) \)</li>
+                    <li>\( \det(A^T) = \det(A) \)</li>
+                    <li>\( \det(cA) = c^n\det(A) \) para matriz \( n \times n \)</li>
+                    <li>\( \det(A^{-1}) = \frac{1}{\det(A)} \)</li>
+                    <li>\( \det(I) = 1 \)</li>
+                    <li>Intercambiar dos filas cambia el signo del determinante</li>
+                    <li>Si una fila es múltiplo de otra, \( \det(A) = 0 \)</li>
+                    <li>\( \det(A) = 0 \) si y solo si \( A \) es singular (no invertible)</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Cálculo de determinante 3×3</h2>
+            <p>Calcular el determinante de:</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 2 & -1 & 3 \\ 1 & 4 & -2 \\ -1 & 0 & 5 \end{pmatrix} $$</p>
+
+            <h3>Usando regla de Sarrus:</h3>
+            <p class="math-block">$$ \det(A) = 2(4)(5) + (-1)(-2)(-1) + 3(1)(0) - 3(4)(-1) - 2(-2)(0) - (-1)(1)(5) $$</p>
+            <p class="math-block">$$ = 40 - 2 + 0 + 12 - 0 + 5 = 55 $$</p>
+
+            <h3>Verificación por cofactores (primera fila):</h3>
+            <p class="math-block">$$ \det(A) = 2\begin{vmatrix} 4 & -2 \\ 0 & 5 \end{vmatrix} - (-1)\begin{vmatrix} 1 & -2 \\ -1 & 5 \end{vmatrix} + 3\begin{vmatrix} 1 & 4 \\ -1 & 0 \end{vmatrix} $$</p>
+            <p class="math-block">$$ = 2(20-0) + 1(5-2) + 3(0+4) = 40 + 3 + 12 = 55 \quad \checkmark $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Matriz Inversa</h2>
+            <p>La inversa de una matriz cuadrada \( A \), denotada \( A^{-1} \), satisface:</p>
+            <p class="math-block">$$ AA^{-1} = A^{-1}A = I $$</p>
+            <p>Una matriz es invertible si y solo si \( \det(A) \neq 0 \).</p>
+
+            <h3>Inversa de matriz 2×2</h3>
+            <p class="math-block">$$ A = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \quad \Rightarrow \quad A^{-1} = \frac{1}{ad-bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix} $$</p>
+
+            <h3>Método de la matriz adjunta</h3>
+            <p>Para cualquier matriz invertible \( n \times n \):</p>
+            <p class="math-block">$$ A^{-1} = \frac{1}{\det(A)}\text{adj}(A) $$</p>
+            <p>Donde \( \text{adj}(A) \) es la matriz de cofactores transpuesta.</p>
+
+            <h3>Método de Gauss-Jordan</h3>
+            <p>Formar la matriz aumentada \( [A|I] \) y reducir por filas hasta obtener \( [I|A^{-1}] \).</p>
+
+            <h3>Propiedades de la inversa</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>\( (A^{-1})^{-1} = A \)</li>
+                    <li>\( (AB)^{-1} = B^{-1}A^{-1} \)</li>
+                    <li>\( (A^T)^{-1} = (A^{-1})^T \)</li>
+                    <li>\( (cA)^{-1} = \frac{1}{c}A^{-1} \) para \( c \neq 0 \)</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Inversa de matriz 2×2</h2>
+            <p>Encontrar la inversa de:</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 3 & 5 \\ 2 & 4 \end{pmatrix} $$</p>
+
+            <h3>Cálculo del determinante:</h3>
+            <p class="math-block">$$ \det(A) = 3(4) - 5(2) = 12 - 10 = 2 $$</p>
+
+            <h3>Inversa:</h3>
+            <p class="math-block">$$ A^{-1} = \frac{1}{2}\begin{pmatrix} 4 & -5 \\ -2 & 3 \end{pmatrix} = \begin{pmatrix} 2 & -2.5 \\ -1 & 1.5 \end{pmatrix} $$</p>
+
+            <h3>Verificación:</h3>
+            <p class="math-block">$$ AA^{-1} = \begin{pmatrix} 3 & 5 \\ 2 & 4 \end{pmatrix}\begin{pmatrix} 2 & -2.5 \\ -1 & 1.5 \end{pmatrix} = \begin{pmatrix} 6-5 & -7.5+7.5 \\ 4-4 & -5+6 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} \quad \checkmark $$</p>
+        </section>
+
+        <section class="section">
+            <h2>Sistemas de Ecuaciones Lineales</h2>
+            <p>Un sistema de \( m \) ecuaciones con \( n \) incógnitas:</p>
+            <p class="math-block">$$ \begin{cases} a_{11}x_1 + a_{12}x_2 + \cdots + a_{1n}x_n = b_1 \\ a_{21}x_1 + a_{22}x_2 + \cdots + a_{2n}x_n = b_2 \\ \vdots \\ a_{m1}x_1 + a_{m2}x_2 + \cdots + a_{mn}x_n = b_m \end{cases} $$</p>
+            <p>Se representa matricialmente como:</p>
+            <p class="math-block">$$ A\vec{x} = \vec{b} $$</p>
+
+            <h3>Solución por matriz inversa</h3>
+            <p>Si \( A \) es cuadrada e invertible:</p>
+            <p class="math-block">$$ \vec{x} = A^{-1}\vec{b} $$</p>
+
+            <h3>Regla de Cramer</h3>
+            <p>Si \( \det(A) \neq 0 \), cada componente se calcula como:</p>
+            <p class="math-block">$$ x_i = \frac{\det(A_i)}{\det(A)} $$</p>
+            <p>Donde \( A_i \) es la matriz \( A \) con la columna \( i \) reemplazada por \( \vec{b} \).</p>
+
+            <h3>Eliminación gaussiana</h3>
+            <p>Método computacionalmente eficiente. Reduce la matriz aumentada \( [A|\vec{b}] \) a forma escalonada mediante operaciones elementales de fila.</p>
+
+            <h3>Tipos de soluciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caso</th>
+                        <th>Condición</th>
+                        <th>Solución</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Única solución</td>
+                        <td>\( \det(A) \neq 0 \)</td>
+                        <td>\( \vec{x} = A^{-1}\vec{b} \)</td>
+                    </tr>
+                    <tr>
+                        <td>Infinitas soluciones</td>
+                        <td>\( \text{rango}(A) = \text{rango}(A|\vec{b}) < n \)</td>
+                        <td>Sistema compatible indeterminado</td>
+                    </tr>
+                    <tr>
+                        <td>Sin solución</td>
+                        <td>\( \text{rango}(A) < \text{rango}(A|\vec{b}) \)</td>
+                        <td>Sistema incompatible</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Sistema de ecuaciones 3×3</h2>
+            <p>Resolver:</p>
+            <p class="math-block">$$ \begin{cases} 2x + y - z = 3 \\ x - y + 2z = 1 \\ 3x + 2y + z = 11 \end{cases} $$</p>
+
+            <h3>Forma matricial:</h3>
+            <p class="math-block">$$ \begin{pmatrix} 2 & 1 & -1 \\ 1 & -1 & 2 \\ 3 & 2 & 1 \end{pmatrix}\begin{pmatrix} x \\ y \\ z \end{pmatrix} = \begin{pmatrix} 3 \\ 1 \\ 11 \end{pmatrix} $$</p>
+
+            <h3>Determinante:</h3>
+            <p class="math-block">$$ \det(A) = 2(-1-4) - 1(1-6) + (-1)(2+3) = -10 + 5 - 5 = -10 $$</p>
+
+            <h3>Usando regla de Cramer:</h3>
+            <p class="math-block">$$ x = \frac{1}{-10}\begin{vmatrix} 3 & 1 & -1 \\ 1 & -1 & 2 \\ 11 & 2 & 1 \end{vmatrix} = \frac{1}{-10}(-20) = 2 $$</p>
+            <p class="math-block">$$ y = \frac{1}{-10}\begin{vmatrix} 2 & 3 & -1 \\ 1 & 1 & 2 \\ 3 & 11 & 1 \end{vmatrix} = \frac{1}{-10}(-30) = 3 $$</p>
+            <p class="math-block">$$ z = \frac{1}{-10}\begin{vmatrix} 2 & 1 & 3 \\ 1 & -1 & 1 \\ 3 & 2 & 11 \end{vmatrix} = \frac{1}{-10}(-10) = 1 $$</p>
+
+            <h3>Solución: \( x = 2, y = 3, z = 1 \)</h3>
+        </section>
+
+        <section class="section">
+            <h2>Autovalores y Autovectores</h2>
+            <p>Para una matriz cuadrada \( A \), un autovalor \( \lambda \) y autovector \( \vec{v} \neq \vec{0} \) satisfacen:</p>
+            <p class="math-block">$$ A\vec{v} = \lambda\vec{v} $$</p>
+
+            <h3>Polinomio característico</h3>
+            <p>Los autovalores son las raíces de:</p>
+            <p class="math-block">$$ \det(A - \lambda I) = 0 $$</p>
+
+            <h3>Multiplicidad</h3>
+            <section class="math-block">
+                <ul>
+                    <li><strong>Algebraica:</strong> Multiplicidad de \( \lambda \) como raíz del polinomio característico</li>
+                    <li><strong>Geométrica:</strong> Dimensión del espacio propio (núcleo de \( A - \lambda I \))</li>
+                </ul>
+            </section>
+
+            <h3>Diagonalización</h3>
+            <p>Si \( A \) tiene \( n \) autovectores linealmente independientes, entonces:</p>
+            <p class="math-block">$$ A = PDP^{-1} $$</p>
+            <p>Donde \( D \) es diagonal con autovalores y \( P \) tiene autovectores como columnas.</p>
+
+            <h3>Aplicaciones de autovalores</h3>
+            <section class="aplicaciones" style="background-color: #494949;">
+                <ul>
+                    <li>Sistemas dinámicos: estabilidad y comportamiento a largo plazo</li>
+                    <li>Mecánica cuántica: estados energéticos, operadores</li>
+                    <li>Análisis de componentes principales (PCA)</li>
+                    <li>Google PageRank: autovector de matriz de transición</li>
+                    <li>Vibraciones mecánicas: modos normales</li>
+                    <li>Grafos: conectividad, clustering</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Ejemplo práctico: Autovalores de matriz 2×2</h2>
+            <p>Encontrar autovalores y autovectores de:</p>
+            <p class="math-block">$$ A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix} $$</p>
+
+            <h3>Polinomio característico:</h3>
+            <p class="math-block">$$ \det(A - \lambda I) = \det\begin{pmatrix} 4-\lambda & 2 \\ 1 & 3-\lambda \end{pmatrix} = (4-\lambda)(3-\lambda) - 2 = \lambda^2 - 7\lambda + 10 = 0 $$</p>
+
+            <h3>Autovalores:</h3>
+            <p class="math-block">$$ \lambda = \frac{7 \pm \sqrt{49-40}}{2} = \frac{7 \pm 3}{2} $$</p>
+            <p>\( \lambda_1 = 5 \), \( \lambda_2 = 2 \)</p>
+
+            <h3>Autovector para \( \lambda_1 = 5 \):</h3>
+            <p class="math-block">$$ (A - 5I)\vec{v}_1 = \vec{0} \quad \Rightarrow \quad \begin{pmatrix} -1 & 2 \\ 1 & -2 \end{pmatrix}\begin{pmatrix} v_1 \\ v_2 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} $$</p>
+            <p>De la primera ecuación: \( -v_1 + 2v_2 = 0 \Rightarrow v_1 = 2v_2 \)</p>
+            <p>Autovector: \( \vec{v}_1 = \begin{pmatrix} 2 \\ 1 \end{pmatrix} \)</p>
+
+            <h3>Autovector para \( \lambda_2 = 2 \):</h3>
+            <p class="math-block">$$ (A - 2I)\vec{v}_2 = \vec{0} \quad \Rightarrow \quad \begin{pmatrix} 2 & 2 \\ 1 & 1 \end{pmatrix}\begin{pmatrix} v_1 \\ v_2 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} $$</p>
+            <p>De la primera ecuación: \( 2v_1 + 2v_2 = 0 \Rightarrow v_1 = -v_2 \)</p>
+            <p>Autovector: \( \vec{v}_2 = \begin{pmatrix} 1 \\ -1 \end{pmatrix} \)</p>
+        </section>
+
+        <section class="section">
+            <h2>Descomposiciones de Matrices</h2>
+
+            <h3>Descomposición LU</h3>
+            <p>Factoriza \( A = LU \) donde \( L \) es triangular inferior y \( U \) triangular superior.</p>
+            <p>Útil para resolver múltiples sistemas con la misma matriz pero diferentes vectores \( \vec{b} \).</p>
+
+            <h3>Descomposición QR</h3>
+            <p>Factoriza \( A = QR \) donde \( Q \) es ortogonal y \( R \) triangular superior.</p>
+            <p>Aplicaciones: mínimos cuadrados, cálculo de autovalores (algoritmo QR).</p>
+
+            <h3>Descomposición de Cholesky</h3>
+            <p>Para matrices simétricas definidas positivas: \( A = LL^T \) donde \( L \) es triangular inferior.</p>
+            <p>Computacionalmente más eficiente que LU para este tipo de matrices.</p>
+
+            <h3>Descomposición en valores singulares (SVD)</h3>
+            <p class="math-block">$$ A = U\Sigma V^T $$</p>
+            <p>Donde \( U \) y \( V \) son ortogonales y \( \Sigma \) diagonal con valores singulares.</p>
+            <p>Aplicaciones: PCA, compresión de imágenes, pseudoinversa, machine learning.</p>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Aplicaciones de matrices</h2>
+            <ul>
+                <li><strong>Gráficos por computadora:</strong> Transformaciones geométricas (rotación, escalado, traslación)</li>
+                <li><strong>Aprendizaje automático:</strong> Regresión lineal, redes neuronales, PCA</li>
+                <li><strong>Física:</strong> Mecánica cuántica (matrices de Pauli), <a href="relatividad_general.html">Relatividad General</a> (métricas)</li>
+                <li><strong>Ingeniería:</strong> Análisis estructural, circuitos eléctricos, control</li>
+                <li><strong>Economía:</strong> Modelos input-output, matrices de Leontief</li>
+                <li><strong>Teoría de grafos:</strong> Matrices de adyacencia, PageRank</li>
+                <li><strong>Procesamiento de señales:</strong> Filtros, transformadas</li>
+                <li><strong>Criptografía:</strong> Cifrados basados en matrices (Hill cipher)</li>
+                <li><strong>Estadística:</strong> Matrices de covarianza, regresión múltiple</li>
+                <li><strong>Biología:</strong> Genética de poblaciones (matrices de Leslie)</li>
+            </ul>
+        </section>
+
+        <section class="aplicaciones">
+            <h2>Notación</h2>
+            <ul>
+                <li>\( A, B, C \): Matrices (mayúsculas)</li>
+                <li>\( a_{ij} \) o \( A_{ij} \): Elemento en fila \( i \), columna \( j \)</li>
+                <li>\( m \times n \): Dimensión de matriz (m filas, n columnas)</li>
+                <li>\( A^T \): Transpuesta de \( A \)</li>
+                <li>\( A^{-1} \): Inversa de \( A \)</li>
+                <li>\( \det(A) \) o \( |A| \): Determinante de \( A \)</li>
+                <li>\( I \) o \( I_n \): Matriz identidad \( n \times n \)</li>
+                <li>\( \text{tr}(A) \): Traza (suma de elementos diagonales)</li>
+                <li>\( \text{rango}(A) \): Rango (número de filas/columnas linealmente independientes)</li>
+                <li>\( \lambda \): Autovalor</li>
+                <li>\( \vec{v} \): Autovector</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Tabla de propiedades</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Propiedad</th>
+                        <th>Expresión</th>
+                        <th>Condición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Conmutatividad suma</td>
+                        <td>\( A + B = B + A \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Asociatividad suma</td>
+                        <td>\( (A+B)+C = A+(B+C) \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Asociatividad producto</td>
+                        <td>\( (AB)C = A(BC) \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Conmutatividad producto</td>
+                        <td>\( AB = BA \)</td>
+                        <td>En general NO</td>
+                    </tr>
+                    <tr>
+                        <td>Distributividad</td>
+                        <td>\( A(B+C) = AB + AC \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Transpuesta de producto</td>
+                        <td>\( (AB)^T = B^T A^T \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Inversa de producto</td>
+                        <td>\( (AB)^{-1} = B^{-1}A^{-1} \)</td>
+                        <td>Si ambas invertibles</td>
+                    </tr>
+                    <tr>
+                        <td>Det de producto</td>
+                        <td>\( \det(AB) = \det(A)\det(B) \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Det de transpuesta</td>
+                        <td>\( \det(A^T) = \det(A) \)</td>
+                        <td>Siempre</td>
+                    </tr>
+                    <tr>
+                        <td>Det de inversa</td>
+                        <td>\( \det(A^{-1}) = 1/\det(A) \)</td>
+                        <td>Si \( A \) invertible</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+    </main>
+
+    <footer>
+        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
+    </footer>
+
+</body>
+</html>
