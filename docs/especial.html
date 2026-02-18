@@ -1,353 +1,134 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatividad Especial - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatividad Especial — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
 
-    <header>
-        <h3 style="text-align: left;"><a href="relatividad.html">← Volver</a></h3>
-        <h1>Relatividad Especial</h1>
-    </header>
+  <a href="relatividad.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Relatividad <em>Especial</em></h1>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>La Relatividad Especial, formulada por Albert Einstein en 1905, revolucionó nuestra comprensión del espacio, el tiempo y la causalidad. Esta teoría describe la física de objetos moviéndose a velocidades cercanas a la luz y establece que las leyes de la física son las mismas en todos los sistemas de referencia inerciales.</p>
-            <p>La teoría surge de dos postulados fundamentales que parecen contradictorios a la intuición newtoniana, pero que han sido verificados experimentalmente con extraordinaria precisión.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Postulados de Einstein (1905)</div>
+    <p><strong>I. Principio de relatividad:</strong> Las leyes de la física son idénticas en todos los sistemas de referencia inerciales. No existe un sistema de reposo absoluto.</p>
+    <p style="margin-top:12px;"><strong>II. Constancia de la luz:</strong></p>
+    <p class="math-block">$$ c = 299{,}792{,}458\;\text{m/s} \quad \text{(constante para todo observador)} $$</p>
+    <div class="info-box">
+      <p>Si persigues un fotón a 0.9c, lo verás alejarse igual a \( c \), no a 0.1c. Esta constancia hace que el tiempo y el espacio sean relativos.</p>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Postulados de Einstein</h2>
-            
-            <h3>Primer Postulado: Principio de Relatividad</h3>
-            <p class="math-block">$$ \text{Las leyes de la física son idénticas en todos los sistemas de referencia inerciales} $$</p>
-            <p>No existe un sistema de referencia absoluto privilegiado. Todos los observadores inerciales (aquellos que se mueven con velocidad constante) experimentan las mismas leyes físicas. No hay experimento que permita determinar si uno está "verdaderamente en reposo".</p>
+  <div class="card">
+    <div class="card-label">Factor de Lorentz</div>
+    <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-v^2/c^2}} $$</p>
+    <p>Aparece en todas las transformaciones relativistas. Para \( v \ll c \), \( \gamma \approx 1 \) y se recupera la mecánica clásica.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Velocidad</th><th>\( v/c \)</th><th>\( \gamma \)</th><th>Dilatación temporal</th><th>Contracción espacial</th></tr></thead>
+        <tbody>
+          <tr><td>—</td><td>0</td><td>1.000</td><td>0%</td><td>0%</td></tr>
+          <tr><td>30,000 km/s</td><td>0.1</td><td>1.005</td><td>0.5%</td><td>0.5%</td></tr>
+          <tr><td>150,000 km/s</td><td>0.5</td><td>1.155</td><td>15.5%</td><td>13.4%</td></tr>
+          <tr><td>270,000 km/s</td><td>0.9</td><td>2.294</td><td>129%</td><td>56.4%</td></tr>
+          <tr><td>296,794 km/s</td><td>0.99</td><td>7.089</td><td>609%</td><td>85.9%</td></tr>
+          <tr><td>299,492 km/s</td><td>0.999</td><td>22.37</td><td>2137%</td><td>95.5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Segundo Postulado: Constancia de la Velocidad de la Luz</h3>
-            <p class="math-block">$$ c = 299{,}792{,}458 \text{ m/s (constante en el vacío)} $$</p>
-            <p>La velocidad de la luz en el vacío es la misma para todos los observadores, independientemente de su movimiento relativo o del movimiento de la fuente luminosa. Esta constancia es absoluta y contraintuitiva: si persigues un rayo de luz a 0.9c, seguirás viéndolo alejarse a velocidad c, no a 0.1c.</p>
+  <div class="card">
+    <div class="card-label">Dilatación del tiempo</div>
+    <p class="math-block">$$ \Delta t = \gamma\,\Delta t_0 = \frac{\Delta t_0}{\sqrt{1-v^2/c^2}} $$</p>
+    <p>Los relojes en movimiento van más lentos. El tiempo propio \( \Delta t_0 \) es el medido por un reloj que acompaña al evento; es el mínimo posible para ese intervalo.</p>
+  </div>
 
-            <section class="aplicaciones" style="background-color: #494949;">
-                <h3>Implicaciones revolucionarias</h3>
-                <ul>
-                    <li>El tiempo no es absoluto: fluye a diferentes ritmos según el observador</li>
-                    <li>El espacio no es absoluto: las distancias dependen del observador</li>
-                    <li>La simultaneidad es relativa: eventos simultáneos para un observador no lo son para otro</li>
-                    <li>Masa y energía son equivalentes: \( E = mc^2 \)</li>
-                    <li>Nada con masa puede alcanzar o superar la velocidad de la luz</li>
-                </ul>
-            </section>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Muones cósmicos</div>
+    <p>Los muones se crean a ~15 km de altura con vida media \( \tau_0 = 2.2\;\mu\text{s} \) y viajan a \( v \approx 0.998c \).</p>
+    <p><strong>Sin relatividad:</strong> solo recorrerían ~660 m antes de desintegrarse. Pero se detectan a nivel del mar.</p>
+    <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-0.998^2}} \approx 15.82 \qquad \tau = \gamma\tau_0 \approx 34.8\;\mu\text{s} $$</p>
+    <p class="math-block">$$ d = v\tau \approx 10{,}400\;\text{m} \checkmark $$</p>
+    <div class="info-box">
+      <p>Desde el muón, la atmósfera parece contraída: \( L = 15{,}000/\gamma \approx 950 \) m. Ambas perspectivas son consistentes.</p>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Factor de Lorentz</h2>
-            <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-v^2/c^2}} $$</p>
-            <p>El factor de Lorentz \( \gamma \) (gamma) cuantifica los efectos relativistas. Aparece en todas las transformaciones entre sistemas de referencia en movimiento relativo.</p>
+  <div class="card">
+    <div class="card-label">Contracción de la longitud</div>
+    <p class="math-block">$$ L = \frac{L_0}{\gamma} = L_0\sqrt{1-v^2/c^2} $$</p>
+    <p>Las longitudes en la dirección del movimiento se contraen. Las dimensiones perpendiculares no se ven afectadas. La longitud propia \( L_0 \) (en reposo) es la máxima medible.</p>
+  </div>
 
-            <h3>Comportamiento del factor gamma</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Para \( v \ll c \): \( \gamma \approx 1 \) (régimen no relativista, mecánica clásica)</li>
-                    <li>Para \( v = 0.1c \): \( \gamma \approx 1.005 \) (correcciones del 0.5%)</li>
-                    <li>Para \( v = 0.5c \): \( \gamma \approx 1.155 \) (correcciones del 15.5%)</li>
-                    <li>Para \( v = 0.9c \): \( \gamma \approx 2.294 \) (efectos dramáticos)</li>
-                    <li>Para \( v = 0.99c \): \( \gamma \approx 7.089 \)</li>
-                    <li>Para \( v = 0.999c \): \( \gamma \approx 22.366 \)</li>
-                    <li>Para \( v \to c \): \( \gamma \to \infty \) (imposible alcanzar c)</li>
-                </ul>
-            </section>
-        </section>
+  <div class="card">
+    <div class="card-label">Transformaciones de Lorentz</div>
+    <p>Entre dos sistemas \( S \) y \( S' \) con movimiento relativo \( v \) en el eje \( x \):</p>
+    <p class="math-block">$$ x' = \gamma(x - vt) \qquad t' = \gamma\!\left(t - \frac{vx}{c^2}\right) $$</p>
+    <p>Las componentes \( y \) y \( z \) no cambian. La transformación inversa se obtiene con \( v \to -v \). Para \( v \ll c \) se recuperan las transformaciones de Galileo.</p>
+  </div>
 
-        <section class="section">
-            <h2>Dilatación del Tiempo</h2>
-            <p class="math-block">$$ \Delta t = \gamma \Delta t_0 = \frac{\Delta t_0}{\sqrt{1-v^2/c^2}} $$</p>
-            <p>El tiempo medido en un sistema en movimiento (\( \Delta t \)) transcurre más lentamente que el tiempo propio (\( \Delta t_0 \)) medido en el sistema en reposo. Los relojes en movimiento "van más lentos".</p>
+  <div class="card">
+    <div class="card-label">Adición relativista de velocidades</div>
+    <p class="math-block">$$ v_\text{total} = \frac{v_1 + v_2}{1 + \dfrac{v_1 v_2}{c^2}} $$</p>
+    <p>Ninguna combinación de velocidades sub-lumínicas puede superar \( c \). Si \( v_1 = v_2 = 0.9c \):</p>
+    <p class="math-block">$$ v_\text{total} = \frac{1.8c}{1.81} \approx 0.994c < c $$</p>
+  </div>
 
-            <h3>Tiempo propio</h3>
-            <p>El tiempo propio \( \Delta t_0 \) es el intervalo temporal medido por un reloj que acompaña al evento (sistema donde el evento ocurre en el mismo lugar). Es el menor tiempo posible que puede medirse para ese intervalo.</p>
+  <div class="card">
+    <div class="card-label">Energía y momento relativistas</div>
+    <p class="math-block">$$ E = \gamma mc^2 \qquad E_0 = mc^2 \qquad K = (\gamma-1)mc^2 $$</p>
+    <p class="math-block">$$ \vec{p} = \gamma m\vec{v} \qquad E^2 = (pc)^2 + (mc^2)^2 $$</p>
+    <p>Para fotones (\( m = 0 \)): \( E = pc \). La relación \( E^2 = (pc)^2+(mc^2)^2 \) es el invariante fundamental de la 4-energía.</p>
+  </div>
 
-            <h3>Paradoja de los gemelos</h3>
-            <p>Uno de los ejemplos más famosos de dilatación temporal: un gemelo viaja al espacio a velocidad relativista mientras el otro permanece en la Tierra. Al regresar, el gemelo viajero ha envejecido menos que su hermano. Esto no es una paradoja sino una predicción verificada de la teoría.</p>
-            <p>La asimetría se debe a que el gemelo viajero experimenta aceleración (cambio de sistema de referencia inercial) mientras que el gemelo terrestre permanece en un único sistema inercial.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Protón en el LHC a \( v = 0.999c \)</div>
+    <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-0.999^2}} \approx 22.37 \qquad E_0 = 938.3\;\text{MeV} $$</p>
+    <p class="math-block">$$ E_\text{total} = 22.37\times938.3 \approx 21{,}000\;\text{MeV} $$</p>
+    <p class="math-block">$$ K = 21{,}000 - 938.3 \approx 20{,}062\;\text{MeV} $$</p>
+    <div class="info-box">
+      <p>La energía cinética clásica \( \frac{1}{2}mv^2 \) daría ~469 MeV — ¡43 veces menos que la predicción relativista correcta!</p>
+    </div>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Muones cósmicos</h2>
-            <p>Los muones son partículas inestables creadas en la atmósfera superior (≈15 km) por rayos cósmicos. Su vida media en reposo es \( \tau_0 = 2.2 \times 10^{-6} \) s. Viajan a \( v \approx 0.998c \).</p>
-            
-            <h3>Sin relatividad:</h3>
-            <p>Distancia máxima antes de desintegrarse:</p>
-            <p class="math-block">$$ d_{\text{clásica}} = v\tau_0 = (0.998 \times 3 \times 10^8)(2.2 \times 10^{-6}) \approx 660 \text{ m} $$</p>
-            <p>Deberían desintegrarse antes de llegar al suelo. ¡Pero se detectan masivamente a nivel del mar!</p>
+  <div class="card">
+    <div class="card-label">Intervalo espacio-temporal</div>
+    <p class="math-block">$$ s^2 = -c^2\Delta t^2 + \Delta x^2 + \Delta y^2 + \Delta z^2 $$</p>
+    <p>Invariante absoluto: todos los observadores inerciales miden el mismo valor.</p>
+    <div class="info-box">
+      <ul>
+        <li>\( s^2 < 0 \) — tipo tiempo: los eventos pueden estar causalmente conectados</li>
+        <li>\( s^2 = 0 \) — tipo luz: conectados por un fotón (cono de luz)</li>
+        <li>\( s^2 > 0 \) — tipo espacio: no pueden estar causalmente conectados</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3>Con relatividad:</h3>
-            <p>Factor de Lorentz:</p>
-            <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-0.998^2}} = \frac{1}{\sqrt{0.003996}} \approx 15.82 $$</p>
-            <p>Tiempo de vida en el laboratorio:</p>
-            <p class="math-block">$$ \tau = \gamma\tau_0 = 15.82 \times 2.2 \times 10^{-6} \approx 3.48 \times 10^{-5} \text{ s} $$</p>
-            <p>Distancia recorrida:</p>
-            <p class="math-block">$$ d = v\tau = (0.998 \times 3 \times 10^8)(3.48 \times 10^{-5}) \approx 10{,}400 \text{ m} $$</p>
-            <p>¡Suficiente para alcanzar la superficie terrestre! Esta es una verificación directa de la dilatación temporal.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( c \) — velocidad de la luz = 299,792,458 m/s</li>
+      <li>\( \gamma \) — factor de Lorentz</li>
+      <li>\( \Delta t_0 \) — tiempo propio; \( \Delta t \) — tiempo dilatado</li>
+      <li>\( L_0 \) — longitud propia; \( L \) — longitud contraída</li>
+      <li>\( E \) — energía total; \( E_0 = mc^2 \) — energía en reposo</li>
+      <li>\( K \) — energía cinética relativista</li>
+      <li>\( p \) — momento relativista</li>
+      <li>\( m \) — masa invariante (masa en reposo)</li>
+      <li>\( s \) — intervalo espacio-temporal</li>
+    </ul>
+  </div>
 
-        <section class="section">
-            <h2>Contracción de la Longitud</h2>
-            <p class="math-block">$$ L = \frac{L_0}{\gamma} = L_0\sqrt{1-v^2/c^2} $$</p>
-            <p>Las longitudes medidas en la dirección del movimiento se contraen. Un objeto de longitud propia \( L_0 \) (medida en su sistema de reposo) aparece contraído a longitud \( L \) cuando se mueve a velocidad \( v \).</p>
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
 
-            <section class="aplicaciones" style="background-color: #494949;">
-                <h3>Características importantes</h3>
-                <ul>
-                    <li>Solo ocurre en la dirección del movimiento (contracción longitudinal)</li>
-                    <li>Las dimensiones perpendiculares no se afectan</li>
-                    <li>Es un efecto recíproco: cada observador ve al otro contraído</li>
-                    <li>La longitud propia es la mayor longitud medible</li>
-                    <li>No es una ilusión óptica sino un efecto geométrico del espacio-tiempo</li>
-                </ul>
-            </section>
-
-            <h3>Perspectiva del muón</h3>
-            <p>Desde el sistema de referencia del muón (que se considera en reposo), es la atmósfera la que se mueve hacia él. La distancia de 15 km se contrae:</p>
-            <p class="math-block">$$ L = \frac{15{,}000}{\gamma} = \frac{15{,}000}{15.82} \approx 948 \text{ m} $$</p>
-            <p>Para el muón, solo debe recorrer ≈950 m antes de desintegrarse, consistente con su vida media propia de 2.2 μs.</p>
-        </section>
-
-        <section class="section">
-            <h2>Transformaciones de Lorentz</h2>
-            <p>Relacionan las coordenadas espacio-temporales entre dos sistemas de referencia inerciales en movimiento relativo con velocidad \( v \) en la dirección x.</p>
-
-            <h3>Transformación directa (S → S')</h3>
-            <p class="math-block">$$ \begin{cases} x' = \gamma(x - vt) \\ y' = y \\ z' = z \\ t' = \gamma\left(t - \frac{vx}{c^2}\right) \end{cases} $$</p>
-
-            <h3>Transformación inversa (S' → S)</h3>
-            <p class="math-block">$$ \begin{cases} x = \gamma(x' + vt') \\ y = y' \\ z = z' \\ t = \gamma\left(t' + \frac{vx'}{c^2}\right) \end{cases} $$</p>
-
-            <p>Nótese la simetría: cambiar \( v \to -v \) intercambia las transformaciones directa e inversa.</p>
-
-            <h3>Límite clásico</h3>
-            <p>Cuando \( v \ll c \), \( \gamma \to 1 \) y recuperamos las transformaciones de Galileo:</p>
-            <p class="math-block">$$ \begin{cases} x' = x - vt \\ t' = t \end{cases} $$</p>
-        </section>
-
-        <section class="section">
-            <h2>Adición Relativista de Velocidades</h2>
-            <p class="math-block">$$ v_{\text{total}} = \frac{v_1 + v_2}{1 + \frac{v_1v_2}{c^2}} $$</p>
-            <p>Las velocidades no se suman linealmente en relatividad. Esta fórmula garantiza que ninguna combinación de velocidades menores que c puede dar una velocidad mayor o igual a c.</p>
-
-            <h3>Casos límite</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Si \( v_1, v_2 \ll c \): \( v_{\text{total}} \approx v_1 + v_2 \) (límite clásico)</li>
-                    <li>Si \( v_1 = c \): \( v_{\text{total}} = c \) (independientemente de \( v_2 \))</li>
-                    <li>Si \( v_1 = v_2 = 0.9c \): \( v_{\text{total}} = \frac{1.8c}{1.81} \approx 0.994c < c \)</li>
-                </ul>
-            </section>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Nave espacial con luz</h2>
-            <p>Una nave viaja a \( v = 0.8c \) respecto a la Tierra. Desde la nave se dispara un láser hacia adelante. ¿A qué velocidad se aleja la luz de la Tierra?</p>
-            
-            <h3>Predicción clásica (incorrecta):</h3>
-            <p class="math-block">$$ v_{\text{clásica}} = 0.8c + c = 1.8c $$</p>
-
-            <h3>Predicción relativista (correcta):</h3>
-            <p class="math-block">$$ v_{\text{luz}} = \frac{0.8c + c}{1 + \frac{(0.8c)(c)}{c^2}} = \frac{1.8c}{1 + 0.8} = \frac{1.8c}{1.8} = c $$</p>
-            <p>La luz siempre se mueve a velocidad c, sin importar el movimiento de la fuente. Este es precisamente el segundo postulado de Einstein.</p>
-        </section>
-
-        <section class="section">
-            <h2>Energía y Momento Relativistas</h2>
-            
-            <h3>Energía total</h3>
-            <p class="math-block">$$ E = \gamma mc^2 = \frac{mc^2}{\sqrt{1-v^2/c^2}} $$</p>
-            <p>Esta es la ecuación completa de la energía relativista. Contiene dos componentes:</p>
-
-            <h3>Energía en reposo</h3>
-            <p class="math-block">$$ E_0 = mc^2 $$</p>
-            <p>La famosa ecuación de Einstein: la energía equivalente de la masa en reposo. Incluso un objeto en reposo posee energía debido a su masa.</p>
-
-            <h3>Energía cinética relativista</h3>
-            <p class="math-block">$$ K = E - E_0 = (\gamma - 1)mc^2 = mc^2\left(\frac{1}{\sqrt{1-v^2/c^2}} - 1\right) $$</p>
-            <p>Para velocidades bajas (\( v \ll c \)), expandiendo en serie recuperamos la expresión clásica:</p>
-            <p class="math-block">$$ K \approx \frac{1}{2}mv^2 + \frac{3}{8}\frac{mv^4}{c^2} + \cdots $$</p>
-
-            <h3>Momento relativista</h3>
-            <p class="math-block">$$ \vec{p} = \gamma m\vec{v} = \frac{m\vec{v}}{\sqrt{1-v^2/c^2}} $$</p>
-
-            <h3>Relación energía-momento</h3>
-            <p class="math-block">$$ E^2 = (pc)^2 + (mc^2)^2 $$</p>
-            <p>Esta ecuación fundamental relaciona energía, momento y masa. Para fotones (\( m = 0 \)):</p>
-            <p class="math-block">$$ E = pc \quad \text{o} \quad p = \frac{E}{c} = \frac{h\nu}{c} $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Acelerador de partículas</h2>
-            <p>Un protón (\( m = 1.673 \times 10^{-27} \) kg) se acelera al 99.9% de la velocidad de la luz en el LHC. Calcular su energía cinética.</p>
-
-            <h3>Factor de Lorentz:</h3>
-            <p class="math-block">$$ \gamma = \frac{1}{\sqrt{1-0.999^2}} = \frac{1}{\sqrt{0.001999}} \approx 22.37 $$</p>
-
-            <h3>Energía en reposo:</h3>
-            <p class="math-block">$$ E_0 = mc^2 = (1.673 \times 10^{-27})(3 \times 10^8)^2 \approx 1.506 \times 10^{-10} \text{ J} $$</p>
-            <p>En unidades de energía de partículas: \( E_0 = 938.3 \) MeV.</p>
-
-            <h3>Energía total:</h3>
-            <p class="math-block">$$ E = \gamma E_0 = 22.37 \times 938.3 \approx 20{,}994 \text{ MeV} \approx 21 \text{ GeV} $$</p>
-
-            <h3>Energía cinética:</h3>
-            <p class="math-block">$$ K = E - E_0 = 21{,}000 - 938.3 \approx 20{,}062 \text{ MeV} $$</p>
-
-            <p>Comparación con mecánica clásica:</p>
-            <p class="math-block">$$ K_{\text{clásica}} = \frac{1}{2}mv^2 = \frac{1}{2}(1.673 \times 10^{-27})(0.999 \times 3 \times 10^8)^2 \approx 469 \text{ MeV} $$</p>
-            <p>¡La energía real es 43 veces mayor que la predicción clásica!</p>
-        </section>
-
-        <section class="section">
-            <h2>Intervalo Espacio-Temporal</h2>
-            <p class="math-block">$$ s^2 = -c^2\Delta t^2 + \Delta x^2 + \Delta y^2 + \Delta z^2 $$</p>
-            <p>El intervalo espacio-temporal es un invariante: todos los observadores inerciales miden el mismo valor de \( s^2 \), independientemente de su movimiento relativo. Es la "distancia" en el espacio-tiempo de Minkowski.</p>
-
-            <h3>Clasificación de intervalos</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Tipo tiempo (\( s^2 < 0 \)):</strong> Los eventos pueden estar causalmente conectados. Existe un sistema de referencia donde ocurren en el mismo lugar.</li>
-                    <li><strong>Tipo luz (\( s^2 = 0 \)):</strong> Los eventos están conectados por un rayo de luz. Definen el cono de luz.</li>
-                    <li><strong>Tipo espacio (\( s^2 > 0 \)):</strong> Los eventos no pueden estar causalmente conectados. Existe un sistema donde son simultáneos.</li>
-                </ul>
-            </section>
-
-            <h3>Métrica de Minkowski</h3>
-            <p>Con firma \( (-,+,+,+) \):</p>
-            <p class="math-block">$$ ds^2 = -c^2dt^2 + dx^2 + dy^2 + dz^2 = \eta_{\mu\nu}dx^\mu dx^\nu $$</p>
-            <p>Donde \( \eta_{\mu\nu} = \text{diag}(-1,1,1,1) \) es el tensor métrico de Minkowski.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de la Relatividad Especial</h2>
-            <ul>
-                <li><strong>GPS:</strong> Requiere correcciones relativistas por velocidad de satélites (~7 μs/día de adelanto)</li>
-                <li><strong>Aceleradores de partículas:</strong> Diseño basado completamente en dinámica relativista</li>
-                <li><strong>Física nuclear:</strong> Defecto de masa y equivalencia masa-energía (\( E=mc^2 \))</li>
-                <li><strong>Astronomía:</strong> Aberración de la luz estelar, efecto Doppler relativista</li>
-                <li><strong>Rayos cósmicos:</strong> Detección de muones y otras partículas de alta energía</li>
-                <li><strong>Sincrotrones:</strong> Radiación sincrotrón de electrones relativistas</li>
-                <li><strong>Medicina:</strong> PET (Tomografía por Emisión de Positrones) usa aniquilación \( e^+e^- \)</li>
-                <li><strong>Energía nuclear:</strong> Fisión y fusión basadas en \( E=mc^2 \)</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( c \): Velocidad de la luz = 299,792,458 m/s</li>
-                <li>\( v \): Velocidad relativa entre sistemas de referencia</li>
-                <li>\( \gamma \): Factor de Lorentz</li>
-                <li>\( \Delta t \): Intervalo temporal medido por observador en movimiento</li>
-                <li>\( \Delta t_0 \): Tiempo propio (intervalo en sistema de reposo)</li>
-                <li>\( L \): Longitud contraída (en movimiento)</li>
-                <li>\( L_0 \): Longitud propia (en reposo)</li>
-                <li>\( E \): Energía total</li>
-                <li>\( E_0 \): Energía en reposo</li>
-                <li>\( K \): Energía cinética</li>
-                <li>\( p \): Momento relativista</li>
-                <li>\( m \): Masa invariante (masa en reposo)</li>
-                <li>\( s \): Intervalo espacio-temporal</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de valores del factor gamma</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Velocidad</th>
-                        <th>\( v/c \)</th>
-                        <th>\( \gamma \)</th>
-                        <th>Dilatación temporal</th>
-                        <th>Contracción espacial</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0 m/s</td>
-                        <td>0</td>
-                        <td>1.000</td>
-                        <td>0%</td>
-                        <td>0%</td>
-                    </tr>
-                    <tr>
-                        <td>30,000 km/s</td>
-                        <td>0.1</td>
-                        <td>1.005</td>
-                        <td>0.5%</td>
-                        <td>0.5%</td>
-                    </tr>
-                    <tr>
-                        <td>150,000 km/s</td>
-                        <td>0.5</td>
-                        <td>1.155</td>
-                        <td>15.5%</td>
-                        <td>13.4%</td>
-                    </tr>
-                    <tr>
-                        <td>210,000 km/s</td>
-                        <td>0.7</td>
-                        <td>1.400</td>
-                        <td>40.0%</td>
-                        <td>28.6%</td>
-                    </tr>
-                    <tr>
-                        <td>270,000 km/s</td>
-                        <td>0.9</td>
-                        <td>2.294</td>
-                        <td>129.4%</td>
-                        <td>56.4%</td>
-                    </tr>
-                    <tr>
-                        <td>296,794 km/s</td>
-                        <td>0.99</td>
-                        <td>7.089</td>
-                        <td>608.9%</td>
-                        <td>85.9%</td>
-                    </tr>
-                    <tr>
-                        <td>299,492 km/s</td>
-                        <td>0.999</td>
-                        <td>22.366</td>
-                        <td>2136.6%</td>
-                        <td>95.5%</td>
-                    </tr>
-                    <tr>
-                        <td>299,792 km/s</td>
-                        <td>0.9999</td>
-                        <td>70.712</td>
-                        <td>6971.2%</td>
-                        <td>98.6%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+</div>
 </body>
 </html>

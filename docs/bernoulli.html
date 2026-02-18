@@ -1,387 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribución de Bernoulli - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distribución de Bernoulli — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
 
-    <header>
-        <h3 style="text-align: left;"><a href="thermo.html">← Volver</a></h3>
-        <h1>Distribución de Bernoulli</h1>
-    </header>
+  <a href="thermo.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Distribución de <em>Bernoulli</em></h1>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>La distribución de Bernoulli, nombrada en honor al matemático suizo Jacob Bernoulli, es la distribución de probabilidad discreta más simple. Modela experimentos que tienen exactamente dos resultados posibles: éxito o fracaso.</p>
-            <p>Es la base fundamental de muchas distribuciones más complejas como la binomial, geométrica y binomial negativa. Su simplicidad la hace ideal para introducir conceptos fundamentales de teoría de probabilidad y estadística.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p>La distribución de Bernoulli es la distribución de probabilidad discreta más simple. Modela experimentos con exactamente dos resultados posibles —éxito o fracaso— y es la base de distribuciones más complejas como la binomial, la geométrica y la binomial negativa.</p>
+    <p class="math-block">$$ P(X = k) = p^k(1-p)^{1-k} \quad \text{para } k \in \{0,\,1\} $$</p>
+    <p>Se escribe \( X \sim \text{Ber}(p) \). El valor \( k=1 \) representa éxito (probabilidad \( p \)), y \( k=0 \) fracaso (probabilidad \( q = 1-p \)).</p>
+  </div>
 
-        <section class="section">
-            <h2>Definición</h2>
-            <p>Un experimento de Bernoulli es un experimento aleatorio con exactamente dos resultados posibles:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Éxito:</strong> Ocurre con probabilidad \( p \), asignamos valor \( X = 1 \)</li>
-                    <li><strong>Fracaso:</strong> Ocurre con probabilidad \( q = 1-p \), asignamos valor \( X = 0 \)</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Parámetros estadísticos</div>
+    <p class="math-block">$$ E[X] = p \qquad \text{Var}(X) = p(1-p) = pq \qquad \sigma = \sqrt{pq} $$</p>
+    <p>La varianza es máxima cuando \( p = 0.5 \): \( \sigma^2_\text{max} = 0.25 \). Se anula en los extremos (\( p = 0 \) o \( p = 1 \)) donde no existe incertidumbre.</p>
+    <p>Asimetría y curtosis:</p>
+    <p class="math-block">$$ \gamma_1 = \frac{q-p}{\sqrt{pq}} \qquad \gamma_2 = \frac{1-6pq}{pq} $$</p>
+  </div>
 
-            <h3>Función de masa de probabilidad</h3>
-            <p class="math-block">$$ P(X = k) = \begin{cases} p & \text{si } k = 1 \\ 1-p & \text{si } k = 0 \\ 0 & \text{en otro caso} \end{cases} $$</p>
-            <p>O de forma compacta:</p>
-            <p class="math-block">$$ P(X = k) = p^k(1-p)^{1-k} \quad \text{para } k \in \{0,1\} $$</p>
+  <div class="card">
+    <div class="card-label">Tabla de varianza según p</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>\( p \)</th><th>\( E[X] \)</th><th>\( \text{Var}(X) \)</th><th>\( \sigma \)</th><th>Interpretación</th></tr></thead>
+        <tbody>
+          <tr><td>0.1</td><td>0.1</td><td>0.09</td><td>0.30</td><td>Evento raro</td></tr>
+          <tr><td>0.3</td><td>0.3</td><td>0.21</td><td>0.46</td><td>—</td></tr>
+          <tr><td>0.5</td><td>0.5</td><td>0.25</td><td>0.50</td><td>Máxima incertidumbre</td></tr>
+          <tr><td>0.7</td><td>0.7</td><td>0.21</td><td>0.46</td><td>—</td></tr>
+          <tr><td>0.9</td><td>0.9</td><td>0.09</td><td>0.30</td><td>Evento muy probable</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Notación</h3>
-            <p>Si \( X \) sigue una distribución de Bernoulli con parámetro \( p \):</p>
-            <p class="math-block">$$ X \sim \text{Bernoulli}(p) \quad \text{o} \quad X \sim \text{Ber}(p) $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Propiedades</div>
+    <ul>
+      <li><strong>Suma:</strong> \( \sum_{i=1}^n X_i \sim \text{Binomial}(n,p) \) cuando las \( X_i \) son i.i.d.</li>
+      <li><strong>Complemento:</strong> Si \( X \sim \text{Ber}(p) \), entonces \( 1-X \sim \text{Ber}(1-p) \).</li>
+      <li><strong>Independencia:</strong> \( P(X_1=x_1,X_2=x_2) = P(X_1=x_1)P(X_2=x_2) \).</li>
+    </ul>
+  </div>
 
-        <section class="section">
-            <h2>Parámetros y Estadísticos</h2>
+  <div class="card">
+    <div class="card-label">Ejemplo — Control de calidad</div>
+    <p>Una fábrica produce piezas con probabilidad de defecto \( p = 0.02 \) (2%). Sea \( X = 1 \) si la pieza es defectuosa.</p>
+    <p class="math-block">$$ E[X] = 0.02 = 2\% \qquad \sigma = \sqrt{0.02\times0.98} \approx 0.14 $$</p>
+    <p>Inspeccionando 100 piezas, \( Y = \sum X_i \sim \text{Binomial}(100,\,0.02) \):</p>
+    <p class="math-block">$$ E[Y] = 2 \qquad \sigma_Y = \sqrt{100\times0.02\times0.98} \approx 1.4 $$</p>
+  </div>
 
-            <h3>Valor esperado (media)</h3>
-            <p class="math-block">$$ E[X] = \mu = 0 \cdot (1-p) + 1 \cdot p = p $$</p>
-            <p>El valor esperado es simplemente la probabilidad de éxito.</p>
+  <div class="card">
+    <div class="card-label">Estimación de parámetros</div>
+    <p>El estimador de máxima verosimilitud de \( p \) es la proporción muestral:</p>
+    <p class="math-block">$$ \hat{p} = \bar{X} = \frac{1}{n}\sum_{i=1}^n X_i $$</p>
+    <p>Es insesgado, consistente y eficiente. Su varianza es:</p>
+    <p class="math-block">$$ \text{Var}(\hat{p}) = \frac{p(1-p)}{n} $$</p>
+    <p>Intervalo de confianza al \( (1-\alpha) \) por el TLC:</p>
+    <p class="math-block">$$ \hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}} $$</p>
+  </div>
 
-            <h3>Varianza</h3>
-            <p class="math-block">$$ \text{Var}(X) = \sigma^2 = E[X^2] - (E[X])^2 = p - p^2 = p(1-p) = pq $$</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — Encuesta electoral</div>
+    <p>En una muestra de 1000 votantes, 560 apoyan al candidato A. IC al 95%:</p>
+    <p class="math-block">$$ \hat{p} = 0.56 \qquad SE = \sqrt{\frac{0.56\times0.44}{1000}} \approx 0.0157 $$</p>
+    <p class="math-block">$$ \boxed{IC_{95\%} = 0.56 \pm 1.96(0.0157) = [52.9\%,\;59.1\%]} $$</p>
+    <p>Tamaño muestral para margen ±2% con 95% de confianza:</p>
+    <p class="math-block">$$ n = \frac{(1.96)^2(0.5)(0.5)}{(0.02)^2} = 2{,}401 $$</p>
+  </div>
 
-            <h3>Desviación estándar</h3>
-            <p class="math-block">$$ \sigma = \sqrt{p(1-p)} = \sqrt{pq} $$</p>
+  <div class="card">
+    <div class="card-label">Prueba de hipótesis para una proporción</div>
+    <p>Hipótesis \( H_0: p = p_0 \). Estadístico de prueba (válido para \( n \) grande):</p>
+    <p class="math-block">$$ Z = \frac{\hat{p} - p_0}{\sqrt{p_0(1-p_0)/n}} \;\xrightarrow{H_0}\; N(0,1) $$</p>
+    <p>Se rechaza \( H_0 \) al nivel \( \alpha = 0.05 \) si \( |Z| > 1.96 \) (prueba bilateral).</p>
+  </div>
 
-            <h3>Máxima varianza</h3>
-            <p>La varianza es máxima cuando \( p = 0.5 \):</p>
-            <p class="math-block">$$ \sigma^2_{\text{max}} = 0.5(1-0.5) = 0.25 $$</p>
-            <p>La varianza se anula en los extremos (\( p = 0 \) o \( p = 1 \)), donde no hay incertidumbre.</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — ¿El dado está sesgado?</div>
+    <p>120 lanzamientos, 25 seises. \( H_0: p = 1/6 \).</p>
+    <p class="math-block">$$ \hat{p} = \frac{25}{120} \approx 0.208 \qquad Z = \frac{0.208-0.1667}{\sqrt{0.1667\times0.8333/120}} \approx 1.23 $$</p>
+    <div class="info-box">
+      <p>\( |Z| = 1.23 < 1.96 \) → no se rechaza \( H_0 \). \( p\text{-valor} \approx 0.218 > 0.05 \): sin evidencia de sesgo.</p>
+    </div>
+  </div>
 
-            <h3>Función generadora de momentos</h3>
-            <p class="math-block">$$ M_X(t) = E[e^{tX}] = (1-p) + pe^t = q + pe^t $$</p>
+  <div class="card">
+    <div class="card-label">Relación con otras distribuciones</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Distribución</th><th>Relación con Bernoulli</th></tr></thead>
+        <tbody>
+          <tr><td>Binomial\((n,p)\)</td><td>Suma de \( n \) Bernoulli i.i.d.</td></tr>
+          <tr><td>Geométrica</td><td>Ensayos hasta el primer éxito</td></tr>
+          <tr><td>Binomial negativa</td><td>Ensayos hasta el \( r \)-ésimo éxito</td></tr>
+          <tr><td>Poisson</td><td>Límite de Binomial: \( n\to\infty,\;np=\lambda \)</td></tr>
+          <tr><td>Normal</td><td>Aproximación por TLC para \( n \) grande</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Asimetría (skewness)</h3>
-            <p class="math-block">$$ \gamma_1 = \frac{1-2p}{\sqrt{p(1-p)}} = \frac{q-p}{\sqrt{pq}} $$</p>
-            <p>Para \( p < 0.5 \): asimetría positiva (cola derecha)</p>
-            <p>Para \( p > 0.5 \): asimetría negativa (cola izquierda)</p>
-            <p>Para \( p = 0.5 \): simétrica</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( X \sim \text{Ber}(p) \) — variable aleatoria de Bernoulli</li>
+      <li>\( p \) — probabilidad de éxito; \( q = 1-p \) — probabilidad de fracaso</li>
+      <li>\( E[X] = \mu = p \) — valor esperado</li>
+      <li>\( \text{Var}(X) = pq \) — varianza</li>
+      <li>\( \hat{p} \) — estimador de \( p \) (proporción muestral)</li>
+      <li>\( z_{\alpha/2} \) — cuantil de la distribución normal estándar</li>
+      <li>\( n \) — tamaño de muestra; \( \alpha \) — nivel de significancia</li>
+    </ul>
+  </div>
 
-            <h3>Curtosis (exceso)</h3>
-            <p class="math-block">$$ \gamma_2 = \frac{1-6pq}{pq} $$</p>
-        </section>
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
 
-        <section class="section">
-            <h2>Propiedades</h2>
-
-            <h3>Suma de variables de Bernoulli</h3>
-            <p>Si \( X_1, X_2, \ldots, X_n \) son variables de Bernoulli independientes con el mismo parámetro \( p \), entonces:</p>
-            <p class="math-block">$$ Y = X_1 + X_2 + \cdots + X_n \sim \text{Binomial}(n, p) $$</p>
-            <p>Esto conecta Bernoulli con la distribución binomial.</p>
-
-            <h3>Complemento</h3>
-            <p>Si \( X \sim \text{Ber}(p) \), entonces \( 1-X \sim \text{Ber}(1-p) \).</p>
-
-            <h3>Producto por constante</h3>
-            <p>Si \( X \sim \text{Ber}(p) \), entonces \( cX \) no es necesariamente Bernoulli (a menos que \( c \in \{0,1\} \)).</p>
-
-            <h3>Independencia</h3>
-            <p>Para variables de Bernoulli independientes:</p>
-            <p class="math-block">$$ P(X_1 = x_1, X_2 = x_2) = P(X_1 = x_1)P(X_2 = x_2) $$</p>
-
-            <h3>Multiplicación</h3>
-            <p>Si \( X_1 \) y \( X_2 \) son Bernoulli independientes con parámetros \( p_1 \) y \( p_2 \):</p>
-            <p class="math-block">$$ P(X_1 X_2 = 1) = P(X_1=1)P(X_2=1) = p_1 p_2 $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Lanzamiento de moneda</h2>
-            <p>Consideremos el lanzamiento de una moneda justa. Definimos "cara" como éxito.</p>
-
-            <h3>Parámetros:</h3>
-            <p>\( p = 0.5 \) (probabilidad de cara)</p>
-            <p>\( q = 1 - 0.5 = 0.5 \) (probabilidad de cruz)</p>
-
-            <h3>Función de probabilidad:</h3>
-            <p class="math-block">$$ P(X = 0) = 0.5 \quad \text{(cruz)} $$</p>
-            <p class="math-block">$$ P(X = 1) = 0.5 \quad \text{(cara)} $$</p>
-
-            <h3>Estadísticos:</h3>
-            <p>Valor esperado:</p>
-            <p class="math-block">$$ E[X] = 0.5 $$</p>
-            <p>Varianza:</p>
-            <p class="math-block">$$ \text{Var}(X) = 0.5(1-0.5) = 0.25 $$</p>
-            <p>Desviación estándar:</p>
-            <p class="math-block">$$ \sigma = \sqrt{0.25} = 0.5 $$</p>
-
-            <h3>Interpretación:</h3>
-            <p>En promedio, obtendremos cara la mitad de las veces. La máxima incertidumbre ocurre con monedas justas.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Control de calidad</h2>
-            <p>Una fábrica produce piezas con probabilidad de defecto \( p = 0.02 \) (2%).</p>
-
-            <h3>Modelado:</h3>
-            <p>Sea \( X = 1 \) si la pieza es defectuosa, \( X = 0 \) si no lo es.</p>
-            <p>\( X \sim \text{Ber}(0.02) \)</p>
-
-            <h3>Probabilidades:</h3>
-            <p class="math-block">$$ P(X = 1) = 0.02 \quad \text{(defectuosa)} $$</p>
-            <p class="math-block">$$ P(X = 0) = 0.98 \quad \text{(buena)} $$</p>
-
-            <h3>Estadísticos:</h3>
-            <p>Proporción esperada de defectos:</p>
-            <p class="math-block">$$ E[X] = 0.02 = 2\% $$</p>
-            <p>Varianza:</p>
-            <p class="math-block">$$ \text{Var}(X) = 0.02(0.98) = 0.0196 $$</p>
-            <p>Desviación estándar:</p>
-            <p class="math-block">$$ \sigma = \sqrt{0.0196} \approx 0.14 $$</p>
-
-            <h3>Si inspeccionamos 100 piezas:</h3>
-            <p>El número de defectos \( Y = \sum_{i=1}^{100} X_i \sim \text{Binomial}(100, 0.02) \)</p>
-            <p>Número esperado de defectos: \( E[Y] = 100(0.02) = 2 \)</p>
-            <p>Desviación estándar: \( \sigma_Y = \sqrt{100(0.02)(0.98)} \approx 1.4 \)</p>
-        </section>
-
-        <section class="section">
-            <h2>Relación con Otras Distribuciones</h2>
-
-            <h3>Distribución Binomial</h3>
-            <p>Suma de \( n \) variables de Bernoulli independientes e idénticamente distribuidas:</p>
-            <p class="math-block">$$ Y = \sum_{i=1}^n X_i \sim \text{Binomial}(n, p) $$</p>
-            <p>Bernoulli es el caso especial \( n = 1 \).</p>
-
-            <h3>Distribución Geométrica</h3>
-            <p>Número de ensayos de Bernoulli hasta obtener el primer éxito:</p>
-            <p class="math-block">$$ P(Y = k) = (1-p)^{k-1}p \quad \text{para } k = 1,2,3,\ldots $$</p>
-
-            <h3>Distribución Binomial Negativa</h3>
-            <p>Generaliza la geométrica: número de ensayos hasta obtener \( r \) éxitos.</p>
-
-            <h3>Distribución de Poisson</h3>
-            <p>Límite de la binomial cuando \( n \to \infty \), \( p \to 0 \), pero \( np = \lambda \) constante.</p>
-
-            <h3>Distribución Normal</h3>
-            <p>Por el Teorema Central del Límite, la suma de muchas Bernoulli se aproxima a una normal:</p>
-            <p class="math-block">$$ \frac{\sum_{i=1}^n X_i - np}{\sqrt{np(1-p)}} \xrightarrow{d} N(0,1) $$</p>
-        </section>
-
-        <section class="section">
-            <h2>Estimación de Parámetros</h2>
-
-            <h3>Estimador de máxima verosimilitud</h3>
-            <p>Dada una muestra \( X_1, X_2, \ldots, X_n \) de variables de Bernoulli independientes, el estimador de \( p \) es:</p>
-            <p class="math-block">$$ \hat{p} = \frac{1}{n}\sum_{i=1}^n X_i = \bar{X} $$</p>
-            <p>Es decir, la proporción muestral de éxitos.</p>
-
-            <h3>Propiedades del estimador</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Insesgado:</strong> \( E[\hat{p}] = p \)</li>
-                    <li><strong>Consistente:</strong> \( \hat{p} \xrightarrow{P} p \) cuando \( n \to \infty \)</li>
-                    <li><strong>Eficiente:</strong> Alcanza la cota de Cramér-Rao</li>
-                    <li><strong>Suficiente:</strong> Contiene toda la información sobre \( p \)</li>
-                </ul>
-            </section>
-
-            <h3>Varianza del estimador</h3>
-            <p class="math-block">$$ \text{Var}(\hat{p}) = \frac{p(1-p)}{n} $$</p>
-
-            <h3>Intervalo de confianza</h3>
-            <p>Para \( n \) grande, por el TLC:</p>
-            <p class="math-block">$$ \hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}} $$</p>
-            <p>Donde \( z_{\alpha/2} \) es el cuantil normal (1.96 para 95% de confianza).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Encuesta electoral</h2>
-            <p>En una encuesta de 1000 votantes, 560 apoyan al candidato A. Estimar la proporción poblacional y un intervalo de confianza al 95%.</p>
-
-            <h3>Estimación puntual:</h3>
-            <p class="math-block">$$ \hat{p} = \frac{560}{1000} = 0.56 = 56\% $$</p>
-
-            <h3>Error estándar:</h3>
-            <p class="math-block">$$ SE = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} = \sqrt{\frac{0.56(0.44)}{1000}} = \sqrt{0.0002464} \approx 0.0157 = 1.57\% $$</p>
-
-            <h3>Intervalo de confianza al 95%:</h3>
-            <p class="math-block">$$ IC_{95\%} = 0.56 \pm 1.96(0.0157) = 0.56 \pm 0.0308 = [0.529, 0.591] $$</p>
-            <p>Conclusión: Estamos 95% confiados de que entre 52.9% y 59.1% de la población apoya al candidato A.</p>
-
-            <h3>Tamaño de muestra necesario:</h3>
-            <p>Para un margen de error de ±2% con 95% de confianza:</p>
-            <p class="math-block">$$ n = \frac{z^2 p(1-p)}{E^2} = \frac{(1.96)^2(0.5)(0.5)}{(0.02)^2} = 2{,}401 $$</p>
-            <p>Se necesitan al menos 2,401 encuestados (usando \( p = 0.5 \) para máxima varianza).</p>
-        </section>
-
-        <section class="section">
-            <h2>Pruebas de Hipótesis</h2>
-
-            <h3>Prueba para una proporción</h3>
-            <p>Hipótesis nula: \( H_0: p = p_0 \)</p>
-            <p>Estadístico de prueba:</p>
-            <p class="math-block">$$ Z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}} $$</p>
-            <p>Bajo \( H_0 \) y para \( n \) grande, \( Z \sim N(0,1) \) aproximadamente.</p>
-
-            <h3>Región de rechazo</h3>
-            <p>Para prueba bilateral con nivel \( \alpha = 0.05 \):</p>
-            <p>Rechazar \( H_0 \) si \( |Z| > 1.96 \)</p>
-
-            <h3>Valor p</h3>
-            <p class="math-block">$$ p\text{-valor} = 2P(Z > |z_{\text{obs}}|) $$</p>
-            <p>Rechazar \( H_0 \) si \( p\text{-valor} < \alpha \).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Prueba de dado</h2>
-            <p>Lanzamos un dado 120 veces y obtenemos 25 seises. ¿Es el dado justo?</p>
-
-            <h3>Hipótesis:</h3>
-            <p>\( H_0: p = 1/6 = 0.1667 \) (dado justo)</p>
-            <p>\( H_1: p \neq 1/6 \) (dado sesgado)</p>
-
-            <h3>Datos:</h3>
-            <p>\( n = 120 \), éxitos = 25, \( \hat{p} = 25/120 = 0.2083 \)</p>
-
-            <h3>Estadístico de prueba:</h3>
-            <p class="math-block">$$ Z = \frac{0.2083 - 0.1667}{\sqrt{\frac{0.1667(0.8333)}{120}}} = \frac{0.0417}{\sqrt{0.001157}} = \frac{0.0417}{0.034} \approx 1.23 $$</p>
-
-            <h3>Decisión:</h3>
-            <p>Con \( \alpha = 0.05 \), valor crítico = 1.96</p>
-            <p>Como \( |Z| = 1.23 < 1.96 \), no rechazamos \( H_0 \).</p>
-            <p>Conclusión: No hay evidencia suficiente para decir que el dado está sesgado.</p>
-
-            <h3>Valor p:</h3>
-            <p class="math-block">$$ p = 2P(Z > 1.23) \approx 2(0.109) = 0.218 $$</p>
-            <p>Como \( p = 0.218 > 0.05 \), confirmamos que no rechazamos \( H_0 \).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de la distribución de Bernoulli</h2>
-            <ul>
-                <li><strong>Control de calidad:</strong> Defectuoso vs no defectuoso</li>
-                <li><strong>Medicina:</strong> Enfermo vs sano, respuesta a tratamiento</li>
-                <li><strong>Finanzas:</strong> Éxito/fracaso de inversión, incumplimiento de crédito</li>
-                <li><strong>Encuestas:</strong> Sí/no, a favor/en contra</li>
-                <li><strong>Machine Learning:</strong> Clasificación binaria, regresión logística</li>
-                <li><strong>Deportes:</strong> Victoria/derrota, acierto/fallo</li>
-                <li><strong>Telecomunicaciones:</strong> Bit transmitido correctamente/con error</li>
-                <li><strong>A/B testing:</strong> Conversión vs no conversión</li>
-                <li><strong>Genética:</strong> Presencia/ausencia de alelo</li>
-                <li><strong>Redes neuronales:</strong> Función de activación sigmoidea</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( X \): Variable aleatoria de Bernoulli</li>
-                <li>\( p \): Probabilidad de éxito (parámetro)</li>
-                <li>\( q = 1-p \): Probabilidad de fracaso</li>
-                <li>\( E[X] = \mu \): Valor esperado</li>
-                <li>\( \text{Var}(X) = \sigma^2 \): Varianza</li>
-                <li>\( \hat{p} \): Estimador de \( p \) (proporción muestral)</li>
-                <li>\( n \): Tamaño de muestra</li>
-                <li>\( \alpha \): Nivel de significancia</li>
-                <li>\( z_{\alpha/2} \): Cuantil de la normal estándar</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de varianza según \( p \)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>\( p \)</th>
-                        <th>\( E[X] \)</th>
-                        <th>\( \text{Var}(X) \)</th>
-                        <th>\( \sigma \)</th>
-                        <th>Interpretación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0.1</td>
-                        <td>0.1</td>
-                        <td>0.09</td>
-                        <td>0.30</td>
-                        <td>Evento raro</td>
-                    </tr>
-                    <tr>
-                        <td>0.2</td>
-                        <td>0.2</td>
-                        <td>0.16</td>
-                        <td>0.40</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.3</td>
-                        <td>0.3</td>
-                        <td>0.21</td>
-                        <td>0.46</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.4</td>
-                        <td>0.4</td>
-                        <td>0.24</td>
-                        <td>0.49</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.5</td>
-                        <td>0.5</td>
-                        <td>0.25</td>
-                        <td>0.50</td>
-                        <td>Máxima incertidumbre</td>
-                    </tr>
-                    <tr>
-                        <td>0.6</td>
-                        <td>0.6</td>
-                        <td>0.24</td>
-                        <td>0.49</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.7</td>
-                        <td>0.7</td>
-                        <td>0.21</td>
-                        <td>0.46</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.8</td>
-                        <td>0.8</td>
-                        <td>0.16</td>
-                        <td>0.40</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>0.9</td>
-                        <td>0.9</td>
-                        <td>0.09</td>
-                        <td>0.30</td>
-                        <td>Evento muy probable</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+</div>
 </body>
 </html>

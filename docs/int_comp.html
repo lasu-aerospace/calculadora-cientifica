@@ -1,66 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interés Compuesto - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interés Compuesto — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
 
-    <header>
-        <h3 style="text-align: left;"><a href="math.html">← Volver</a></h3>
-        <h1>Interés Compuesto</h1>
-    </header>
+  <a href="math.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Interés <em>Compuesto</em></h1>
 
-    <main>
-        <hr>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ C(t) = C_0\left(1 + i\right)^t $$</p>
+    <p>El interés compuesto reinvierte los intereses generados en cada período, de modo que el capital crece exponencialmente. A diferencia del interés simple, aquí cada período genera intereses sobre el capital acumulado más los intereses anteriores.</p>
+    <div class="info-box">
+      <ul>
+        <li>\( C_0 \) — capital inicial</li>
+        <li>\( i \) — tasa de interés por período</li>
+        <li>\( t \) — número de períodos</li>
+        <li>\( C(t) \) — capital al final del período \( t \)</li>
+      </ul>
+    </div>
+  </div>
 
-        <section>
-            <h2>Definición</h2>
-            <h1 class="math-block">$$ C(t)=C_0(1+i)^t $$</h1>
-            <p>El interés compuesto es el interés que se calcula no solo sobre el capital inicial, sino también sobre los intereses que se han sumado en períodos anteriores. Esto significa que se obtiene "interés sobre el interés", lo que genera un crecimiento exponencial de la inversión o deuda.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Capitalización continua</div>
+    <p>Cuando la frecuencia de capitalización tiende a infinito, la fórmula discreta converge a una exponencial:</p>
+    <p class="math-block">$$ C(t) = C_0\,e^{r\,t} $$</p>
+    <p>Donde \( r \) es la tasa nominal continua. Esta forma emerge naturalmente cuando se modela el interés como una derivada instantánea del capital.</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>El interés compuesto tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Inversiones financieras a largo plazo.</li>
-                <li>Ahorros.</li>
-                <li>Préstamos hipotecarios y créditos personales.</li>
-                <li>Planificación financiera y presupuestaria.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Contribuciones periódicas</div>
+    <p>Si se deposita una contribución fija \( n \) por período, en el caso discreto:</p>
+    <p class="math-block">$$ C_T = C_0(1+i)^t + n\cdot\frac{(1+i)^t - 1}{i} $$</p>
+    <p>Y en el caso continuo se obtiene integrando el aporte acumulado:</p>
+    <p class="math-block">$$ C_T = C_0\,e^{rt} + n\int_0^t e^{r(t-s)}\,ds = C_0\,e^{rt} + \frac{n}{r}(e^{rt}-1) $$</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico</h2>
-            <p>Supongamos que inviertes $150 mensuales (\( S(\tau)=150\tau \)) con una tasa del 3.57% mensual:</p>
-            <p>Integrando la fórmula del interés compuesto:</p>
-            <p class="math-block">$$ \boxed{C(t)=\int_0^tS(\tau)(1+i)^{t-\tau}\,d\tau} $$</p>
-            <p>Esto sirve para multiplicar los ingresos mensuales con la ayuda de una inversión fija y estable en interés compuesto.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>Inversiones:</strong> crecimiento de cartera a largo plazo.</li>
+      <li><strong>Cajas de ahorro:</strong> proyección de capital con depósitos regulares.</li>
+      <li><strong>Préstamos:</strong> cálculo de cuotas y capital adeudado.</li>
+      <li><strong>Inflación:</strong> modelado del poder adquisitivo en el tiempo.</li>
+      <li><strong>Biología:</strong> crecimiento poblacional y propagación de enfermedades.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( C(t) \) : Monto final después de aplicar el interés compuesto.</li>
-                <li>\( C_0 \) : Capital inicial (Capital inicial de la inversión o préstamo).</li>
-                <li>\( i \) : Tasa de interés por período (expresada como decimal, e.g., 5% = 0.05).</li>
-                <li>\( t \) : Número de períodos (número total de veces que el interés se aplica).</li>
-            </ul>
-        </section>
-    </main>
+  <div class="card">
+    <div class="card-label">Ejemplo — Depósitos diarios crecientes</div>
+    <p>Se deposita $1 más que el día anterior durante 250 días. La integral continua del aporte:</p>
+    <p class="math-block">$$ C_T = \int_0^{250} x\,dx = \left[\frac{x^2}{2}\right]_0^{250} = \frac{250^2}{2} = 31{,}250 $$</p>
+    <div class="info-box">
+      <p>Depositando $1 más que el día anterior durante 250 días (~8 meses) se acumulan <strong>$31.250</strong>, sin contar intereses adicionales.</p>
+    </div>
+  </div>
 
-    <footer>
-        <p><i>Explora más herramientas matemáticas en el <a href="index.html">inicio</a>.</i></p>
-    </footer>
+  <div class="card">
+    <div class="card-label">Ejemplo — Inversión a tasa compuesta</div>
+    <p>Capital inicial \( C_0 = \$5{,}000 \), tasa anual \( i = 8\% \), plazo \( t = 10 \) años:</p>
+    <p class="math-block">$$ C(10) = 5000\,(1.08)^{10} = 5000 \times 2.1589 \approx \$10{,}795 $$</p>
+    <div class="info-box">
+      <p><strong>Regla del 72:</strong> El tiempo de duplicación aproximado es \( t_{2} \approx \dfrac{72}{i\%} \) períodos. A 8% anual: \( 72/8 = 9 \) años.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Comparación — Simple vs Compuesto</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Año</th><th>Interés simple</th><th>Interés compuesto</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>$5,400</td><td>$5,400</td></tr>
+          <tr><td>5</td><td>$7,000</td><td>$7,347</td></tr>
+          <tr><td>10</td><td>$9,000</td><td>$10,795</td></tr>
+          <tr><td>20</td><td>$13,000</td><td>$23,305</td></tr>
+          <tr><td>30</td><td>$17,000</td><td>$50,313</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="3">Capital inicial $5,000 · Tasa 8% anual</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( C_0 \) — capital inicial</li>
+      <li>\( i \) — tasa de interés por período (decimal)</li>
+      <li>\( r \) — tasa nominal continua</li>
+      <li>\( t \) — tiempo (períodos)</li>
+      <li>\( n \) — contribución periódica</li>
+      <li>\( e \approx 2.71828 \) — base del logaritmo natural</li>
+    </ul>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+
+</div>
 </body>
 </html>

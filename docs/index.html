@@ -1,110 +1,118 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Calculadora Científica</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Científica</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <header>
-        <h1>Calculadora Científica</h1>
-        <p>Accede al repositorio científico y mejora tu comprensión de conceptos clave en matemática, física, química, biología y más.</p>
-    </header>
+<div class="page">
 
-    <main>
-        <hr>
+  <div class="index-hero">
+    <div class="kicker">// repositorio científico</div>
+    <h1>Calculadora<em> Científica</em></h1>
+    <p>Accede al repositorio y mejora tu comprensión de conceptos clave en matemática, física, química, biología y más.</p>
+  </div>
 
-        <!-- CONTENEDOR COMPLETO DEL CARRUSEL -->
-        <div class="carousel-wrapper">
+  <div class="card-label">Áreas de estudio</div>
 
-            <!-- Botón izquierdo -->
-            <button class="carousel-btn left">&#10094;</button>
+  <div class="carousel-wrap">
+    <div class="carousel-container">
+      <div class="carousel-track">
 
-            <!-- Ventana del carrusel -->
-            <div class="carousel-container">
-                <div class="carousel-track-snap">
+        <a href="math.html" class="card-snap">
+          <h3 style="bottom:14%;right:10%;">Matemática</h3>
+        </a>
 
-                    <a href="math.html" class="card-snap">
-                        <h3 style="bottom: 10%; right: 10%;">Matemática</h3>
-                    </a>
+        <a href="advmath.html" class="card-snap">
+          <h3 style="top:14%;left:10%;">Cálculo</h3>
+        </a>
 
-                    <a href="advmath.html" class="card-snap">
-                        <h3 style="top: 10%; left: 10%;">Cálculo</h3>
-                    </a>
+        <a href="ph.html" class="card-snap">
+          <h3 style="top:14%;right:10%;">Física</h3>
+        </a>
 
-                    <a href="ph.html" class="card-snap">
-                        <h3 style="top: 10%; right: 10%;">Física</h3>
-                    </a>
+        <a href="modph.html" class="card-snap">
+          <h3 style="bottom:14%;right:10%;">Física avanzada</h3>
+        </a>
 
-                    <a href="modph.html" class="card-snap">
-                        <h3 style="bottom: 10%; right: 10%;">Física avanzada</h3>
-                    </a>
+        <a href="ch.html" class="card-snap">
+          <h3 style="bottom:14%;left:10%;">Química</h3>
+        </a>
 
-                    <a href="ch.html" class="card-snap">
-                        <h3 style="bottom: 10%; right: 10%;">Química</h3>
-                    </a>
+        <span class="card-snap locked">
+          <h3 style="top:14%;right:10%;">Biología</h3>
+        </span>
 
-                    <a class="card-snap">
-                        <h3 style="top: 10%; right: 10%;">Biología (próximamente)</h3>
-                    </a>
+        <span class="card-snap locked">
+          <h3 style="top:14%;left:10%;">Bioquímica</h3>
+        </span>
 
-                    <a class="card-snap">
-                        <h3 style="top: 10%; left: 10%;">Bioquímica (próximamente)</h3>
-                    </a>
+        <span class="card-snap locked">
+          <h3 style="bottom:14%;left:10%;">Biotecnología</h3>
+        </span>
 
-                    <a class="card-snap">
-                        <h3 style="bottom: 10%; left: 10%;">Biotecnología (próximamente)</h3>
-                    </a>
+        <span class="card-snap locked">
+          <h3 style="top:14%;left:10%;">Ciencias del espacio</h3>
+        </span>
 
-                    <a class="card-snap">
-                        <h3 style="top: 10%; left: 10%;">Ciencias del espacio (próximamente)</h3>
-                    </a>
+      </div>
+    </div>
 
-                </div>
-            </div>
+    <div class="carousel-nav">
+      <button class="carousel-btn" id="btnLeft">&#10094;</button>
+      <div class="carousel-dots" id="dots"></div>
+      <button class="carousel-btn" id="btnRight">&#10095;</button>
+    </div>
+  </div>
 
-            <!-- Botón derecho -->
-            <button class="carousel-btn right">&#10095;</button>
-        </div>
+  <footer class="site-footer">
+    <p>
+      Prueba la actualización:
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html">El laboratorio</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a>
+    </p>
+  </footer>
 
-    </main>
+</div>
 
-    <footer>
-        <p>Prueba la actualización de la calculadora: <a href="https://www.lasu-aerospace.github.io/calculadora-cientifica/lab.html">El laboratorio</a>.<br>
-            <i>Consulta las actualizaciones y mejoras de la calculadora en el 
-            <a href="https://github.com/lasu-aerospace/calculadora-cientifica">Repositorio de GitHub</a></i>.
-            <br>Es recomendable usar las herramientas en <a href="https://support.google.com/chrome/answer/13514529?hl=es-419">vista de ordenador</a>.
-        </p>
-    </footer>
+<script>
+  const container = document.querySelector('.carousel-container');
+  const cards     = document.querySelectorAll('.card-snap');
+  const btnLeft   = document.getElementById('btnLeft');
+  const btnRight  = document.getElementById('btnRight');
+  const dotsEl    = document.getElementById('dots');
 
-    <!-- SCRIPT DEL CARRUSEL -->
-    <script>
-    const track = document.querySelector(".carousel-track-snap");
-    const cards = document.querySelectorAll(".card-snap");
-    const btnLeft = document.querySelector(".carousel-btn.left");
-    const btnRight = document.querySelector(".carousel-btn.right");
+  let idx = 0;
 
-    let index = 0;
+  // Build dots
+  cards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  });
 
-    function updateScroll() {
-        const cardWidth = cards[0].getBoundingClientRect().width;
-        track.parentElement.scrollTo({
-            left: cardWidth * index,
-            behavior: "smooth"
-        });
-    }
+  function go(n) {
+    idx = Math.max(0, Math.min(n, cards.length - 1));
+    const w = cards[0].getBoundingClientRect().width;
+    container.scrollTo({ left: w * idx, behavior: 'smooth' });
+    document.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === idx));
+  }
 
-    btnRight.onclick = () => {
-        if (index < cards.length - 1) index++;
-        updateScroll();
-    };
+  btnRight.addEventListener('click', () => go(idx + 1));
+  btnLeft.addEventListener('click',  () => go(idx - 1));
 
-    btnLeft.onclick = () => {
-        if (index > 0) index--;
-        updateScroll();
-    };
-    </script>
-
+  // Sync dots on manual swipe
+  container.addEventListener('scrollend', () => {
+    const w = cards[0].getBoundingClientRect().width;
+    idx = Math.round(container.scrollLeft / w);
+    document.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === idx));
+  });
+</script>
 </body>
 </html>

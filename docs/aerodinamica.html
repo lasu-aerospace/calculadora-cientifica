@@ -1,692 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aerodinámica - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aerodinámica — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header>
-        <h3 style="text-align: left;"><a href="modph.html">← Volver</a></h3>
-        <h1>Aerodinámica</h1>
-    </header>
-
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>La aerodinámica es la rama de la mecánica de fluidos que estudia el movimiento del aire y otros gases, y su interacción con cuerpos sólidos en movimiento. Gobierna el diseño de aviones, cohetes, automóviles, trenes de alta velocidad, edificios, puentes y turbinas.</p>
-            <p>Los principios aerodinámicos se derivan de las ecuaciones de Navier-Stokes, que describen completamente el flujo de fluidos newtonianos, aunque estas ecuaciones no tienen solución analítica general y requieren aproximaciones o métodos numéricos (CFD).</p>
-        </section>
-
-        <section class="section">
-            <h2>Ecuaciones de Navier-Stokes</h2>
-            <p>Conjunto de ecuaciones diferenciales que describen el movimiento de fluidos viscosos:</p>
-            <p class="math-block">$$ \rho\left(\frac{\partial \vec{v}}{\partial t} + (\vec{v}\cdot\nabla)\vec{v}\right) = -\nabla p + \mu\nabla^2\vec{v} + \vec{f} $$</p>
-            <p>Donde:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( \rho \): Densidad del fluido</li>
-                    <li>\( \vec{v} \): Campo de velocidades</li>
-                    <li>\( p \): Presión</li>
-                    <li>\( \mu \): Viscosidad dinámica</li>
-                    <li>\( \vec{f} \): Fuerzas externas por unidad de volumen</li>
-                </ul>
-            </section>
-
-            <h3>Ecuación de continuidad</h3>
-            <p>Conservación de la masa:</p>
-            <p class="math-block">$$ \frac{\partial \rho}{\partial t} + \nabla\cdot(\rho\vec{v}) = 0 $$</p>
-            <p>Para flujo incompresible (\( \rho = \text{constante} \)):</p>
-            <p class="math-block">$$ \nabla\cdot\vec{v} = 0 $$</p>
-
-            <h3>Ecuación de Bernoulli</h3>
-            <p>Para flujo incompresible, irrotacional y estacionario:</p>
-            <p class="math-block">$$ p + \frac{1}{2}\rho v^2 + \rho gh = \text{constante} $$</p>
-            <p>Esta ecuación relaciona presión, velocidad y altura en una línea de corriente.</p>
-        </section>
-
-        <section class="section">
-            <h2>Fuerza de Arrastre (Drag)</h2>
-            <p class="math-block">$$ F_D = \frac{1}{2}\rho v^2 C_D A = \frac{1}{2}\rho v^2 S_{ref} C_D $$</p>
-            <p>El arrastre es la fuerza que se opone al movimiento en la dirección del flujo.</p>
-
-            <h3>Componentes del arrastre total</h3>
-            <p class="math-block">$$ C_D = C_{D,\text{presión}} + C_{D,\text{fricción}} + C_{D,\text{inducido}} + C_{D,\text{onda}} $$</p>
-
-            <h4>1. Arrastre de presión (forma)</h4>
-            <p>Causado por separación del flujo y estelas turbulentas. Dominante en cuerpos romos (cilindros, esferas).</p>
-            <p>La separación ocurre cuando el gradiente adverso de presión supera el momento del fluido en la capa límite.</p>
-
-            <h4>2. Arrastre de fricción (viscoso)</h4>
-            <p>Esfuerzo cortante en la superficie debido a viscosidad. Para placa plana laminar:</p>
-            <p class="math-block">$$ C_f = \frac{1.328}{\sqrt{Re_L}} $$</p>
-            <p>Para flujo turbulento:</p>
-            <p class="math-block">$$ C_f = \frac{0.074}{Re_L^{1/5}} $$</p>
-
-            <h4>3. Arrastre inducido</h4>
-            <p>Relacionado con generación de sustentación en alas finitas:</p>
-            <p class="math-block">$$ C_{D,i} = \frac{C_L^2}{\pi e AR} $$</p>
-            <p>Donde \( AR = b^2/S \) es la relación de aspecto (envergadura² / área alar) y \( e \) es el factor de eficiencia de Oswald (0.7-0.9 típicamente).</p>
-
-            <h4>4. Arrastre de onda</h4>
-            <p>Aparece a velocidades transónicas y supersónicas por formación de ondas de choque. Aumenta dramáticamente cerca de Mach 1.</p>
-
-            <h3>Coeficientes de arrastre típicos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Objeto</th>
-                        <th>\( C_D \)</th>
-                        <th>Reynolds</th>
-                        <th>Notas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Placa plana perpendicular</td>
-                        <td>1.98</td>
-                        <td>10⁴-10⁶</td>
-                        <td>Máximo arrastre de presión</td>
-                    </tr>
-                    <tr>
-                        <td>Esfera</td>
-                        <td>0.47</td>
-                        <td>10⁴-10⁵</td>
-                        <td>Crisis de arrastre a Re ≈ 3×10⁵</td>
-                    </tr>
-                    <tr>
-                        <td>Esfera (Re > 3×10⁵)</td>
-                        <td>0.07-0.15</td>
-                        <td>> 3×10⁵</td>
-                        <td>Flujo turbulento, menos separación</td>
-                    </tr>
-                    <tr>
-                        <td>Cubo</td>
-                        <td>1.05</td>
-                        <td>10⁴-10⁶</td>
-                        <td>Alta separación</td>
-                    </tr>
-                    <tr>
-                        <td>Cilindro circular</td>
-                        <td>0.82</td>
-                        <td>10⁴-10⁵</td>
-                        <td>Perpendicular al flujo</td>
-                    </tr>
-                    <tr>
-                        <td>Gota aerodinámica</td>
-                        <td>0.04</td>
-                        <td>10⁵-10⁶</td>
-                        <td>Mínima separación</td>
-                    </tr>
-                    <tr>
-                        <td>Perfil aerodinámico (NACA 0012)</td>
-                        <td>0.006-0.02</td>
-                        <td>10⁶</td>
-                        <td>α = 0-10°</td>
-                    </tr>
-                    <tr>
-                        <td>Automóvil deportivo</td>
-                        <td>0.25-0.35</td>
-                        <td>10⁶-10⁷</td>
-                        <td>Optimizado</td>
-                    </tr>
-                    <tr>
-                        <td>Camión</td>
-                        <td>0.6-0.9</td>
-                        <td>10⁶-10⁷</td>
-                        <td>Alta separación trasera</td>
-                    </tr>
-                    <tr>
-                        <td>Bicicleta + ciclista</td>
-                        <td>0.9-1.1</td>
-                        <td>10⁵-10⁶</td>
-                        <td>Posición afecta mucho</td>
-                    </tr>
-                    <tr>
-                        <td>Paracaídas</td>
-                        <td>1.3-1.5</td>
-                        <td>10⁵</td>
-                        <td>Diseñado para alto arrastre</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Crisis de arrastre en una esfera</h2>
-            <p>Una pelota de golf con "hoyuelos" (dimples) experimenta una reducción dramática de arrastre comparada con una esfera lisa.</p>
-
-            <h3>Esfera lisa a 40 m/s:</h3>
-            <p>Radio \( r = 0.021 \) m, \( \nu_{\text{aire}} = 1.5 \times 10^{-5} \) m²/s</p>
-            <p class="math-block">$$ Re = \frac{vD}{\nu} = \frac{40(0.042)}{1.5\times10^{-5}} \approx 112{,}000 $$</p>
-            <p>A este Reynolds, \( C_D \approx 0.47 \)</p>
-            <p class="math-block">$$ F_D = \frac{1}{2}(1.225)(40)^2(0.47)\pi(0.021)^2 \approx 0.61 \text{ N} $$</p>
-
-            <h3>Pelota de golf (rugosa) a 40 m/s:</h3>
-            <p>Los hoyuelos inducen transición temprana a flujo turbulento en la capa límite, retrasando la separación.</p>
-            <p>\( C_D \approx 0.25 \) (reducción del 47%)</p>
-            <p class="math-block">$$ F_D \approx 0.32 \text{ N} $$</p>
-            <p>Resultado: La pelota de golf viaja casi el doble de distancia que una esfera lisa del mismo tamaño y velocidad inicial.</p>
-        </section>
-
-        <section class="section">
-            <h2>Fuerza de Sustentación (Lift)</h2>
-            <p class="math-block">$$ F_L = \frac{1}{2}\rho v^2 C_L S $$</p>
-            <p>Fuerza perpendicular a la dirección del flujo, esencial para el vuelo.</p>
-
-            <h3>Generación de sustentación</h3>
-            <p>Dos explicaciones complementarias (ambas correctas):</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Bernoulli:</strong> El aire viaja más rápido sobre el ala (menor presión) que debajo (mayor presión)</li>
-                    <li><strong>Newton:</strong> El ala desvía aire hacia abajo (downwash), por acción-reacción hay fuerza hacia arriba</li>
-                </ul>
-            </section>
-
-            <h3>Teorema de Kutta-Joukowski</h3>
-            <p>Para sustentación en 2D (por unidad de envergadura):</p>
-            <p class="math-block">$$ L' = \rho v \Gamma $$</p>
-            <p>Donde \( \Gamma \) es la circulación alrededor del perfil alar.</p>
-
-            <h3>Coeficiente de sustentación</h3>
-            <p>Para perfiles aerodinámicos delgados a bajo ángulo de ataque:</p>
-            <p class="math-block">$$ C_L \approx 2\pi\alpha \quad \text{(teoría lineal)} $$</p>
-            <p>Donde \( \alpha \) es el ángulo de ataque en radianes.</p>
-            <p>En la práctica, para perfiles reales:</p>
-            <p class="math-block">$$ C_L = C_{L,0} + \frac{dC_L}{d\alpha}\alpha $$</p>
-            <p>Con \( \frac{dC_L}{d\alpha} \approx 0.11 \) por grado (≈ 6.3 por radián) para perfiles típicos.</p>
-
-            <h3>Ángulo de ataque crítico (stall)</h3>
-            <p>Más allá de \( \alpha_{\text{crítico}} \approx 12°-18° \), la capa límite se separa masivamente y \( C_L \) cae abruptamente mientras \( C_D \) aumenta dramáticamente. Esta es la pérdida de sustentación (stall).</p>
-        </section>
-
-        <section class="section">
-            <h2>Relación Sustentación/Arrastre (L/D)</h2>
-            <p class="math-block">$$ \frac{L}{D} = \frac{C_L}{C_D} $$</p>
-            <p>Métrica fundamental de eficiencia aerodinámica. Cuanto mayor, mejor.</p>
-
-            <h3>L/D máximo</h3>
-            <p>Para un avión dado, existe un ángulo de ataque donde L/D es máximo. En crucero, se vuela cerca de este punto para maximizar eficiencia.</p>
-            <p>Para vuelo nivelado:</p>
-            <p class="math-block">$$ L = W \quad \Rightarrow \quad \frac{1}{2}\rho v^2 C_L S = mg $$</p>
-            <p>La potencia requerida es:</p>
-            <p class="math-block">$$ P = Dv = \frac{W}{L/D}v $$</p>
-            <p>Mínima potencia ocurre cuando se vuela a velocidad que maximiza \( (L/D)/v \).</p>
-
-            <h3>Valores típicos de L/D máximo</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aeronave/Animal</th>
-                        <th>L/D máximo</th>
-                        <th>Notas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Planeador de competición</td>
-                        <td>50-70</td>
-                        <td>Alas muy largas, bajo arrastre</td>
-                    </tr>
-                    <tr>
-                        <td>Albatros</td>
-                        <td>~20</td>
-                        <td>Ave con mayor L/D</td>
-                    </tr>
-                    <tr>
-                        <td>Boeing 747</td>
-                        <td>~17</td>
-                        <td>Crucero subsónico</td>
-                    </tr>
-                    <tr>
-                        <td>Cessna 172</td>
-                        <td>~11</td>
-                        <td>Aviación general</td>
-                    </tr>
-                    <tr>
-                        <td>Caza F-15</td>
-                        <td>~8</td>
-                        <td>Optimizado para maniobras</td>
-                    </tr>
-                    <tr>
-                        <td>Parapente</td>
-                        <td>~9</td>
-                        <td>Ala flexible</td>
-                    </tr>
-                    <tr>
-                        <td>Murciélago</td>
-                        <td>~5</td>
-                        <td>Ala batiente</td>
-                    </tr>
-                    <tr>
-                        <td>Paracaídas</td>
-                        <td>~3</td>
-                        <td>Descenso controlado</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Número de Reynolds</h2>
-            <p class="math-block">$$ Re = \frac{\rho v L}{\mu} = \frac{vL}{\nu} $$</p>
-            <p>Número adimensional que compara fuerzas inerciales con viscosas. Determina el régimen de flujo.</p>
-
-            <h3>Interpretación física</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Re bajo: Viscosidad domina (flujo laminar, ordenado)</li>
-                    <li>Re alto: Inercia domina (flujo turbulento, caótico)</li>
-                </ul>
-            </section>
-
-            <h3>Transición laminar-turbulento</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Geometría</th>
-                        <th>Re crítico</th>
-                        <th>Características</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Flujo en tubería</td>
-                        <td>~2,300</td>
-                        <td>Transición a Re ≈ 4,000</td>
-                    </tr>
-                    <tr>
-                        <td>Placa plana</td>
-                        <td>~5×10⁵</td>
-                        <td>Depende de rugosidad</td>
-                    </tr>
-                    <tr>
-                        <td>Cilindro circular</td>
-                        <td>~3×10⁵</td>
-                        <td>Crisis de arrastre</td>
-                    </tr>
-                    <tr>
-                        <td>Perfil alar</td>
-                        <td>~3-5×10⁵</td>
-                        <td>Depende de presión gradiente</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Escalado y similitud</h3>
-            <p>Dos flujos con igual geometría y mismo Re son dinámicamente similares. Esto permite pruebas en túnel de viento con modelos a escala.</p>
-            <p>Para modelo a escala 1:N con mismo fluido:</p>
-            <p class="math-block">$$ v_{\text{modelo}} = N \cdot v_{\text{real}} $$</p>
-            <p>Problema: velocidades muy altas pueden causar efectos compresibles no deseados.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Reynolds de diversos objetos</h2>
-            <p>Aire a nivel del mar: \( \nu = 1.5 \times 10^{-5} \) m²/s</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Objeto</th>
-                        <th>L (m)</th>
-                        <th>v (m/s)</th>
-                        <th>Re</th>
-                        <th>Régimen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bacteria nadando</td>
-                        <td>10⁻⁶</td>
-                        <td>10⁻⁵</td>
-                        <td>10⁻⁶</td>
-                        <td>Viscoso puro</td>
-                    </tr>
-                    <tr>
-                        <td>Mosquito</td>
-                        <td>0.003</td>
-                        <td>1</td>
-                        <td>200</td>
-                        <td>Laminar</td>
-                    </tr>
-                    <tr>
-                        <td>Pelota de tenis</td>
-                        <td>0.065</td>
-                        <td>40</td>
-                        <td>1.7×10⁵</td>
-                        <td>Transición</td>
-                    </tr>
-                    <tr>
-                        <td>Automóvil</td>
-                        <td>4.5</td>
-                        <td>30</td>
-                        <td>9×10⁶</td>
-                        <td>Turbulento</td>
-                    </tr>
-                    <tr>
-                        <td>Boeing 747</td>
-                        <td>70</td>
-                        <td>250</td>
-                        <td>1.2×10⁹</td>
-                        <td>Turbulento</td>
-                    </tr>
-                    <tr>
-                        <td>Ballena azul</td>
-                        <td>25</td>
-                        <td>5</td>
-                        <td>8×10⁷</td>
-                        <td>Turbulento (agua)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Número de Mach</h2>
-            <p class="math-block">$$ M = \frac{v}{a} $$</p>
-            <p>Relación entre velocidad del objeto y velocidad del sonido local.</p>
-
-            <h3>Velocidad del sonido</h3>
-            <p class="math-block">$$ a = \sqrt{\gamma RT} $$</p>
-            <p>Donde \( \gamma = 1.4 \) para aire, \( R = 287 \) J/(kg·K), \( T \) temperatura absoluta.</p>
-            <p>A nivel del mar (15°C): \( a \approx 340 \) m/s</p>
-            <p>A 11,000 m (-56.5°C): \( a \approx 295 \) m/s</p>
-
-            <h3>Regímenes de flujo</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Incompresible (M < 0.3):</strong> Densidad constante, ecuaciones simplificadas</li>
-                    <li><strong>Subsónico (0.3 < M < 0.8):</strong> Efectos compresibles menores</li>
-                    <li><strong>Transónico (0.8 < M < 1.2):</strong> Ondas de choque locales, alta inestabilidad</li>
-                    <li><strong>Supersónico (1.2 < M < 5):</strong> Ondas de choque oblicuas, cono de Mach</li>
-                    <li><strong>Hipersónico (M > 5):</strong> Calentamiento extremo, disociación química</li>
-                </ul>
-            </section>
-
-            <h3>Ondas de choque</h3>
-            <p>A velocidades supersónicas, el aire no puede "avisar" de la llegada del objeto. Se forman discontinuidades (choques) donde presión, densidad y temperatura cambian abruptamente.</p>
-            
-            <h4>Choque normal</h4>
-            <p>Relaciones de Rankine-Hugoniot para choque perpendicular al flujo:</p>
-            <p class="math-block">$$ \frac{p_2}{p_1} = 1 + \frac{2\gamma}{\gamma+1}(M_1^2-1) $$</p>
-            <p class="math-block">$$ M_2^2 = \frac{(\gamma-1)M_1^2+2}{2\gamma M_1^2-(\gamma-1)} $$</p>
-
-            <h3>Cono de Mach</h3>
-            <p>Ángulo del cono de ondas generado por objeto supersónico:</p>
-            <p class="math-block">$$ \sin\mu = \frac{1}{M} $$</p>
-            <p>Para M = 2: \( \mu = 30° \); para M = 3: \( \mu = 19.5° \)</p>
-        </section>
-
-        <section class="section">
-            <h2>Capa Límite</h2>
-            <p>Región delgada cerca de la superficie donde la velocidad varía de cero (en la pared) a la velocidad del flujo libre.</p>
-
-            <h3>Ecuaciones de capa límite</h3>
-            <p>Aproximación de Prandtl para flujo 2D estacionario:</p>
-            <p class="math-block">$$ u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho}\frac{dp}{dx} + \nu\frac{\partial^2 u}{\partial y^2} $$</p>
-
-            <h3>Espesor de capa límite</h3>
-            <p>Definido donde \( u = 0.99u_\infty \).</p>
-            
-            <p><strong>Laminar sobre placa plana:</strong></p>
-            <p class="math-block">$$ \delta = \frac{5x}{\sqrt{Re_x}} $$</p>
-            
-            <p><strong>Turbulento:</strong></p>
-            <p class="math-block">$$ \delta = \frac{0.37x}{Re_x^{1/5}} $$</p>
-
-            <h3>Espesor de desplazamiento</h3>
-            <p>Mide cuánto el flujo es "desplazado" hacia afuera por la capa límite:</p>
-            <p class="math-block">$$ \delta^* = \int_0^\infty \left(1-\frac{u}{u_\infty}\right)dy $$</p>
-
-            <h3>Espesor de momento</h3>
-            <p class="math-block">$$ \theta = \int_0^\infty \frac{u}{u_\infty}\left(1-\frac{u}{u_\infty}\right)dy $$</p>
-
-            <h3>Separación de capa límite</h3>
-            <p>Ocurre cuando:</p>
-            <p class="math-block">$$ \left(\frac{\partial u}{\partial y}\right)_{y=0} = 0 $$</p>
-            <p>El flujo se invierte cerca de la pared, creando recirculación y estelas.</p>
-            
-            <h4>Criterios de separación</h4>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Gradiente adverso de presión (\( \frac{dp}{dx} > 0 \))</li>
-                    <li>Curvatura superficial excesiva</li>
-                    <li>Ángulo de ataque muy alto (stall aerodinámico)</li>
-                </ul>
-            </section>
-        </section>
-
-        <section class="section">
-            <h2>Turbulencia</h2>
-            <p>Flujo caracterizado por fluctuaciones caóticas de velocidad, presión y otras propiedades.</p>
-
-            <h3>Características de la turbulencia</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Aleatoriedad:</strong> Aparentemente caótica pero determinista</li>
-                    <li><strong>Difusividad:</strong> Mezcla eficiente de momento, calor, masa</li>
-                    <li><strong>Multiescala:</strong> Vórtices de muchos tamaños (cascada de energía)</li>
-                    <li><strong>Disipación:</strong> Energía cinética → calor por viscosidad</li>
-                    <li><strong>Tridimensionalidad:</strong> Inherentemente 3D</li>
-                </ul>
-            </section>
-
-            <h3>Cascada de energía de Kolmogorov</h3>
-            <p>Energía se transfiere de grandes vórtices (escala integral \( L \)) a pequeños (escala de Kolmogorov \( \eta \)):</p>
-            <p class="math-block">$$ \eta = \left(\frac{\nu^3}{\varepsilon}\right)^{1/4} $$</p>
-            <p>Donde \( \varepsilon \) es la tasa de disipación de energía por unidad de masa.</p>
-
-            <h3>Espectro de energía</h3>
-            <p>En el rango inercial (escalas intermedias), Kolmogorov predice:</p>
-            <p class="math-block">$$ E(k) \propto \varepsilon^{2/3}k^{-5/3} $$</p>
-            <p>La famosa ley de los "-5/3", verificada experimentalmente.</p>
-
-            <h3>Modelado de turbulencia (RANS)</h3>
-            <p>Reynolds-Averaged Navier-Stokes descompone velocidad en promedio y fluctuación:</p>
-            <p class="math-block">$$ u_i = \overline{u}_i + u'_i $$</p>
-            <p>Genera el tensor de esfuerzos de Reynolds:</p>
-            <p class="math-block">$$ \tau_{ij} = -\rho\overline{u'_i u'_j} $$</p>
-            <p>Requiere modelos de cierre (k-ε, k-ω, SST, etc.) para resolver.</p>
-
-            <h3>Large Eddy Simulation (LES)</h3>
-            <p>Resuelve directamente las escalas grandes, modela solo las pequeñas. Más preciso pero computacionalmente costoso.</p>
-
-            <h3>Direct Numerical Simulation (DNS)</h3>
-            <p>Resuelve todas las escalas sin modelado. Requiere:</p>
-            <p class="math-block">$$ N \propto Re^{9/4} $$</p>
-            <p>puntos de malla. Factible solo para Re ~ 10³-10⁴ actualmente.</p>
-        </section>
-
-        <section class="section">
-            <h2>Vórtices</h2>
-            <p>Regiones de fluido con rotación significativa alrededor de un eje.</p>
-
-            <h3>Vorticidad</h3>
-            <p class="math-block">$$ \vec{\omega} = \nabla \times \vec{v} $$</p>
-            <p>Campo vectorial que mide la rotación local del fluido.</p>
-
-            <h3>Ecuación de transporte de vorticidad</h3>
-            <p class="math-block">$$ \frac{D\vec{\omega}}{Dt} = (\vec{\omega}\cdot\nabla)\vec{v} + \nu\nabla^2\vec{\omega} $$</p>
-
-            <h3>Vórtices de punta de ala</h3>
-            <p>Generados por diferencia de presión entre superficies superior e inferior del ala. El flujo "se derrama" alrededor de las puntas, creando vórtices helicoidales intensos.</p>
-            
-            <h4>Arrastre inducido</h4>
-            <p class="math-block">$$ D_i = \frac{L^2}{\frac{1}{2}\rho v^2 \pi b^2 e} $$</p>
-            <p>Donde \( b \) es la envergadura del ala. Por eso alas largas son más eficientes.</p>
-
-            <h4>Peligro de estelas</h4>
-            <p>Los vórtices de punta de ala de aviones grandes pueden derribar aviones pequeños que vuelen detrás. Requieren separación temporal/espacial en aeropuertos.</p>
-
-            <h3>Calle de vórtices de von Kármán</h3>
-            <p>Patrón de vórtices alternados desprendidos de cilindros en flujo cruzado.</p>
-            <p class="math-block">$$ St = \frac{fD}{v} \approx 0.2 $$</p>
-            <p>Número de Strouhal relaciona frecuencia de desprendimiento con velocidad.</p>
-
-            <h4>Aplicaciones</h4>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Medición de flujo:</strong> Caudalímetros de vórtice</li>
-                    <li><strong>Ingeniería estructural:</strong> Vibración inducida por vórtices (chimeneas, puentes)</li>
-                    <li><strong>Acústica:</strong> Tono eólico (silbido de cables)</li>
-                </ul>
-            </section>
-
-            <h3>Vórtices en alas delta</h3>
-            <p>A alto ángulo de ataque, alas delta generan vórtices de borde de ataque muy estables que aumentan sustentación. Usado en cazas supersónicos (Concorde, F-16).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Diseño de ala de avión comercial</h2>
-            <p>Boeing 787-8 en crucero:</p>
-
-            <h3>Datos:</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Masa: 220,000 kg</li>
-                    <li>Envergadura: 60 m</li>
-                    <li>Área alar: 377 m²</li>
-                    <li>Velocidad crucero: 250 m/s (M = 0.85)</li>
-                    <li>Altitud: 11,000 m (\( \rho = 0.364 \) kg/m³)</li>
-                </ul>
-            </section>
-
-            <h3>Cálculo de \( C_L \) requerido:</h3>
-            <p class="math-block">$$ L = W \quad \Rightarrow \quad \frac{1}{2}\rho v^2 C_L S = mg $$</p>
-            <p class="math-block">$$ C_L = \frac{2mg}{\rho v^2 S} = \frac{2(220{,}000)(9.8)}{(0.364)(250)^2(377)} \approx 0.50 $$</p>
-
-            <h3>Relación de aspecto:</h3>
-            <p class="math-block">$$ AR = \frac{b^2}{S} = \frac{60^2}{377} \approx 9.55 $$</p>
-
-            <h3>Arrastre inducido (asumiendo \( e = 0.85 \)):</h3>
-            <p class="math-block">$$ C_{D,i} = \frac{C_L^2}{\pi e AR} = \frac{(0.50)^2}{\pi(0.85)(9.55)} \approx 0.0098 $$</p>
-
-            <h3>Arrastre total estimado:</h3>
-            <p>\( C_D \approx C_{D,0} + C_{D,i} \approx 0.018 + 0.0098 \approx 0.028 \)</p>
-            <p class="math-block">$$ D = \frac{1}{2}(0.364)(250)^2(0.028)(377) \approx 239{,}000 \text{ N} $$</p>
-
-            <h3>L/D en crucero:</h3>
-            <p class="math-block">$$ \frac{L}{D} = \frac{C_L}{C_D} = \frac{0.50}{0.028} \approx 17.9 $$</p>
-
-            <h3>Potencia requerida:</h3>
-            <p class="math-block">$$ P = Dv = 239{,}000 \times 250 \approx 59.8 \text{ MW} $$</p>
-            <p>Con eficiencia de motores ~40%, potencia de combustible: ~150 MW</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de la aerodinámica</h2>
-            <ul>
-                <li><strong>Aviación:</strong> Diseño de alas, fuselajes, motores, optimización de rutas</li>
-                <li><strong>Automovilismo:</strong> Reducción de arrastre (economía), generación de downforce (F1)</li>
-                <li><strong>Deportes:</strong> Ciclismo (posición), natación (trajes), esquí (tucked position)</li>
-                <li><strong>Energía eólica:</strong> Diseño de palas de turbinas, optimización de parques</li>
-                <li><strong>Arquitectura:</strong> Cargas de viento en rascacielos, ventilación natural</li>
-                <li><strong>Astronáutica:</strong> Reentrada atmosférica, minimización de calentamiento</li>
-                <li><strong>Ingeniería de trenes:</strong> Trenes de alta velocidad, reducción de ruido</li>
-                <li><strong>Balística:</strong> Trayectorias de proyectiles, estabilidad de cohetes</li>
-                <li><strong>Biología:</strong> Vuelo de aves e insectos, natación de peces</li>
-                <li><strong>Meteorología:</strong> Formación de nubes, tornados, huracanes</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \rho \): Densidad del fluido (kg/m³)</li>
-                <li>\( v \): Velocidad (m/s)</li>
-                <li>\( p \): Presión (Pa)</li>
-                <li>\( \mu \): Viscosidad dinámica (Pa·s)</li>
-                <li>\( \nu \): Viscosidad cinemática = \( \mu/\rho \) (m²/s)</li>
-                <li>\( C_D \): Coeficiente de arrastre</li>
-                <li>\( C_L \): Coeficiente de sustentación</li>
-                <li>\( A, S \): Área de referencia (m²)</li>
-                <li>\( Re \): Número de Reynolds</li>
-                <li>\( M \): Número de Mach</li>
-                <li>\( \alpha \): Ángulo de ataque</li>
-                <li>\( AR \): Relación de aspecto (aspect ratio)</li>
-                <li>\( e \): Factor de eficiencia de Oswald</li>
-                <li>\( \delta \): Espesor de capa límite (m)</li>
-                <li>\( \vec{\omega} \): Vorticidad (s⁻¹)</li>
-                <li>\( \Gamma \): Circulación (m²/s)</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de propiedades del aire estándar</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Altitud (m)</th>
-                        <th>T (°C)</th>
-                        <th>\( \rho \) (kg/m³)</th>
-                        <th>p (kPa)</th>
-                        <th>a (m/s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>15.0</td>
-                        <td>1.225</td>
-                        <td>101.3</td>
-                        <td>340</td>
-                    </tr>
-                    <tr>
-                        <td>1,000</td>
-                        <td>8.5</td>
-                        <td>1.112</td>
-                        <td>89.9</td>
-                        <td>336</td>
-                    </tr>
-                    <tr>
-                        <td>5,000</td>
-                        <td>-17.5</td>
-                        <td>0.736</td>
-                        <td>54.0</td>
-                        <td>320</td>
-                    </tr>
-                    <tr>
-                        <td>10,000</td>
-                        <td>-50.0</td>
-                        <td>0.413</td>
-                        <td>26.5</td>
-                        <td>299</td>
-                    </tr>
-                    <tr>
-                        <td>11,000</td>
-                        <td>-56.5</td>
-                        <td>0.364</td>
-                        <td>22.7</td>
-                        <td>295</td>
-                    </tr>
-                    <tr>
-                        <td>20,000</td>
-                        <td>-56.5</td>
-                        <td>0.089</td>
-                        <td>5.5</td>
-                        <td>295</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+<div class="page">
+
+  <a href="modph.html" class="back-link">← Volver</a>
+  <h1 class="page-title"><em>Aerodinámica</em></h1>
+
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>La aerodinámica estudia el movimiento del aire y su interacción con cuerpos sólidos. Gobierna el diseño de aviones, cohetes, automóviles, trenes de alta velocidad y turbinas. Los principios fundamentales se derivan de las ecuaciones de Navier-Stokes, que no tienen solución analítica general y requieren métodos numéricos (CFD) para casos complejos.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Ecuaciones de Navier-Stokes</div>
+    <p class="math-block">$$ \rho\!\left(\frac{\partial\vec{v}}{\partial t} + (\vec{v}\cdot\nabla)\vec{v}\right) = -\nabla p + \mu\nabla^2\vec{v} + \vec{f} $$</p>
+    <p>Conservación de masa (continuidad):</p>
+    <p class="math-block">$$ \frac{\partial\rho}{\partial t} + \nabla\cdot(\rho\vec{v}) = 0 $$</p>
+    <p>Para flujo incompresible (\(\rho = \text{cte}\)): \( \nabla\cdot\vec{v} = 0 \).</p>
+    <p>Ecuación de Bernoulli (flujo estacionario, irrotacional, incompresible):</p>
+    <p class="math-block">$$ p + \frac{1}{2}\rho v^2 + \rho gh = \text{cte} $$</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Fuerza de arrastre (Drag)</div>
+    <p class="math-block">$$ F_D = \frac{1}{2}\rho v^2 C_D A $$</p>
+    <p>El arrastre total se descompone en cuatro componentes:</p>
+    <ul>
+      <li><strong>Presión (forma):</strong> separación del flujo y estelas turbulentas — domina en cuerpos romos.</li>
+      <li><strong>Fricción:</strong> esfuerzo cortante viscoso en la superficie.</li>
+      <li><strong>Inducido:</strong> consecuencia de la sustentación en alas finitas: \( C_{D,i} = \dfrac{C_L^2}{\pi e\,AR} \)</li>
+      <li><strong>Onda:</strong> aparece en régimen transónico/supersónico por ondas de choque.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Coeficientes de arrastre típicos</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Objeto</th><th>\( C_D \)</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr><td>Placa plana perpendicular</td><td>1.98</td><td>Máximo arrastre de presión</td></tr>
+          <tr><td>Esfera (Re < 3×10⁵)</td><td>0.47</td><td>Crisis de arrastre en Re ≈ 3×10⁵</td></tr>
+          <tr><td>Esfera (Re > 3×10⁵)</td><td>0.07–0.15</td><td>Flujo turbulento</td></tr>
+          <tr><td>Gota aerodinámica</td><td>0.04</td><td>Mínima separación</td></tr>
+          <tr><td>Perfil NACA 0012</td><td>0.006–0.02</td><td>\( \alpha = 0°\text{–}10° \)</td></tr>
+          <tr><td>Automóvil deportivo</td><td>0.25–0.35</td><td>Optimizado</td></tr>
+          <tr><td>Camión</td><td>0.6–0.9</td><td>Alta separación trasera</td></tr>
+          <tr><td>Paracaídas</td><td>1.3–1.5</td><td>Diseñado para alto arrastre</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Ejemplo — Pelota de golf</div>
+    <p>Los hoyuelos (dimples) inducen transición temprana a flujo turbulento en la capa límite, retrasando la separación.</p>
+    <p class="math-block">$$ Re = \frac{v\,D}{\nu} = \frac{40\times0.042}{1.5\times10^{-5}} \approx 112{,}000 $$</p>
+    <p>Esfera lisa: \( C_D \approx 0.47 \), \( F_D \approx 0.61 \) N. Pelota de golf: \( C_D \approx 0.25 \), \( F_D \approx 0.32 \) N.</p>
+    <div class="info-box">
+      <p>La reducción del 47% en arrastre permite que la pelota de golf viaje casi el doble de distancia que una esfera lisa del mismo tamaño.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Fuerza de sustentación (Lift)</div>
+    <p class="math-block">$$ F_L = \frac{1}{2}\rho v^2 C_L S $$</p>
+    <p>Para perfiles aerodinámicos delgados a bajo ángulo de ataque (teoría lineal):</p>
+    <p class="math-block">$$ C_L \approx 2\pi\alpha \quad (\alpha \text{ en radianes}) $$</p>
+    <p>Más allá del ángulo crítico (~12°–18°) la capa límite se separa masivamente: <em>stall</em>. El \( C_L \) cae y el \( C_D \) aumenta abruptamente.</p>
+    <p>Teorema de Kutta-Joukowski (por unidad de envergadura):</p>
+    <p class="math-block">$$ L' = \rho\,v\,\Gamma $$</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Eficiencia aerodinámica L/D</div>
+    <p class="math-block">$$ \frac{L}{D} = \frac{C_L}{C_D} $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aeronave / Animal</th><th>L/D máximo</th></tr></thead>
+        <tbody>
+          <tr><td>Planeador de competición</td><td>50–70</td></tr>
+          <tr><td>Albatros</td><td>~20</td></tr>
+          <tr><td>Boeing 747</td><td>~17</td></tr>
+          <tr><td>Cessna 172</td><td>~11</td></tr>
+          <tr><td>Caza F-15</td><td>~8</td></tr>
+          <tr><td>Murciélago</td><td>~5</td></tr>
+          <tr><td>Paracaídas</td><td>~3</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Número de Reynolds</div>
+    <p class="math-block">$$ Re = \frac{\rho v L}{\mu} = \frac{vL}{\nu} $$</p>
+    <p>Compara fuerzas inerciales con viscosas. Re bajo → flujo laminar; Re alto → turbulento. Permite escalar experimentos en túnel de viento: dos flujos con igual geometría e igual Re son dinámicamente similares.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Número de Mach y regímenes</div>
+    <p class="math-block">$$ M = \frac{v}{a} \qquad a = \sqrt{\gamma RT} $$</p>
+    <p>A nivel del mar (15°C): \( a \approx 340 \) m/s. A 11,000 m: \( a \approx 295 \) m/s.</p>
+    <div class="info-box">
+      <ul>
+        <li><strong>M &lt; 0.3 — incompresible:</strong> densidad constante, ecuaciones simplificadas</li>
+        <li><strong>0.3–0.8 — subsónico:</strong> efectos compresibles menores</li>
+        <li><strong>0.8–1.2 — transónico:</strong> ondas de choque locales, alta inestabilidad</li>
+        <li><strong>1.2–5 — supersónico:</strong> cono de Mach \(\sin\mu = 1/M\)</li>
+        <li><strong>M &gt; 5 — hipersónico:</strong> calentamiento extremo, disociación química</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Capa límite</div>
+    <p>Región delgada donde la velocidad pasa de cero (en la pared) a la del flujo libre. Espesor:</p>
+    <p class="math-block">$$ \delta_\text{lam} = \frac{5x}{\sqrt{Re_x}} \qquad \delta_\text{turb} = \frac{0.37x}{Re_x^{1/5}} $$</p>
+    <p>La separación ocurre cuando \( \left(\partial u/\partial y\right)_{y=0} = 0 \), creando recirculación, estelas y arrastre de presión.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Ejemplo — Boeing 787-8 en crucero</div>
+    <p>Masa 220,000 kg, envergadura 60 m, área alar 377 m², \( v = 250 \) m/s, altitud 11,000 m (\( \rho = 0.364 \) kg/m³).</p>
+    <p class="math-block">$$ C_L = \frac{2mg}{\rho v^2 S} = \frac{2(220{,}000)(9.8)}{(0.364)(250)^2(377)} \approx 0.50 $$</p>
+    <p class="math-block">$$ AR = \frac{60^2}{377} \approx 9.55 \qquad C_{D,i} = \frac{0.50^2}{\pi(0.85)(9.55)} \approx 0.0098 $$</p>
+    <p class="math-block">$$ \frac{L}{D} = \frac{0.50}{0.028} \approx 17.9 \qquad P = Dv \approx 59.8\;\text{MW} $$</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Atmósfera estándar ISA</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Altitud (m)</th><th>T (°C)</th><th>\( \rho \) (kg/m³)</th><th>p (kPa)</th><th>a (m/s)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>15.0</td><td>1.225</td><td>101.3</td><td>340</td></tr>
+          <tr><td>1,000</td><td>8.5</td><td>1.112</td><td>89.9</td><td>336</td></tr>
+          <tr><td>5,000</td><td>-17.5</td><td>0.736</td><td>54.0</td><td>320</td></tr>
+          <tr><td>10,000</td><td>-50.0</td><td>0.413</td><td>26.5</td><td>299</td></tr>
+          <tr><td>11,000</td><td>-56.5</td><td>0.364</td><td>22.7</td><td>295</td></tr>
+          <tr><td>20,000</td><td>-56.5</td><td>0.089</td><td>5.5</td><td>295</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \rho \) — densidad del fluido (kg/m³); \( \mu \) — viscosidad dinámica (Pa·s); \( \nu = \mu/\rho \) — viscosidad cinemática (m²/s)</li>
+      <li>\( C_D,\,C_L \) — coeficientes de arrastre y sustentación</li>
+      <li>\( A,\,S \) — área de referencia (m²)</li>
+      <li>\( Re \) — número de Reynolds; \( M \) — número de Mach</li>
+      <li>\( \alpha \) — ángulo de ataque; \( AR \) — relación de aspecto; \( e \) — factor de eficiencia de Oswald</li>
+      <li>\( \delta \) — espesor de capa límite; \( \Gamma \) — circulación (m²/s)</li>
+      <li>\( \vec{\omega} = \nabla\times\vec{v} \) — vorticidad (s⁻¹)</li>
+    </ul>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+
+</div>
 </body>
 </html>

@@ -1,315 +1,473 @@
-/* ===============================
-   ESTILO BASE - BIBLIOTECA CIENTÍFICA
-   Diseño sobrio, legible y funcional
-   =============================== */
+/* ═══════════════════════════════════════════════════════
+   CALCULADORA CIENTÍFICA — Global Stylesheet
+   Aesthetic: dark scientific / lab (matches lab.html)
+   ═══════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@900&family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Familjen+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
-/* ===============================
-   CARRUSEL
-   =============================== */
-
-.carousel-snap {
-    max-width: 900px;
-    margin: 40px auto;
-    text-align: center;
+/* ── Variables ──────────────────────────────────────── */
+:root {
+  --bg:       #0d0e12;
+  --s0:       #13141a;
+  --s1:       #1a1c24;
+  --s2:       #22252f;
+  --border:   #2a2d3a;
+  --border2:  #363a4a;
+  --txt:      #e4e6f0;
+  --txt2:     #8b90a8;
+  --txt3:     #52566a;
+  --accent:   #4ade80;
+  --radius:   16px;
+  --radius-sm:10px;
 }
 
-.carousel-snap h2 {
-    color: #a5b4fc;
-    margin-bottom: 20px;
-    font-size: 1.6rem;
-}
-
-/* Contenedor visible que debe tener el scroll */
-.carousel-container {
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-/* Track interno: NO debe tener overflow */
-.carousel-track-snap {
-    display: flex;
-    gap: 0;
-}
-
-/* Tarjetas */
-.card-snap {
-    flex: 0 0 100%;
-    aspect-ratio: 16 / 9;
-    scroll-snap-align: start;
-    background: #111827;
-    border-radius: 0;
-    position: relative;
-    color: #e0e7ff;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-    cursor: grab;
-    text-decoration: none;
-}
-
-.card-snap:active {
-    cursor: grabbing;
-}
-
-/* Evitar selección de texto */
-.card-snap,
-.card-snap *,
-.carousel-track-snap,
-.carousel-snap {
-    user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
-/* Títulos dentro de las tarjetas */
-.card-snap h3 {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-}
-
-/* Hover */
-.card-snap:hover {
-    transform: translateY(-3px);
-    transition: transform 0.3s;
-}
-
-/* Scrollbar (del contenedor real) */
-.carousel-container::-webkit-scrollbar {
-    height: 3px;
-}
-
-.carousel-container::-webkit-scrollbar-thumb {
-    background: #989fff;
-}
-
-.carousel-container::-webkit-scrollbar-track {
-    background: #1e293b;
-}
-
-/* Bloqueo de clicks durante arrastre */
-.carousel-track-snap.dragging a {
-    pointer-events: none;
-}
-
-/* Envoltura del carrusel */
-.carousel-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    margin: 30px auto;
-}
-
-/* Botones */
-.carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #1f2937;
-    border: none;
-    color: white;
-    font-size: 28px;
-    padding: 8px 14px;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.3s;
-    user-select: none;
-}
-
-.carousel-btn:hover {
-    opacity: 1;
-}
-
-.carousel-btn.left {
-    left: -45px;
-}
-
-.carousel-btn.right {
-    right: -45px;
-}
+/* ── Reset & Base ───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
-    background-color: #303030;
-    color: #ffffff;
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-main {
-    max-width: 70%;
-    margin: auto;
-    text-align: left;
-    padding: 20px;
+/* Scanline overlay — same as lab.html */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px
+  );
 }
 
-li {
-    margin-top: 10px;
+/* ── Page wrapper ───────────────────────────────────── */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+  position: relative;
+  z-index: 1;
 }
 
-a {
-    color: #ffffff;
-    text-decoration: underline;
+/* ── Back link ──────────────────────────────────────── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: color .2s;
+}
+.back-link:hover { color: var(--txt2); }
+
+/* ── Page title ─────────────────────────────────────── */
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #e4e6f0 30%, #52566a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.page-title em { font-style: italic; opacity: .6; }
+
+.page-sub {
+  font-size: 14px;
+  color: var(--txt2);
+  margin-bottom: 32px;
 }
 
-h2 {
-    font-size: 160%;
+/* ── Divider ────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 28px 0;
 }
 
-h3 {
-    font-size: 200%;
+/* ── Card ───────────────────────────────────────────── */
+.card {
+  background: var(--s0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 16px;
 }
 
+/* Card label (like in lab.html) */
+.card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Headings inside cards ──────────────────────────── */
+.card h2 {
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--txt);
+  margin: 0 0 10px;
+}
+
+.card h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--txt);
+  margin: 18px 0 6px;
+}
+.card h3:first-child { margin-top: 0; }
+
+/* ── Body text ──────────────────────────────────────── */
 p {
-    font-weight: 400;
-    font-size: 130%;
+  font-size: 15px;
+  color: var(--txt2);
+  margin-bottom: 12px;
+}
+p:last-child { margin-bottom: 0; }
+
+ul, ol {
+  padding-left: 22px;
+  color: var(--txt2);
+  font-size: 15px;
+}
+li { margin-bottom: 7px; line-height: 1.55; }
+strong { color: var(--txt); font-weight: 600; }
+
+/* ── Links ──────────────────────────────────────────── */
+a {
+  color: var(--txt);
+  text-decoration: underline;
+  text-decoration-color: var(--border2);
+  text-underline-offset: 3px;
+  transition: color .2s, text-decoration-color .2s;
+}
+a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* ── Info / highlight box ───────────────────────────── */
+.info-box {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.info-box p  { font-size: 14px; }
+.info-box li { font-size: 14px; }
+
+/* Nested box (darker) */
+.info-box .info-box {
+  background: var(--s2);
+  border-color: var(--border2);
+  border-left-color: var(--border2);
 }
 
-a:hover {
-    text-underline-position: under;
-    color: #989fff;
+/* ── Math block ─────────────────────────────────────── */
+.math-block {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+  text-align: center;
+  color: var(--txt);
+  font-size: 1rem;
+  font-weight: 400;
+  -webkit-text-fill-color: var(--txt);
 }
 
-section h2 {
-    color: #e0e7ff;
-    text-align: center;
-    font-size: 160%;
-}
-
-footer {
-    margin-top: 20px;
-    padding: 10px 0;
-    background-color: #303030;
-    text-align: center;
-}
-
-/* ===============================
-   TABLAS
-   =============================== */
+/* ── Table ──────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-thead {
-    background: #0f172a;
-    color: #ffffff;
-}
-
-th {
-    text-align: left;
-    padding: 12px 16px;
-    letter-spacing: 0.03em;
-}
-
-td {
-    padding: 12px 16px;
-    color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-tbody tr:last-child td {
-    border-bottom: none;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 300px;
 }
 
 caption {
-    caption-side: top;
-    text-align: left;
-    padding-bottom: 1rem;
-    color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  text-align: left;
+  padding-bottom: 10px;
 }
 
-/* ===============================
-   ENCABEZADOS
-   =============================== */
+thead { background: var(--s2); }
 
-h1, h2, h3, h4 {
-    font-weight: 600;
-    color: #f1f5f9;
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-h1 {
-    font-size: 1.8rem;
-    margin-top: 30px;
+td {
+  padding: 10px 14px;
+  color: var(--txt2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
 }
 
-h2 {
-    font-size: 1.4rem;
-    margin-top: 25px;
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+
+tfoot tr {
+  border-top: 1px solid var(--border);
+}
+tfoot td {
+  padding: 14px;
+  font-size: 13px;
+  color: var(--txt2);
+  border-bottom: none;
 }
 
-h3 {
-    font-size: 1.2rem;
-    margin-top: 20px;
+/* ── Footer ─────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0 0;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+}
+.site-footer a { color: var(--txt2); text-decoration-color: var(--border2); }
+.site-footer a:hover { color: var(--accent); }
+.site-footer p { font-size: 11px; color: var(--txt3); margin: 0; }
+
+/* ═══════════════════════════════════════════════════
+   INDEX — hero + carousel
+   ═══════════════════════════════════════════════════ */
+
+.index-hero {
+  margin-bottom: 32px;
+}
+.index-hero .kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.index-hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -.025em;
+  background: linear-gradient(135deg, #e4e6f0 30%, #52566a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.index-hero p {
+  font-size: 15px;
+  color: var(--txt2);
+  max-width: 480px;
 }
 
-/* ===============================
-   BLOQUES MATEMÁTICOS
-   =============================== */
+/* Carousel */
+.carousel-wrap { margin-bottom: 16px; }
 
-.math-block {
-    background-color: #1e293b;
-    padding: 15px;
-    border-radius: 6px;
-    margin: 20px 0;
+.carousel-container {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  border-radius: var(--radius);
+  -webkit-overflow-scrolling: touch;
+}
+.carousel-container::-webkit-scrollbar { display: none; }
+.carousel-container { scrollbar-width: none; }
+
+.carousel-track {
+  display: flex;
 }
 
-/* ===============================
-   SECCIONES DEL DOCUMENTO
-   =============================== */
+.card-snap {
+  flex: 0 0 100%;
+  aspect-ratio: 16 / 7;
+  scroll-snap-align: start;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color .3s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card-snap:hover { border-color: var(--border2); }
 
-.section {
-    margin-bottom: 30px;
+/* Grid texture */
+.card-snap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: .4;
 }
 
-/* Sección de aplicaciones prácticas */
-.aplicaciones {
-    margin-top: 30px;
-    background-color: #3a3a3a;
-    padding: 15px 20px;
-    border-left: 4px solid #0f172a;
-    border-radius: 6px;
+.card-snap h3 {
+  position: absolute;
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(1.1rem, 3.5vw, 1.8rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--txt);
+  margin: 0;
+  padding: 0;
+  -webkit-text-fill-color: var(--txt);
+  background: none;
 }
 
-.aplicaciones h2 {
-    margin-bottom: 10px;
-    color: #ffffff;
+/* Locked / upcoming cards */
+.card-snap.locked {
+  opacity: .4;
+  cursor: default;
+  pointer-events: none;
 }
 
-.aplicaciones ul {
-    list-style: square;
-    padding-left: 20px;
-    line-height: 1.6;
-    font-size: 110%;
+/* Nav row */
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
 }
 
-.aplicaciones li {
-    margin-bottom: 6px;
+.carousel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--s1);
+  color: var(--txt2);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+.carousel-btn:hover {
+  border-color: var(--border2);
+  color: var(--txt);
+  background: var(--s2);
 }
 
+.carousel-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  transition: background .25s, transform .25s;
+  cursor: pointer;
+}
+.dot.active { background: var(--txt2); transform: scale(1.35); }
 
-/* ===============================
-   RESPONSIVE BÁSICO
-   =============================== */
+/* ═══════════════════════════════════════════════════
+   MENU PAGE (advmath, ch, astronomia…)
+   ═══════════════════════════════════════════════════ */
+
+.menu-list { padding: 0; }
+
+.menu-item {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: background .15s;
+}
+.menu-item:last-child { border-bottom: none; }
+
+.menu-item h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--txt);
+  margin: 0 0 4px;
+  transition: color .2s;
+}
+.menu-item:hover h3 { color: var(--accent); }
+
+.menu-item p {
+  font-size: 13px;
+  color: var(--txt3);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
 
 @media (max-width: 600px) {
-    main {
-        padding: 10px;
-    }
+  .page { padding: 24px 16px 60px; }
 
-    table, th, td {
-        font-size: 0.9rem;
-    }
+  .page-title { font-size: 2rem; }
+  .index-hero h1 { font-size: 2.4rem; }
+
+  .card { padding: 16px; }
+
+  .card-snap { aspect-ratio: 4 / 3; }
+  .card-snap h3 { font-size: 1.1rem; }
+
+  th, td { padding: 8px 10px; }
+  table { font-size: 13px; }
 }
-
-/* ===============================
-   FIN DEL ESTILO
-   =============================== */  

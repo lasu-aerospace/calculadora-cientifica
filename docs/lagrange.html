@@ -1,85 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interpolación de Lagrange - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interpolación de Lagrange — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
 
-    <header>
-        <h3 style="text-align: left;"><a href="advmath.html">← Volver</a></h3>
-        <h1>Interpolación de Lagrange</h1>
-    </header>
+  <a href="advmath.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Interpolación de <em>Lagrange</em></h1>
 
-    <main>
-        <hr>
-        <section class="section">
-            <h2>Definición</h2>
-            <h1 class="math-block">$$ P(x)=\sum_{i=0}^{n-1}y_{i}\ell_{i}(x)\quad\text{con}\quad\ell_{i}(x)=\prod_{\begin{array}\\j=0\\j\neq i\end{array}}^{n-1}\frac{x-x_{j}}{x_{i}-x_{j}} $$</h1>
-            <p>Método clásico de análisis numérico para construir un polinomio único que pasa exactamente por un conjunto dado de puntos.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ P(x)=\sum_{i=0}^{n-1}y_{i}\ell_{i}(x)\quad\text{con}\quad\ell_{i}(x)=\prod_{\substack{j=0\\j\neq i}}^{n-1}\frac{x-x_{j}}{x_{i}-x_{j}} $$</p>
+    <p>Método clásico de análisis numérico para construir un polinomio único que pasa exactamente por un conjunto dado de puntos.</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>La Interpolación de Lagrange tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Aproximaciones numéricas.</li>
-                <li>Calibración de sensores con pocos puntos de referencia.</li>
-                <li>Corrección de tablas experimentales pequeñas.</li>
-                <li>Reconstrucción de leyes empíricas simples.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li>Aproximaciones numéricas.</li>
+      <li>Calibración de sensores con pocos puntos de referencia.</li>
+      <li>Corrección de tablas experimentales pequeñas.</li>
+      <li>Reconstrucción de leyes empíricas simples.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico</h2>
-            <p>Dados los puntos experimentales de un IMU: \( V(R_{x})=(-4,1), (-2,3),(6,2) \) queremos calcular cuál es el polinomio más aproximado.</p>
-            <p class="math-block">$$ \ell_{0}(x)=\frac{x-(-2)}{-4-(-2)}\cdot\frac{x-6}{-4-6}=\frac{x+2}{-2}\cdot\frac{x-6}{-10} $$</p>
-            <p class="math-block">$$ \ell_{0}(x)=\frac{(x+2)(x-6)}{20} $$</p>
-            <p class="math-block">$$ \ell_{1}(x)=\frac{x-(-4)}{-2-(-4)}\cdot\frac{x-6}{-2-6}=\frac{x+4}{2}\cdot\frac{x-6}{-8} $$</p>
-            <p class="math-block">$$ \ell_{1}(x)=-\frac{(x+4)(x-6)}{16} $$</p>
-            <p class="math-block">$$ \ell_{2}(x)=\frac{x-(-4)}{6-(-4)}\cdot\frac{x-(-2)}{6-(-2)}=\frac{x+4}{10}\cdot\frac{x+2}{8} $$</p>
-            <p class="math-block">$$ \ell_{2}(x)=\frac{(x+4)(x+2)}{80} $$</p>
-            <p>Construimos el polimonio interpolante:</p>
-            <p class="math-block">$$ P(x)=1\cdot\ell_{0}(x)+3\cdot\ell_{1}(x)+2\cdot\ell_{2}(x) $$</p>
-            <p>Expandimos los términos:</p>
-            <p class="math-block">$$ \begin{array}\\ (x+2)(x-6)=x^2-4x-12 \\ (x+4)(x-6)=x^2-2x-24 \\ (x+4)(x+2)=x^2+6x+8 \end{array}$$</p>
-            <p class="math-block">$$ P(x)=\frac{x^2-4x-12}{20}-\frac{3(x^2-2x-24)}{16}+\frac{2(x^2+6x+8)}{80} $$</p>
-            <p>Denominador común \( 80 \):</p>
-            <p class="math-block">$$ P(x)=\frac{4(x^2-4x-12)-15(x^2-2x-24)+2(x^2+6x+8)}{80} $$</p>
-            <p>Simplificamos:</p>
-            <p class="math-block">$$ \begin{array}\\ 4x^2-16x-48-15x^2+30x+360+2x^2+12x+16\\ =-9x^2+26x+328\end{array} $$</p>
-            <p class="math-block">$$ P(x)=\frac{-9x^2+26x+328}{80} $$</p>
-            <p>Verificamos:</p>
-            <p class="math-block">$$ P(-4)=\frac{-9(16)+26(-4)+328}{80}=\frac{-144-104+328}{80}=\frac{80}{80}=1 $$</p>
-            <p class="math-block">$$ P(-2)=\frac{-9(4)+26(-2)+328}{80}=\frac{-36-52+328}{80}=\frac{240}{80}=3 $$</p>
-            <p class="math-block">$$ P(6)=\frac{-9(36)+26(6)+328}{80}=\frac{-324+156+328}{80}=\frac{160}{80}=2 $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo práctico</div>
+    <p>Dados los puntos de un IMU: \( (-4,\,1),\;(-2,\,3),\;(6,\,2) \), calculamos el polinomio interpolante.</p>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \sum \) : Símbolo de sumatoria.</li>
-                <li>\( \prod \) : Símbolo de interpolación.</li>
-                <li>\( i \) : Iteración de sumatoria.</li>
-                <li>\( j \) : Iteración de producto.</li>
-                <li>\( \ell_{i}(x) \) : Producto de interpolación.</li>
-            </ul>
-        </section>
-        <hr>
-    </main>
+    <p class="math-block">$$ \ell_{0}(x)=\frac{(x+2)(x-6)}{20} $$</p>
+    <p class="math-block">$$ \ell_{1}(x)=-\frac{(x+4)(x-6)}{16} $$</p>
+    <p class="math-block">$$ \ell_{2}(x)=\frac{(x+4)(x+2)}{80} $$</p>
 
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
+    <p>Construimos el polinomio interpolante:</p>
+    <p class="math-block">$$ P(x)=1\cdot\ell_{0}(x)+3\cdot\ell_{1}(x)+2\cdot\ell_{2}(x) $$</p>
 
+    <p>Expandiendo con denominador común 80:</p>
+    <p class="math-block">$$ P(x)=\frac{4(x^2-4x-12)-15(x^2-2x-24)+2(x^2+6x+8)}{80} = \frac{-9x^2+26x+328}{80} $$</p>
+
+    <p>Verificación:</p>
+    <div class="info-box">
+      <p class="math-block">$$ P(-4)=\frac{80}{80}=1\quad P(-2)=\frac{240}{80}=3\quad P(6)=\frac{160}{80}=2\;\checkmark $$</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \sum \) — símbolo de sumatoria</li>
+      <li>\( \prod \) — símbolo de productoria</li>
+      <li>\( \ell_{i}(x) \) — polinomio base de Lagrange</li>
+      <li>\( i, j \) — índices de iteración</li>
+    </ul>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+
+</div>
 </body>
 </html>

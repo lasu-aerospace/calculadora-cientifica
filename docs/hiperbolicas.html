@@ -1,345 +1,150 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trayectorias Hiperbólicas - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trayectorias Hiperbólicas — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
 
-    <header>
-        <h3 style="text-align: left;"><a href="orbital.html">← Volver</a></h3>
-        <h1>Trayectorias Hiperbólicas y Sobrevuelos</h1>
-    </header>
+  <a href="orbital.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Trayectorias <em>Hiperbólicas</em></h1>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>Las trayectorias hiperbólicas ocurren cuando un objeto tiene velocidad mayor que la velocidad de escape del cuerpo central. Son fundamentales para sobrevuelos planetarios (flybys), asistencias gravitacionales (gravity assists) y escape de sistemas planetarios.</p>
-            <p>A diferencia de las órbitas elípticas cerradas, las hipérbolas son trayectorias abiertas donde el objeto se aproxima al planeta, se curva alrededor de él, y escapa al infinito.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>Las trayectorias hiperbólicas ocurren cuando un objeto tiene velocidad mayor que la de escape del cuerpo central. Son fundamentales para sobrevuelos planetarios (flybys), asistencias gravitacionales y escape de sistemas planetarios. A diferencia de las órbitas elípticas cerradas, las hipérbolas son trayectorias abiertas: el objeto se aproxima, se curva alrededor del planeta y escapa al infinito.</p>
+  </div>
 
-        <section class="section">
-            <h2>Ecuación de la Hipérbola</h2>
-            <p class="math-block">$$ r = \frac{a(e^2-1)}{1 + e\cos\theta} $$</p>
-            <p>Donde:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( a \): Semieje mayor (negativo para hipérbolas)</li>
-                    <li>\( e > 1 \): Excentricidad</li>
-                    <li>\( \theta \): Anomalía verdadera</li>
-                    <li>\( r \): Distancia radial</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Ecuación de la hipérbola</div>
+    <p class="math-block">$$ r = \frac{a(e^2-1)}{1 + e\cos\theta} $$</p>
+    <div class="info-box">
+      <ul>
+        <li>\( a \) — semieje mayor (negativo para hipérbolas)</li>
+        <li>\( e > 1 \) — excentricidad</li>
+        <li>\( \theta \) — anomalía verdadera</li>
+        <li>\( r \) — distancia radial</li>
+      </ul>
+    </div>
+    <p style="margin-top:14px;"><strong>Energía específica</strong> (positiva para hipérbolas):</p>
+    <p class="math-block">$$ \varepsilon = \frac{v^2}{2} - \frac{\mu}{r} = \frac{\mu}{2|a|} > 0 $$</p>
+  </div>
 
-            <h3>Energía específica</h3>
-            <p class="math-block">$$ \varepsilon = \frac{v^2}{2} - \frac{\mu}{r} = \frac{\mu}{2|a|} > 0 $$</p>
-            <p>Para hipérbolas, la energía es positiva (exceso de energía cinética sobre potencial).</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Velocidad hiperbólica en el infinito</div>
+    <p class="math-block">$$ v_\infty = \sqrt{\frac{\mu}{|a|}} = \sqrt{v^2 - v_\text{esc}^2} $$</p>
+    <p>Es la velocidad que conservaría el objeto a distancia infinita del planeta. Caracteriza completamente la hipérbola. A cualquier distancia \( r \):</p>
+    <p class="math-block">$$ v^2 = v_\infty^2 + \frac{2\mu}{r} $$</p>
+    <p>Excentricidad en función del periapsis \( r_p \):</p>
+    <p class="math-block">$$ e = 1 + \frac{r_p\,v_\infty^2}{\mu} $$</p>
+  </div>
 
-        <section class="section">
-            <h2>Velocidad Hiperbólica en el Infinito</h2>
-            <p class="math-block">$$ v_\infty = \sqrt{\frac{\mu}{|a|}} = \sqrt{v^2 - v_{\text{esc}}^2} $$</p>
-            <p>Es la velocidad que tendría el objeto a distancia infinita del planeta (sin influencia gravitacional). Este parámetro caracteriza completamente la hipérbola.</p>
+  <div class="card">
+    <div class="card-label">Periapsis y parámetro de impacto</div>
+    <p class="math-block">$$ r_p = |a|(e-1) \qquad v_p = \sqrt{v_\infty^2 + \frac{2\mu}{r_p}} $$</p>
+    <p>El parámetro de impacto \( b \) es la distancia perpendicular entre la asíntota y el foco:</p>
+    <p class="math-block">$$ b = |a|\sqrt{e^2-1} $$</p>
+  </div>
 
-            <h3>Relación con velocidad local</h3>
-            <p>A cualquier distancia \( r \):</p>
-            <p class="math-block">$$ v^2 = v_\infty^2 + v_{\text{esc}}^2 = v_\infty^2 + \frac{2\mu}{r} $$</p>
+  <div class="card">
+    <div class="card-label">Ángulo de deflexión</div>
+    <p class="math-block">$$ \delta = 2\arcsin\!\left(\frac{1}{e}\right) = 2\arctan\!\left(\frac{\mu}{r_p\,v_\infty^2}\right) $$</p>
+    <p>Mide cuánto se curva la trayectoria durante el sobrevuelo. El ángulo asintótico es:</p>
+    <p class="math-block">$$ \nu_\infty = \arccos\!\left(-\frac{1}{e}\right) = 90° + \frac{\delta}{2} $$</p>
+    <div class="info-box">
+      <ul>
+        <li>\( r_p \to \infty \): \( \delta \to 0° \) — paso lejano, sin deflexión</li>
+        <li>\( v_\infty \to 0 \): \( \delta \to 180° \) — captura, límite parabólico</li>
+        <li>\( v_\infty \to \infty \): \( \delta \to 0° \) — demasiado rápido para curvarse</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3>Excentricidad</h3>
-            <p class="math-block">$$ e = 1 + \frac{r_p v_\infty^2}{\mu} $$</p>
-            <p>Donde \( r_p \) es la distancia del periapsis (punto de máxima aproximación).</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Voyager 1 en Júpiter (1979)</div>
+    <p>Datos: \( \mu_J = 1.267\times10^8 \) km³/s², \( r_p = 350{,}000 \) km, \( v_\infty = 5.6 \) km/s</p>
+    <p class="math-block">$$ v_p = \sqrt{5.6^2 + \frac{2(1.267\times10^8)}{350{,}000}} \approx 27.5\;\text{km/s} $$</p>
+    <p class="math-block">$$ e = 1 + \frac{350{,}000 \times 5.6^2}{1.267\times10^8} \approx 1.086 \qquad \delta \approx 134° $$</p>
+    <p>Ganancia heliocéntrica con \( v_\text{Júpiter} = 13.1 \) km/s:</p>
+    <p class="math-block">$$ \boxed{\Delta v_\text{helio} = 2(13.1)\sin(67°) \approx 24.1\;\text{km/s}} $$</p>
+  </div>
 
-        <section class="section">
-            <h2>Parámetros del Periapsis</h2>
-            
-            <h3>Distancia del periapsis</h3>
-            <p class="math-block">$$ r_p = \frac{|a|(e^2-1)}{1+e} = |a|(e-1) $$</p>
+  <div class="card">
+    <div class="card-label">Asistencia gravitacional</div>
+    <p>En el sistema del planeta la rapidez no cambia, solo la dirección. En el marco heliocéntrico:</p>
+    <p class="math-block">$$ \Delta v_\text{helio} = 2\,v_\text{planeta}\sin\!\left(\frac{\delta}{2}\right) $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Geometría</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td>Leading-side</td><td>Adelante del planeta</td><td>Acelera la nave</td></tr>
+          <tr><td>Trailing-side</td><td>Detrás del planeta</td><td>Desacelera la nave</td></tr>
+          <tr><td>Polar</td><td>Sobre/bajo polos</td><td>Cambia inclinación</td></tr>
+          <tr><td>Powered (Oberth)</td><td>Con impulso en periapsis</td><td>Efecto amplificado</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Velocidad en el periapsis</h3>
-            <p class="math-block">$$ v_p = \sqrt{v_\infty^2 + \frac{2\mu}{r_p}} $$</p>
-            <p>Esta es la velocidad máxima durante el sobrevuelo.</p>
+  <div class="card">
+    <div class="card-label">Voyager 2 Grand Tour</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Planeta</th><th>Fecha</th><th>\( v_\infty \) (km/s)</th><th>Ganancia helio</th></tr></thead>
+        <tbody>
+          <tr><td>Júpiter</td><td>Jul 1979</td><td>9.1</td><td>+16.0 km/s</td></tr>
+          <tr><td>Saturno</td><td>Ago 1981</td><td>5.2</td><td>+7.3 km/s</td></tr>
+          <tr><td>Urano</td><td>Ene 1986</td><td>4.1</td><td>+3.0 km/s</td></tr>
+          <tr><td>Neptuno</td><td>Ago 1989</td><td>5.2</td><td>Escape solar</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="4">Sin asistencias: ~16 km/s desde Tierra. Con asistencias: ~3.5 km/s — reducción del 78%.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
 
-            <h3>Parámetro de impacto</h3>
-            <p class="math-block">$$ b = |a|\sqrt{e^2-1} = r_p\sqrt{1 + \frac{2\mu}{r_p v_\infty^2}} $$</p>
-            <p>Es la distancia perpendicular entre la asíntota de entrada y el foco (centro del planeta). Determina cuán cerca pasará la nave sin cambio de trayectoria.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Esfera de influencia (SOI)</div>
+    <p class="math-block">$$ r_\text{SOI} \approx r_\text{órbita}\!\left(\frac{m_\text{planeta}}{M_\odot}\right)^{2/5} $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Planeta</th><th>SOI (10³ km)</th><th>Radio físico (km)</th><th>Razón</th></tr></thead>
+        <tbody>
+          <tr><td>Mercurio</td><td>112</td><td>2,440</td><td>46×</td></tr>
+          <tr><td>Venus</td><td>616</td><td>6,052</td><td>102×</td></tr>
+          <tr><td>Tierra</td><td>925</td><td>6,371</td><td>145×</td></tr>
+          <tr><td>Marte</td><td>578</td><td>3,390</td><td>170×</td></tr>
+          <tr><td>Júpiter</td><td>48,200</td><td>69,911</td><td>689×</td></tr>
+          <tr><td>Saturno</td><td>54,800</td><td>58,232</td><td>941×</td></tr>
+          <tr><td>Neptuno</td><td>86,800</td><td>24,622</td><td>3,526×</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Ángulo de Deflexión</h2>
-            <p class="math-block">$$ \delta = 2\arcsin\left(\frac{1}{e}\right) = 2\arctan\left(\frac{\mu}{r_p v_\infty^2}\right) $$</p>
-            <p>Es el ángulo total que la trayectoria se curva durante el sobrevuelo. Mide la efectividad de la asistencia gravitacional.</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( v_\infty \) — velocidad hiperbólica en el infinito (km/s)</li>
+      <li>\( r_p \) — distancia del periapsis (km)</li>
+      <li>\( e > 1 \) — excentricidad de la hipérbola</li>
+      <li>\( a < 0 \) — semieje mayor (negativo para hipérbolas)</li>
+      <li>\( \delta \) — ángulo de deflexión</li>
+      <li>\( b \) — parámetro de impacto (km)</li>
+      <li>\( \mu = GM \) — parámetro gravitacional estándar (km³/s²)</li>
+      <li>\( r_\text{SOI} \) — radio de la esfera de influencia</li>
+    </ul>
+  </div>
 
-            <h3>Límites del ángulo</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>\( r_p \to \infty \): \( \delta \to 0° \) (sin deflexión, paso lejano)</li>
-                    <li>\( r_p \to 0 \): \( \delta \to 180° \) (reversión completa)</li>
-                    <li>\( v_\infty \to 0 \): \( \delta \to 180° \) (captura, límite parabólico)</li>
-                    <li>\( v_\infty \to \infty \): \( \delta \to 0° \) (sin deflexión, muy rápido)</li>
-                </ul>
-            </section>
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
 
-            <h3>Asíntotas</h3>
-            <p>El ángulo entre cada asíntota y la línea al periapsis es:</p>
-            <p class="math-block">$$ \nu_\infty = \arccos\left(-\frac{1}{e}\right) = 90° + \frac{\delta}{2} $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Sobrevuelo de Júpiter</h2>
-            <p>La sonda Voyager 1 realizó un sobrevuelo de Júpiter en 1979 para ganar velocidad hacia Saturno.</p>
-
-            <h3>Datos:</h3>
-            <section class="math-block">
-                <ul>
-                    <li>\( \mu_{\text{Júpiter}} = 1.267 \times 10^8 \) km³/s²</li>
-                    <li>Radio de Júpiter: \( R_J = 71{,}492 \) km</li>
-                    <li>Velocidad de aproximación: \( v_\infty = 5.6 \) km/s</li>
-                    <li>Periapsis: \( r_p = 4.9 R_J = 350{,}000 \) km</li>
-                </ul>
-            </section>
-
-            <h3>Velocidad en periapsis:</h3>
-            <p class="math-block">$$ v_p = \sqrt{5.6^2 + \frac{2(1.267 \times 10^8)}{350{,}000}} = \sqrt{31.36 + 724} \approx 27.5 \text{ km/s} $$</p>
-
-            <h3>Excentricidad:</h3>
-            <p class="math-block">$$ e = 1 + \frac{350{,}000(5.6)^2}{1.267 \times 10^8} = 1 + 0.0863 \approx 1.086 $$</p>
-
-            <h3>Ángulo de deflexión:</h3>
-            <p class="math-block">$$ \delta = 2\arcsin\left(\frac{1}{1.086}\right) = 2\arcsin(0.921) \approx 134° $$</p>
-
-            <h3>Cambio de velocidad heliocéntrica:</h3>
-            <p>Aunque \( v_\infty \) relativo a Júpiter no cambia, la dirección sí. En el marco heliocéntrico, esto resulta en ganancia de velocidad:</p>
-            <p class="math-block">$$ \Delta v_{\text{helio}} = 2v_{\text{Júpiter}}\sin\left(\frac{\delta}{2}\right) $$</p>
-            <p>Con \( v_{\text{Júpiter}} = 13.1 \) km/s alrededor del Sol:</p>
-            <p class="math-block">$$ \Delta v_{\text{helio}} = 2(13.1)\sin(67°) \approx 24.1 \text{ km/s} $$</p>
-            <p>¡Enorme ganancia de velocidad sin gastar propelente!</p>
-        </section>
-
-        <section class="section">
-            <h2>Asistencia Gravitacional (Gravity Assist)</h2>
-            <p>El sobrevuelo planetario puede usarse para cambiar significativamente la velocidad y dirección de una nave en el marco heliocéntrico, sin consumir propelente.</p>
-
-            <h3>Conservación en marco planetario</h3>
-            <p>En el sistema de referencia del planeta:</p>
-            <p class="math-block">$$ |\vec{v}_{\text{entrada}}| = |\vec{v}_{\text{salida}}| = v_\infty $$</p>
-            <p>Solo cambia la dirección, no la magnitud.</p>
-
-            <h3>Cambio en marco heliocéntrico</h3>
-            <p>Transformando al marco del Sol:</p>
-            <p class="math-block">$$ \Delta v_{\text{helio}} = 2v_{\text{planeta}}\sin\left(\frac{\delta}{2}\right) $$</p>
-
-            <h3>Tipos de asistencia</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Geometría</th>
-                        <th>Efecto</th>
-                        <th>Aplicación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Leading-side</td>
-                        <td>Adelante del planeta en órbita</td>
-                        <td>Acelera la nave</td>
-                        <td>Ir a planetas exteriores</td>
-                    </tr>
-                    <tr>
-                        <td>Trailing-side</td>
-                        <td>Detrás del planeta</td>
-                        <td>Desacelera la nave</td>
-                        <td>Ir a planetas interiores</td>
-                    </tr>
-                    <tr>
-                        <td>Polar</td>
-                        <td>Sobre/bajo polos</td>
-                        <td>Cambio de plano</td>
-                        <td>Cambiar inclinación orbital</td>
-                    </tr>
-                    <tr>
-                        <td>Powered</td>
-                        <td>Con impulso en periapsis</td>
-                        <td>Efecto amplificado (Oberth)</td>
-                        <td>Maximizar ganancia</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Efecto Oberth en sobrevuelo</h3>
-            <p>Quemar propelente en el periapsis amplifica el efecto debido a la alta velocidad:</p>
-            <p class="math-block">$$ \Delta E = v_p \Delta v_{\text{burn}} $$</p>
-            <p>Con \( v_p \) muy alto, pequeños \( \Delta v \) generan grandes cambios de energía orbital.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo histórico: Voyager 2 Grand Tour</h2>
-            <p>La misión Voyager 2 (1977) usó múltiples asistencias para visitar los cuatro gigantes gaseosos:</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Planeta</th>
-                        <th>Fecha</th>
-                        <th>\( v_\infty \) (km/s)</th>
-                        <th>Ganancia helio (km/s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Júpiter</td>
-                        <td>Jul 1979</td>
-                        <td>9.1</td>
-                        <td>+16.0</td>
-                    </tr>
-                    <tr>
-                        <td>Saturno</td>
-                        <td>Ago 1981</td>
-                        <td>5.2</td>
-                        <td>+7.3</td>
-                    </tr>
-                    <tr>
-                        <td>Urano</td>
-                        <td>Ene 1986</td>
-                        <td>4.1</td>
-                        <td>+3.0</td>
-                    </tr>
-                    <tr>
-                        <td>Neptuno</td>
-                        <td>Ago 1989</td>
-                        <td>5.2</td>
-                        <td>Escape solar</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Ahorro de propelente:</h3>
-            <p>Sin asistencias, llegar a Neptuno requeriría:</p>
-            <p class="math-block">$$ \Delta v_{\text{directo}} \approx 16 \text{ km/s desde Tierra} $$</p>
-            <p>Con asistencias gravitacionales:</p>
-            <p class="math-block">$$ \Delta v_{\text{total}} \approx 3.5 \text{ km/s (solo escape terrestre)} $$</p>
-            <p>¡Reducción de ~78% en \( \Delta v \) requerido!</p>
-        </section>
-
-        <section class="section">
-            <h2>Esfera de Influencia (SOI)</h2>
-            <p>Región donde la gravedad del planeta domina sobre la del Sol:</p>
-            <p class="math-block">$$ r_{\text{SOI}} \approx r_{\text{órbita}}\left(\frac{m_{\text{planeta}}}{M_{\odot}}\right)^{2/5} $$</p>
-
-            <h3>Esferas de influencia planetarias</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Planeta</th>
-                        <th>Radio SOI (10³ km)</th>
-                        <th>Radio físico (km)</th>
-                        <th>Razón SOI/Radio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Mercurio</td>
-                        <td>112</td>
-                        <td>2,440</td>
-                        <td>46</td>
-                    </tr>
-                    <tr>
-                        <td>Venus</td>
-                        <td>616</td>
-                        <td>6,052</td>
-                        <td>102</td>
-                    </tr>
-                    <tr>
-                        <td>Tierra</td>
-                        <td>925</td>
-                        <td>6,371</td>
-                        <td>145</td>
-                    </tr>
-                    <tr>
-                        <td>Marte</td>
-                        <td>578</td>
-                        <td>3,390</td>
-                        <td>170</td>
-                    </tr>
-                    <tr>
-                        <td>Júpiter</td>
-                        <td>48,200</td>
-                        <td>69,911</td>
-                        <td>689</td>
-                    </tr>
-                    <tr>
-                        <td>Saturno</td>
-                        <td>54,800</td>
-                        <td>58,232</td>
-                        <td>941</td>
-                    </tr>
-                    <tr>
-                        <td>Neptuno</td>
-                        <td>86,800</td>
-                        <td>24,622</td>
-                        <td>3,526</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Método de esferas patched</h3>
-            <p>Las trayectorias interplanetarias se calculan en tres segmentos:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ol>
-                    <li>Escape de SOI del planeta origen (hipérbola)</li>
-                    <li>Transferencia heliocéntrica (elipse o hipérbola solar)</li>
-                    <li>Aproximación a SOI del planeta destino (hipérbola)</li>
-                </ol>
-            </section>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de trayectorias hiperbólicas</h2>
-            <ul>
-                <li><strong>Sobrevuelos científicos:</strong> Misiones Voyager, New Horizons (Plutón), Cassini</li>
-                <li><strong>Asistencias gravitacionales:</strong> Reducir \( \Delta v \) para misiones lejanas</li>
-                <li><strong>Escape solar:</strong> Sondas interestelares (Voyagers, Pioneer)</li>
-                <li><strong>Cambio de inclinación:</strong> Polar flybys para cambiar plano orbital</li>
-                <li><strong>Captura balística:</strong> Usar \( v_\infty \) bajo para captura con aerofrenado</li>
-                <li><strong>Cometas y asteroides:</strong> Muchos tienen órbitas hiperbólicas respecto a planetas</li>
-                <li><strong>Objetos interestelares:</strong> 'Oumuamua (2017) tuvo trayectoria hiperbólica solar</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( v_\infty \): Velocidad hiperbólica en el infinito (km/s)</li>
-                <li>\( r_p \): Distancia del periapsis (km)</li>
-                <li>\( v_p \): Velocidad en periapsis (km/s)</li>
-                <li>\( e > 1 \): Excentricidad de la hipérbola</li>
-                <li>\( a < 0 \): Semieje mayor (negativo para hipérbolas)</li>
-                <li>\( \delta \): Ángulo de deflexión (grados o radianes)</li>
-                <li>\( b \): Parámetro de impacto (km)</li>
-                <li>\( \mu = GM \): Parámetro gravitacional (km³/s²)</li>
-                <li>\( r_{\text{SOI}} \): Radio de esfera de influencia (km)</li>
-                <li>\( \nu_\infty \): Anomalía verdadera asintótica</li>
-            </ul>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+</div>
 </body>
 </html>
