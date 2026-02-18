@@ -1,306 +1,105 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masas Vinculadas - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masas Vinculadas — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="ph.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Sistemas de Masas <em>Vinculadas</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="ph.html">← Volver</a></h3>
-        <h1>Sistemas de Masas Vinculadas</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>Los sistemas de masas vinculadas son configuraciones donde dos o más objetos están conectados mediante cuerdas, poleas o superficies de contacto, de modo que sus movimientos están acoplados. La clave es identificar las restricciones cinemáticas (vínculos) y aplicar las Leyes de Newton a cada masa individualmente mediante diagramas de cuerpo libre (DCL).</p>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>Los sistemas de masas vinculadas son configuraciones mecánicas donde dos o más objetos están conectados mediante cuerdas, poleas o superficies de contacto, de modo que sus movimientos están relacionados. Estos sistemas son fundamentales para comprender la aplicación de las <a href="newton.html">leyes de Newton</a> en situaciones con múltiples cuerpos acoplados.</p>
-            <p>La clave para resolver estos problemas es identificar las restricciones cinemáticas (vínculos) que relacionan los movimientos de los cuerpos, y aplicar las leyes de Newton a cada masa individualmente mediante diagramas de cuerpo libre.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Máquina de Atwood simple</div>
+    <p>Dos masas \( m_1>m_2 \) suspendidas por una cuerda inextensible sobre una polea sin masa ni fricción. Ambas masas tienen la misma magnitud de aceleración y la tensión es uniforme.</p>
+    <p><strong>Para \( m_1 \) (desciende):</strong> \( m_1g-T=m_1a \)</p>
+    <p><strong>Para \( m_2 \) (asciende):</strong> \( T-m_2g=m_2a \)</p>
+    <p>Sumando ambas ecuaciones:</p>
+    <p class="math-block">$$ \boxed{a=\frac{(m_1-m_2)g}{m_1+m_2}} \qquad T=\frac{2m_1m_2g}{m_1+m_2} $$</p>
+    <div class="info-box">
+      <ul>
+        <li>\( m_1=m_2 \): \( a=0 \), \( T=mg \) — equilibrio</li>
+        <li>\( m_1\gg m_2 \): \( a\to g \), \( T\to2m_2g \) — caída casi libre</li>
+        <li>\( m_2=0 \): \( a=g \), \( T=0 \) — caída libre</li>
+      </ul>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Máquina de Atwood Simple</h2>
-            <p>La máquina de Atwood es un dispositivo clásico que consiste en dos masas \( m_1 \) y \( m_2 \) suspendidas de los extremos de una cuerda inextensible que pasa por una polea sin fricción ni masa.</p>
-            
-            <h3>Restricciones del sistema</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>La cuerda es inextensible: ambas masas tienen la misma magnitud de aceleración</li>
-                    <li>La polea es ideal: sin fricción y sin masa (no rota con inercia)</li>
-                    <li>La tensión es uniforme a lo largo de la cuerda</li>
-                    <li>Si \( m_1 \) desciende, \( m_2 \) asciende con la misma rapidez</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Ejemplo numérico — Atwood simple</div>
+    <p>Masas \( m_1=5 \) kg y \( m_2=3 \) kg. Hallar aceleración, tensión y distancia en 2 s.</p>
+    <p class="math-block">$$ a=\frac{(5-3)(9.8)}{5+3}=\frac{19.6}{8}=2.45\;\text{m/s}^2 $$</p>
+    <p class="math-block">$$ T=\frac{2(5)(3)(9.8)}{8}=36.75\;\text{N} $$</p>
+    <p class="math-block">$$ d=\frac{1}{2}at^2=\frac{1}{2}(2.45)(4)=4.9\;\text{m} $$</p>
+    <p>Verificación: \( T-m_2g=36.75-29.4=7.35=m_2a ✓ \)</p>
+  </div>
 
-            <h3>Análisis dinámico</h3>
-            <p>Suponiendo \( m_1 > m_2 \), entonces \( m_1 \) desciende y \( m_2 \) asciende.</p>
-            
-            <p><strong>Para \( m_1 \) (desciende):</strong></p>
-            <p class="math-block">$$ \sum F_y: m_1g - T = m_1a $$</p>
-            
-            <p><strong>Para \( m_2 \) (asciende):</strong></p>
-            <p class="math-block">$$ \sum F_y: T - m_2g = m_2a $$</p>
+  <div class="card">
+    <div class="card-label">Atwood con polea masiva</div>
+    <p>Polea cilíndrica homogénea de masa \( M \) y radio \( R \): \( I=\frac{1}{2}MR^2 \). Las tensiones en los dos lados son distintas (\( T_1\neq T_2 \)).</p>
+    <p><strong>Ecuaciones:</strong></p>
+    <p class="math-block">$$ m_1g-T_1=m_1a \qquad T_2-m_2g=m_2a \qquad (T_1-T_2)R=I\frac{a}{R} $$</p>
+    <p class="math-block">$$ \boxed{a=\frac{(m_1-m_2)g}{m_1+m_2+M/2}} $$</p>
+    <p>La polea masiva reduce la aceleración como si se añadiera \( M/2 \) a la masa total del sistema.</p>
+  </div>
 
-            <h3>Solución del sistema</h3>
-            <p>Sumando ambas ecuaciones:</p>
-            <p class="math-block">$$ m_1g - m_2g = m_1a + m_2a $$</p>
-            <p class="math-block">$$ \boxed{a = \frac{(m_1 - m_2)g}{m_1 + m_2}} $$</p>
-            
-            <p>Sustituyendo en cualquiera de las ecuaciones originales:</p>
-            <p class="math-block">$$ \boxed{T = \frac{2m_1m_2g}{m_1 + m_2}} $$</p>
+  <div class="card">
+    <div class="card-label">Masas sobre plano inclinado</div>
+    <p>Masa \( m_1 \) sobre un plano de ángulo \( \theta \) (con fricción \( \mu_k \)) conectada a \( m_2 \) que cuelga verticalmente.</p>
+    <p class="math-block">$$ N=m_1g\cos\theta \qquad f_k=\mu_k m_1g\cos\theta $$</p>
+    <p class="math-block">$$ \boxed{a=\frac{m_2g-m_1g\sin\theta-\mu_k m_1g\cos\theta}{m_1+m_2}} $$</p>
+    <p>Condición de movimiento: \( m_2g>m_1g(\sin\theta+\mu_k\cos\theta) \).</p>
+  </div>
 
-            <h3>Casos límite</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Si \( m_1 = m_2 \):</strong> \( a = 0 \) y \( T = mg \) (equilibrio)</li>
-                    <li><strong>Si \( m_1 \gg m_2 \):</strong> \( a \to g \) y \( T \to 2m_2g \) (caída casi libre de \( m_1 \))</li>
-                    <li><strong>Si \( m_2 = 0 \):</strong> \( a = g \) y \( T = 0 \) (caída libre)</li>
-                </ul>
-            </section>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Plano inclinado con fricción</div>
+    <p>\( m_1=8 \) kg en plano de 30°, \( \mu_k=0.25 \), \( m_2=6 \) kg colgando.</p>
+    <p class="math-block">$$ F_\text{motriz}=6(9.8)=58.8\;\text{N} $$</p>
+    <p class="math-block">$$ F_\text{opuesta}=8(9.8)(0.5)+0.25(8)(9.8)(0.866)=39.2+16.97=56.17\;\text{N} $$</p>
+    <p>Como \( 58.8>56.17 \) el sistema se mueve:</p>
+    <p class="math-block">$$ a=\frac{58.8-56.17}{14}\approx0.19\;\text{m/s}^2 $$</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo numérico: Máquina de Atwood</h2>
-            <p>Dos masas \( m_1 = 5 \) kg y \( m_2 = 3 \) kg cuelgan de una polea ideal. Calcular:</p>
-            <ol>
-                <li>La aceleración del sistema</li>
-                <li>La tensión en la cuerda</li>
-                <li>La distancia recorrida en 2 segundos partiendo del reposo</li>
-            </ol>
+  <div class="card">
+    <div class="card-label">Bloques en contacto y poleas móviles</div>
+    <p><strong>Bloques en contacto</strong> — fuerza \( F \) sobre \( m_1 \) que empuja a \( m_2 \):</p>
+    <p class="math-block">$$ a=\frac{F}{m_1+m_2} \qquad N_c=\frac{m_2 F}{m_1+m_2} $$</p>
+    <p><strong>Polea móvil simple</strong> — ventaja mecánica 2:</p>
+    <p class="math-block">$$ 2T=mg+ma \qquad a=\frac{2T-mg}{m} $$</p>
+    <p>Con \( n \) segmentos de cuerda: fuerza necesaria \( F=W/n \), pero la cuerda recorre \( n\cdot d_\text{carga} \).</p>
+  </div>
 
-            <h3>Solución:</h3>
-            <p><strong>1. Aceleración:</strong></p>
-            <p class="math-block">$$ a = \frac{(5-3)(9.8)}{5+3} = \frac{19.6}{8} = 2.45 \text{ m/s}^2 $$</p>
+  <div class="card">
+    <div class="card-label">Método general de resolución</div>
+    <p>1. Identificar todas las masas del sistema. 2. Dibujar DCL para cada cuerpo incluyendo todas las fuerzas (peso, tensión, normal, fricción). 3. Establecer restricciones cinemáticas entre aceleraciones. 4. Elegir sistemas de coordenadas alineados con el movimiento. 5. Aplicar \( \sum\vec{F}=m\vec{a} \) para cada masa en cada dirección. 6. Resolver el sistema de ecuaciones.</p>
+  </div>
 
-            <p><strong>2. Tensión:</strong></p>
-            <p class="math-block">$$ T = \frac{2(5)(3)(9.8)}{5+3} = \frac{294}{8} = 36.75 \text{ N} $$</p>
-            <p>Verificación con \( m_2 \): \( T - m_2g = m_2a \Rightarrow 36.75 - 29.4 = 3(2.45) = 7.35 \) ✓</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( m_1,m_2 \) — masas (kg)</li>
+      <li>\( a \) — aceleración del sistema (m/s²)</li>
+      <li>\( T \) — tensión en la cuerda (N)</li>
+      <li>\( N \) — fuerza normal (N)</li>
+      <li>\( f_k=\mu_k N \) — fuerza de fricción cinética</li>
+      <li>\( I \) — momento de inercia de la polea (kg·m²)</li>
+      <li>\( \alpha=a/R \) — aceleración angular de la polea (rad/s²)</li>
+      <li>\( N_c \) — fuerza de contacto entre bloques (N)</li>
+    </ul>
+  </div>
 
-            <p><strong>3. Distancia en 2 segundos:</strong></p>
-            <p>Usando cinemática con \( v_0 = 0 \):</p>
-            <p class="math-block">$$ d = v_0t + \frac{1}{2}at^2 = 0 + \frac{1}{2}(2.45)(2)^2 = 4.9 \text{ m} $$</p>
-        </section>
-
-        <section class="section">
-            <h2>Máquina de Atwood con Polea Masiva</h2>
-            <p>Cuando la polea tiene masa \( M \) y radio \( R \), debemos considerar su momento de inercia y aplicar la segunda ley de Newton rotacional.</p>
-
-            <h3>Momento de inercia</h3>
-            <p>Para una polea cilíndrica homogénea:</p>
-            <p class="math-block">$$ I = \frac{1}{2}MR^2 $$</p>
-
-            <h3>Ecuaciones del sistema</h3>
-            <p>Las tensiones a cada lado de la polea son diferentes: \( T_1 \) y \( T_2 \).</p>
-            
-            <p><strong>Para \( m_1 \) (desciende):</strong></p>
-            <p class="math-block">$$ m_1g - T_1 = m_1a $$</p>
-            
-            <p><strong>Para \( m_2 \) (asciende):</strong></p>
-            <p class="math-block">$$ T_2 - m_2g = m_2a $$</p>
-            
-            <p><strong>Para la polea (rotación):</strong></p>
-            <p class="math-block">$$ \tau_{\text{neto}} = I\alpha = (T_1 - T_2)R = I\frac{a}{R} $$</p>
-
-            <h3>Solución del sistema</h3>
-            <p>Combinando las tres ecuaciones:</p>
-            <p class="math-block">$$ a = \frac{(m_1 - m_2)g}{m_1 + m_2 + \frac{I}{R^2}} = \frac{(m_1 - m_2)g}{m_1 + m_2 + \frac{M}{2}} $$</p>
-            <p>Nótese que la polea masiva reduce la aceleración del sistema, como si agregáramos \( M/2 \) a la masa total.</p>
-        </section>
-
-        <section class="section">
-            <h2>Masas sobre Plano Inclinado</h2>
-            <p>Dos masas \( m_1 \) y \( m_2 \) conectadas por una cuerda sobre planos inclinados con ángulos \( \theta_1 \) y \( \theta_2 \).</p>
-
-            <h3>Configuración típica</h3>
-            <p>Consideremos \( m_1 \) en un plano inclinado \( \theta_1 \) y \( m_2 \) colgando verticalmente (caso especial: \( \theta_2 = 90° \)).</p>
-
-            <p><strong>Para \( m_1 \) (sobre el plano):</strong></p>
-            <section class="math-block">
-                <ul>
-                    <li>Perpendicular: \( N = m_1g\cos\theta_1 \)</li>
-                    <li>Paralelo: \( T - m_1g\sin\theta_1 - f_k = m_1a \)</li>
-                    <li>Fricción: \( f_k = \mu_k N = \mu_k m_1g\cos\theta_1 \)</li>
-                </ul>
-            </section>
-
-            <p><strong>Para \( m_2 \) (vertical):</strong></p>
-            <p class="math-block">$$ m_2g - T = m_2a $$</p>
-
-            <h3>Solución</h3>
-            <p>Sumando ambas ecuaciones y despejando:</p>
-            <p class="math-block">$$ a = \frac{m_2g - m_1g\sin\theta_1 - \mu_k m_1g\cos\theta_1}{m_1 + m_2} $$</p>
-            
-            <p>El sistema se mueve si la fuerza motriz supera la fricción y la componente gravitacional de \( m_1 \):</p>
-            <p class="math-block">$$ m_2g > m_1g(\sin\theta_1 + \mu_k\cos\theta_1) $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Plano inclinado con fricción</h2>
-            <p>Una masa \( m_1 = 8 \) kg sobre un plano de 30° con \( \mu_k = 0.25 \) está conectada a \( m_2 = 6 \) kg que cuelga verticalmente. ¿El sistema se mueve? Si es así, ¿cuál es su aceleración?</p>
-
-            <h3>Verificar movimiento:</h3>
-            <p>Fuerza motriz de \( m_2 \):</p>
-            <p class="math-block">$$ F_{\text{motriz}} = m_2g = 6 \times 9.8 = 58.8 \text{ N} $$</p>
-            
-            <p>Fuerzas que se oponen en \( m_1 \):</p>
-            <p class="math-block">$$ F_{\text{opuesta}} = m_1g\sin(30°) + \mu_k m_1g\cos(30°) $$</p>
-            <p class="math-block">$$ F_{\text{opuesta}} = 8(9.8)(0.5) + 0.25(8)(9.8)(0.866) $$</p>
-            <p class="math-block">$$ F_{\text{opuesta}} = 39.2 + 16.97 = 56.17 \text{ N} $$</p>
-
-            <p>Como \( 58.8 > 56.17 \), el sistema se mueve con \( m_2 \) descendiendo.</p>
-
-            <h3>Aceleración:</h3>
-            <p class="math-block">$$ a = \frac{58.8 - 56.17}{8 + 6} = \frac{2.63}{14} \approx 0.19 \text{ m/s}^2 $$</p>
-        </section>
-
-        <section class="section">
-            <h2>Bloques en Contacto sobre Superficie</h2>
-            <p>Dos bloques \( m_1 \) y \( m_2 \) en contacto sobre una superficie horizontal. Se aplica una fuerza \( F \) sobre \( m_1 \).</p>
-
-            <h3>Restricción cinemática</h3>
-            <p>Ambos bloques se mueven juntos con la misma aceleración \( a \).</p>
-
-            <h3>Sistema completo</h3>
-            <p>Considerando ambos bloques como un solo sistema:</p>
-            <p class="math-block">$$ F - f = (m_1 + m_2)a $$</p>
-            <p>Donde \( f \) es la fricción total con la superficie.</p>
-
-            <h3>Fuerza de contacto entre bloques</h3>
-            <p>Analizando solo \( m_2 \):</p>
-            <p class="math-block">$$ N_c - f_2 = m_2a $$</p>
-            <p>Donde \( N_c \) es la fuerza normal de contacto entre los bloques.</p>
-            <p class="math-block">$$ N_c = m_2a + f_2 = m_2a + \mu_k m_2g $$</p>
-
-            <h3>Sin fricción</h3>
-            <p>Si la superficie es lisa (\( \mu_k = 0 \)):</p>
-            <p class="math-block">$$ a = \frac{F}{m_1 + m_2} $$</p>
-            <p class="math-block">$$ N_c = m_2a = \frac{m_2F}{m_1 + m_2} $$</p>
-            <p>Esta es la fuerza que \( m_1 \) ejerce sobre \( m_2 \) para acelerarlo.</p>
-        </section>
-
-        <section class="section">
-            <h2>Sistema con Múltiples Poleas</h2>
-            <p>En sistemas con poleas móviles, la ventaja mecánica se obtiene a costa de la distancia recorrida.</p>
-
-            <h3>Polea móvil simple</h3>
-            <p>Con una polea móvil, la cuerda soporta la carga desde dos segmentos, por lo que:</p>
-            <p class="math-block">$$ 2T = mg + ma $$</p>
-            <p>Si tiramos con tensión \( T \), la fuerza neta sobre la masa es \( 2T - mg \), dando:</p>
-            <p class="math-block">$$ a = \frac{2T - mg}{m} $$</p>
-
-            <h3>Ventaja mecánica</h3>
-            <p>Con \( n \) segmentos de cuerda soportando la carga:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Ventaja mecánica ideal: \( VM = n \)</li>
-                    <li>Fuerza necesaria: \( F = \frac{W}{n} \)</li>
-                    <li>Distancia que debe recorrer la cuerda: \( d_{\text{cuerda}} = n \cdot d_{\text{carga}} \)</li>
-                </ul>
-            </section>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones prácticas</h2>
-            <ul>
-                <li><strong>Ascensores y montacargas:</strong> Sistema de poleas para elevar cargas con menor esfuerzo</li>
-                <li><strong>Grúas de construcción:</strong> Sistemas de poleas múltiples para ventaja mecánica</li>
-                <li><strong>Gimnasios:</strong> Máquinas de poleas para ejercicio con pesas</li>
-                <li><strong>Telares industriales:</strong> Control de tensión en hilos mediante sistemas de masas</li>
-                <li><strong>Laboratorio de física:</strong> Máquina de Atwood para medir \( g \) con precisión</li>
-                <li><strong>Sistemas de transmisión:</strong> Bandas y poleas en maquinaria industrial</li>
-                <li><strong>Bicicletas:</strong> Sistema de cadena y piñones (análogo a poleas)</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Método general de resolución</h2>
-            <ol>
-                <li><strong>Identificar las masas:</strong> Enumerar todos los cuerpos del sistema</li>
-                <li><strong>Dibujar DCL para cada masa:</strong> Incluir todas las fuerzas (peso, tensión, normal, fricción)</li>
-                <li><strong>Establecer restricciones:</strong> Relacionar las aceleraciones según los vínculos</li>
-                <li><strong>Elegir sistema de coordenadas:</strong> Alineado con el movimiento para simplificar</li>
-                <li><strong>Aplicar Segunda Ley:</strong> \( \sum \vec{F} = m\vec{a} \) para cada masa en cada dirección</li>
-                <li><strong>Sistema de ecuaciones:</strong> Tantas ecuaciones como incógnitas</li>
-                <li><strong>Resolver algebraicamente:</strong> Despejar aceleraciones, tensiones, etc.</li>
-                <li><strong>Verificar:</strong> Comprobar unidades, signos y casos límite</li>
-            </ol>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( m_1, m_2 \): Masas del sistema (kg)</li>
-                <li>\( a \): Aceleración del sistema (m/s²)</li>
-                <li>\( T \): Tensión en la cuerda (N)</li>
-                <li>\( N \): Fuerza normal (N)</li>
-                <li>\( f_k \): Fuerza de fricción cinética (N)</li>
-                <li>\( \mu_k \): Coeficiente de fricción cinética</li>
-                <li>\( \theta \): Ángulo del plano inclinado (grados o radianes)</li>
-                <li>\( g \): Aceleración gravitacional = 9.8 m/s²</li>
-                <li>\( I \): Momento de inercia (kg·m²)</li>
-                <li>\( \alpha \): Aceleración angular (rad/s²)</li>
-                <li>\( R \): Radio de la polea (m)</li>
-                <li>\( \tau \): Torque (N·m)</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla resumen de configuraciones</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Configuración</th>
-                        <th>Aceleración</th>
-                        <th>Observaciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Atwood simple</td>
-                        <td>\( a = \frac{(m_1-m_2)g}{m_1+m_2} \)</td>
-                        <td>Polea ideal, sin fricción</td>
-                    </tr>
-                    <tr>
-                        <td>Atwood con polea masiva</td>
-                        <td>\( a = \frac{(m_1-m_2)g}{m_1+m_2+M/2} \)</td>
-                        <td>Polea cilíndrica de masa \( M \)</td>
-                    </tr>
-                    <tr>
-                        <td>Plano inclinado + vertical</td>
-                        <td>\( a = \frac{m_2g - m_1g(\sin\theta + \mu_k\cos\theta)}{m_1+m_2} \)</td>
-                        <td>\( m_1 \) en plano, \( m_2 \) cuelga</td>
-                    </tr>
-                    <tr>
-                        <td>Bloques en contacto</td>
-                        <td>\( a = \frac{F}{m_1+m_2} \)</td>
-                        <td>Sin fricción con superficie</td>
-                    </tr>
-                    <tr>
-                        <td>Doble plano inclinado</td>
-                        <td>\( a = \frac{(m_1\sin\theta_1 - m_2\sin\theta_2)g}{m_1+m_2} \)</td>
-                        <td>Ambas masas en planos, sin fricción</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

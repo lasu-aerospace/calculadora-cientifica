@@ -1,69 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ley del Coseno - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ley del Coseno — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="math.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Ley del <em>Coseno</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="math.html">← Volver</a></h3>
-        <h1>Ley del Coseno</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ \alpha = \sqrt{b^2+c^2-2bc\cos A} $$</p>
+    <p>La Ley del Coseno relaciona los tres lados de un triángulo cualquiera con el coseno de uno de sus ángulos. Generaliza el Teorema de Pitágoras a triángulos oblicuángulos (que no tienen ángulo recto). Para las tres variantes:</p>
+    <p class="math-block">$$ a^2=b^2+c^2-2bc\cos A \qquad b^2=a^2+c^2-2ac\cos B \qquad c^2=a^2+b^2-2ab\cos C $$</p>
+    <div class="info-box">
+      <p>Para \( A=90° \), \( \cos90°=0 \) y se recupera el Teorema de Pitágoras: \( a^2=b^2+c^2 \).</p>
+    </div>
+  </div>
 
-    <main>
-        <hr>
+  <div class="card">
+    <div class="card-label">Cálculo de ángulos</div>
+    <p>Si se conocen los tres lados, se puede hallar cualquier ángulo:</p>
+    <p class="math-block">$$ \cos A=\frac{b^2+c^2-a^2}{2bc} \qquad A=\arccos\!\left(\frac{b^2+c^2-a^2}{2bc}\right) $$</p>
+  </div>
 
-        <section>
-            <h2>Definición</h2>
-            <h1 class="math-block">
-                $$ \alpha = \sqrt{b^2 + c^2 - 2bc \cdot \cos{\angle{A}}} $$
-            </h1>
-            <p>La Ley del Coseno establece una relación entre los lados y los ángulos de un triángulo cualquiera, no solo en triángulos rectángulos. Se usa para determinar longitudes de lados o ángulos en triángulos oblicuángulos (que no son rectángulos).</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>GPS y posicionamiento:</strong> triangulación de señales para determinar posición cuando los ángulos y distancias no son rectos.</li>
+      <li><strong>Cartografía avanzada:</strong> cálculo de distancias en terrenos irregulares.</li>
+      <li><strong>Geometría molecular:</strong> longitudes de enlace y ángulos en moléculas.</li>
+      <li><strong>Navegación astronómica:</strong> distancias angulares entre estrellas y planetas.</li>
+      <li><strong>Robótica:</strong> cinemática de brazos articulados con ángulos arbitrarios.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>La Ley del Coseno tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Sistemas de Posicionamiento Global (GPS).</li>
-                <li>Cartografía avanzada.</li>
-                <li>Geometría molecular.</li>
-                <li>Navegación astronómica.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Antenas parabólicas y GPS</div>
+    <p>Se desconoce la distancia entre dos antenas parabólicas. Un satélite GPS mide el ángulo entre ellas trazando un arco a \( 0.15 \) rad/s durante 2 s:</p>
+    <p class="math-block">$$ A=0.15\times2=0.3\;\text{rad}\approx17.19° $$</p>
+    <p>Sus distancias al satélite se calculan multiplicando el tiempo de ida y vuelta de un ping por \( c=3\times10^5 \) km/s:</p>
+    <p class="math-block">$$ b=3.2\times10^{-3}\times3\times10^5=960\;\text{km} \qquad c=3.4\times10^{-3}\times3\times10^5=1020\;\text{km} $$</p>
+    <p class="math-block">$$ \alpha=\sqrt{960^2+1020^2-2(960)(1020)\cos(17.19°)}\approx\boxed{303\;\text{km}} $$</p>
+    <p>Las antenas están separadas 303 km en línea recta — un 0.75% de la circunferencia terrestre, perfectamente dentro de la bóveda celeste de cada una.</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico</h2>
-            <p>Se desconoce la distancia entre un par de antenas parabólicas. Un satélite GPS mide el ángulo entre ellos usando su sistema de control de reacción al trazar un arco entre ellos a \( 0.15 \frac{rad}{s} \) durante 2 segundos: \( A=\frac{3}{20}\frac{rad}{s}\cdot2\,s=0.3\,rad\approx17.1887°\). A su vez, su antena direccional dispara un ping de señal hacia las antenas. La primera en llegar tarda \( 3.2\times10^{-3}\,s \), mientras que la segunda tarda \( 3.4\times10^{-3}\,s \). Multiplicando por \( 3\times10^{5}\,\frac{km}{s} \), nos da \( 9.6\times10^{2}\,km \) (960 km) y \( 1.02\times10^{3}\,km \) (1020 km).</p>
-            <p>Sabemos las distancias del satélite a cada antena y el ángulo adyacente a ambas. Podemos usar la Ley del Coseno:</p>
-            <p class="math-block">$$ \boxed{\alpha=\sqrt{960^2+1020^2-2(960\cdot1020)\cdot\cos(17.1887°)}\approx303\,km} $$</p>
-            <p>Por lo tanto, la separación entre ellos es de 303 km en línea recta, que equivalen a un 0,75% de circunferencia total terrestre, más que suficiente para que el satélite esté dentro de la bóveda celeste de cada antena, haciendo posible este experimento.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( a,\,b,\,c \) — longitudes de los lados del triángulo</li>
+      <li>\( A,\,B,\,C \) — ángulos opuestos a los lados \( a,\,b,\,c \) respectivamente</li>
+      <li>\( \alpha \) — lado opuesto al ángulo \( A \) (forma alternativa)</li>
+      <li>\( \cos \) — función coseno</li>
+      <li>\( \arccos \) — arcocoseno (función inversa del coseno)</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( b \) : Lado \( b \) del triángulo.</li>
-                <li>\( c \) : Lado \( c \) del triángulo.</li>
-                <li>\( A \) : Ángulo entre los lados \( b \) y \( c \) (en grados).</li>
-                <li>\( \alpha \) : Lado opuesto a \( \angle{A} \).</li>
-                <li>\( \cos \) : Coseno.</li>
-            </ul>
-        </section>
-    </main>
-    
-    <footer>
-      <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

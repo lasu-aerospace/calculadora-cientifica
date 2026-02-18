@@ -1,371 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transferencia de Hohmann - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transferencia de Hohmann — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="orbital.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Transferencia de <em>Hohmann</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="orbital.html">← Volver</a></h3>
-        <h1>Transferencia de Hohmann</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>La transferencia de Hohmann, propuesta por Walter Hohmann en 1925, es la maniobra orbital más eficiente en términos de consumo de propelente para trasladar una nave entre dos órbitas circulares coplanares. Utiliza una órbita elíptica de transferencia tangente a ambas órbitas. Se aplica para subir satélites a GEO, enviar sondas interplanetarias y cualquier cambio de altitud orbital.</p>
+    <div class="info-box">
+      <p>Tres fases: 1) Órbita circular inicial (radio \( r_1 \)) · 2) Elipse de transferencia (periapsis \( r_1 \), apoapsis \( r_2 \)) · 3) Órbita circular final (radio \( r_2 \)).</p>
+    </div>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>La transferencia de Hohmann, propuesta por Walter Hohmann en 1925, es la maniobra orbital más eficiente en términos de consumo de propelente para trasladar una nave espacial entre dos órbitas circulares coplanares. Utiliza una órbita elíptica de transferencia tangente a ambas órbitas.</p>
-            <p>Esta maniobra es fundamental en astronáutica y se usa extensivamente para subir satélites a órbita geoestacionaria, enviar sondas a otros planetas, y cualquier cambio de altitud orbital.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Geometría de la elipse de transferencia</div>
+    <p><strong>Semieje mayor:</strong></p>
+    <p class="math-block">$$ a_t = \frac{r_1 + r_2}{2} $$</p>
+    <p><strong>Excentricidad:</strong></p>
+    <p class="math-block">$$ e = \frac{r_2 - r_1}{r_2 + r_1} $$</p>
+    <p><strong>Tiempo de transferencia</strong> (medio período de la elipse):</p>
+    <p class="math-block">$$ t_\text{transf} = \pi\sqrt{\frac{(r_1+r_2)^3}{8\mu}} $$</p>
+    <p>donde \( \mu=GM \) es el parámetro gravitacional estándar del cuerpo central.</p>
+  </div>
 
-        <section class="section">
-            <h2>Geometría de la Transferencia</h2>
-            <p>La transferencia de Hohmann consta de tres fases:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ol>
-                    <li><strong>Órbita inicial circular:</strong> Radio \( r_1 \), velocidad \( v_1 \)</li>
-                    <li><strong>Órbita de transferencia elíptica:</strong> Periapsis en \( r_1 \), apoapsis en \( r_2 \)</li>
-                    <li><strong>Órbita final circular:</strong> Radio \( r_2 \), velocidad \( v_2 \)</li>
-                </ol>
-            </section>
+  <div class="card">
+    <div class="card-label">Velocidades orbitales</div>
+    <p><strong>En órbita circular</strong> de radio \( r \):</p>
+    <p class="math-block">$$ v_\text{circ}(r)=\sqrt{\frac{\mu}{r}} $$</p>
+    <p><strong>En la elipse de transferencia</strong> (vis-viva):</p>
+    <p class="math-block">$$ v_{t1}=\sqrt{\frac{2\mu r_2}{r_1(r_1+r_2)}} \qquad v_{t2}=\sqrt{\frac{2\mu r_1}{r_2(r_1+r_2)}} $$</p>
+  </div>
 
-            <h3>Parámetros de la elipse de transferencia</h3>
-            <p><strong>Semieje mayor:</strong></p>
-            <p class="math-block">$$ a_t = \frac{r_1 + r_2}{2} $$</p>
+  <div class="card">
+    <div class="card-label">Delta-v requerido</div>
+    <p><strong>Primer impulso</strong> (periapsis — acelerar al transferir):</p>
+    <p class="math-block">$$ \Delta v_1 = v_{t1} - v_1 = \sqrt{\frac{\mu}{r_1}}\!\left(\sqrt{\frac{2r_2}{r_1+r_2}}-1\right) $$</p>
+    <p><strong>Segundo impulso</strong> (apoapsis — circularizar en \( r_2 \)):</p>
+    <p class="math-block">$$ \Delta v_2 = v_2 - v_{t2} = \sqrt{\frac{\mu}{r_2}}\!\left(1-\sqrt{\frac{2r_1}{r_1+r_2}}\right) $$</p>
+    <p class="math-block">$$ \Delta v_\text{total} = \Delta v_1 + \Delta v_2 $$</p>
+    <p>Con la razón de radios \( n=r_2/r_1>1 \), la forma adimensional es:</p>
+    <p class="math-block">$$ \Delta v_\text{total}=\sqrt{\frac{\mu}{r_1}}\!\left[\sqrt{\frac{2n}{n+1}}-1+\frac{1}{\sqrt{n}}\!\left(1-\sqrt{\frac{2}{n+1}}\right)\right] $$</p>
+  </div>
 
-            <p><strong>Excentricidad:</strong></p>
-            <p class="math-block">$$ e = \frac{r_2 - r_1}{r_2 + r_1} $$</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — LEO a GEO</div>
+    <p>Transferir un satélite de LEO (400 km) a GEO (35,786 km) alrededor de la Tierra (\( \mu=398,600 \) km³/s²).</p>
+    <p class="math-block">$$ r_1=6{,}771\;\text{km} \qquad r_2=42{,}157\;\text{km} \qquad a_t=24{,}464\;\text{km} $$</p>
+    <p class="math-block">$$ v_1=\sqrt{\frac{398600}{6771}}\approx7.67\;\text{km/s} \qquad v_2\approx3.07\;\text{km/s} $$</p>
+    <p class="math-block">$$ v_{t1}\approx10.25\;\text{km/s} \qquad v_{t2}\approx1.61\;\text{km/s} $$</p>
+    <p class="math-block">$$ \Delta v_1=2.58\;\text{km/s} \qquad \Delta v_2=1.46\;\text{km/s} \qquad \boxed{\Delta v_\text{total}=4.04\;\text{km/s}} $$</p>
+    <p class="math-block">$$ t_\text{transf}=\pi\sqrt{\frac{(48928)^3}{8(398600)}}\approx18{,}937\;\text{s}\approx5.26\;\text{horas} $$</p>
+    <div class="info-box">
+      <p>Con \( I_{sp}=320 \) s (motor de apogeo típico): \( v_e=3.14 \) km/s · \( R=e^{4.04/3.14}\approx3.62 \). Aproximadamente el 72% de la masa inicial debe ser propelente.</p>
+    </div>
+  </div>
 
-            <p><strong>Período orbital de transferencia:</strong></p>
-            <p class="math-block">$$ T_t = 2\pi\sqrt{\frac{a_t^3}{\mu}} = \pi\sqrt{\frac{(r_1+r_2)^3}{8\mu}} $$</p>
-            <p>Donde \( \mu = GM \) es el parámetro gravitacional estándar del cuerpo central.</p>
+  <div class="card">
+    <div class="card-label">Transferencia interplanetaria</div>
+    <p>La Hohmann se aplica también entre órbitas planetarias, considerándolas aproximadamente circulares y coplanares. El \( \Delta v \) de escape desde el planeta origen:</p>
+    <p class="math-block">$$ \Delta v_\text{esc}=\sqrt{v_\infty^2+v_\text{esc}^2}-v_\text{órbita baja} $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Destino</th><th>\( \Delta v \) total (aprox.)</th><th>Tiempo de vuelo</th></tr></thead>
+        <tbody>
+          <tr><td>Venus</td><td>~3.5 km/s</td><td>~150 días</td></tr>
+          <tr><td>Marte</td><td>~5.6 km/s</td><td>~259 días</td></tr>
+          <tr><td>Júpiter</td><td>~9.2 km/s</td><td>~2.7 años</td></tr>
+          <tr><td>Saturno</td><td>~10.3 km/s</td><td>~6 años</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">Desde LEO terrestre · Sin asistencias gravitacionales</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
 
-            <h3>Tiempo de transferencia</h3>
-            <p>La nave recorre medio período de la elipse:</p>
-            <p class="math-block">$$ t_{\text{transfer}} = \frac{T_t}{2} = \pi\sqrt{\frac{(r_1+r_2)^3}{8\mu}} $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ventana de lanzamiento</div>
+    <p>Para transferencias interplanetarias, el planeta destino debe estar en la posición correcta al llegar la nave. El ángulo de adelanto necesario es:</p>
+    <p class="math-block">$$ \phi_f = \pi - \omega_f t_\text{transf} $$</p>
+    <p>donde \( \omega_f=\sqrt{\mu_\odot/r_f^3} \) es la velocidad angular del planeta destino. La ventana se repite con el período sinódico: \( T_\text{sin}=\dfrac{T_1 T_2}{|T_1-T_2|} \).</p>
+  </div>
 
-        <section class="section">
-            <h2>Velocidades Orbitales</h2>
-            
-            <h3>Velocidad en órbita circular</h3>
-            <p class="math-block">$$ v_{\text{circ}}(r) = \sqrt{\frac{\mu}{r}} $$</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \mu=GM \) — parámetro gravitacional estándar (km³/s²)</li>
+      <li>\( r_1,\,r_2 \) — radios de las órbitas inicial y final (km)</li>
+      <li>\( a_t \) — semieje mayor de la elipse de transferencia (km)</li>
+      <li>\( v_1,\,v_2 \) — velocidades circulares (km/s)</li>
+      <li>\( v_{t1},\,v_{t2} \) — velocidades en periapsis/apoapsis de la elipse (km/s)</li>
+      <li>\( \Delta v \) — cambio de velocidad requerido (km/s)</li>
+      <li>\( e \) — excentricidad; \( n=r_2/r_1 \) — razón de radios</li>
+    </ul>
+  </div>
 
-            <h3>Velocidades en órbitas iniciales y finales</h3>
-            <p class="math-block">$$ v_1 = \sqrt{\frac{\mu}{r_1}} \quad \text{(órbita inicial)} $$</p>
-            <p class="math-block">$$ v_2 = \sqrt{\frac{\mu}{r_2}} \quad \text{(órbita final)} $$</p>
-
-            <h3>Velocidades en la órbita de transferencia</h3>
-            <p>En el periapsis (punto más cercano, \( r_1 \)):</p>
-            <p class="math-block">$$ v_{t1} = \sqrt{\mu\left(\frac{2}{r_1} - \frac{1}{a_t}\right)} = \sqrt{\frac{2\mu r_2}{r_1(r_1+r_2)}} $$</p>
-
-            <p>En el apoapsis (punto más lejano, \( r_2 \)):</p>
-            <p class="math-block">$$ v_{t2} = \sqrt{\mu\left(\frac{2}{r_2} - \frac{1}{a_t}\right)} = \sqrt{\frac{2\mu r_1}{r_2(r_1+r_2)}} $$</p>
-        </section>
-
-        <section class="section">
-            <h2>Delta-v de la Transferencia</h2>
-            <p>Se requieren dos impulsos:</p>
-
-            <h3>Primer impulso (\( \Delta v_1 \))</h3>
-            <p>En el periapsis, acelera de velocidad circular a velocidad de transferencia:</p>
-            <p class="math-block">$$ \Delta v_1 = v_{t1} - v_1 = \sqrt{\frac{\mu}{r_1}}\left(\sqrt{\frac{2r_2}{r_1+r_2}} - 1\right) $$</p>
-
-            <h3>Segundo impulso (\( \Delta v_2 \))</h3>
-            <p>En el apoapsis, acelera de velocidad de transferencia a velocidad circular final:</p>
-            <p class="math-block">$$ \Delta v_2 = v_2 - v_{t2} = \sqrt{\frac{\mu}{r_2}}\left(1 - \sqrt{\frac{2r_1}{r_1+r_2}}\right) $$</p>
-
-            <h3>Delta-v total</h3>
-            <p class="math-block">$$ \Delta v_{\text{total}} = \Delta v_1 + \Delta v_2 = \sqrt{\frac{\mu}{r_1}}\left(\sqrt{\frac{2r_2}{r_1+r_2}} - 1\right) + \sqrt{\frac{\mu}{r_2}}\left(1 - \sqrt{\frac{2r_1}{r_1+r_2}}\right) $$</p>
-
-            <h3>Forma simplificada</h3>
-            <p>Definiendo \( n = r_2/r_1 > 1 \) (razón de radios):</p>
-            <p class="math-block">$$ \Delta v_{\text{total}} = \sqrt{\frac{\mu}{r_1}}\left[\sqrt{\frac{2n}{n+1}} - 1 + \frac{1}{\sqrt{n}}\left(1 - \sqrt{\frac{2}{n+1}}\right)\right] $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: LEO a GEO</h2>
-            <p>Transferir un satélite de Órbita Terrestre Baja (LEO) a Órbita Geoestacionaria (GEO).</p>
-
-            <h3>Datos:</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Radio terrestre: \( R_\oplus = 6{,}371 \) km</li>
-                    <li>LEO: altitud 400 km → \( r_1 = 6{,}771 \) km</li>
-                    <li>GEO: altitud 35,786 km → \( r_2 = 42{,}157 \) km</li>
-                    <li>\( \mu_\oplus = 398{,}600 \) km³/s²</li>
-                </ul>
-            </section>
-
-            <h3>Velocidades orbitales:</h3>
-            <p class="math-block">$$ v_1 = \sqrt{\frac{398{,}600}{6{,}771}} = \sqrt{58{,}860} \approx 7.67 \text{ km/s} $$</p>
-            <p class="math-block">$$ v_2 = \sqrt{\frac{398{,}600}{42{,}157}} = \sqrt{9{,}455} \approx 3.07 \text{ km/s} $$</p>
-
-            <h3>Semieje mayor de transferencia:</h3>
-            <p class="math-block">$$ a_t = \frac{6{,}771 + 42{,}157}{2} = 24{,}464 \text{ km} $$</p>
-
-            <h3>Velocidades en transferencia:</h3>
-            <p class="math-block">$$ v_{t1} = \sqrt{\frac{2(398{,}600)(42{,}157)}{6{,}771(48{,}928)}} \approx 10.25 \text{ km/s} $$</p>
-            <p class="math-block">$$ v_{t2} = \sqrt{\frac{2(398{,}600)(6{,}771)}{42{,}157(48{,}928)}} \approx 1.61 \text{ km/s} $$</p>
-
-            <h3>Delta-v requerido:</h3>
-            <p class="math-block">$$ \Delta v_1 = 10.25 - 7.67 = 2.58 \text{ km/s} $$</p>
-            <p class="math-block">$$ \Delta v_2 = 3.07 - 1.61 = 1.46 \text{ km/s} $$</p>
-            <p class="math-block">$$ \boxed{\Delta v_{\text{total}} = 2.58 + 1.46 = 4.04 \text{ km/s}} $$</p>
-
-            <h3>Tiempo de transferencia:</h3>
-            <p class="math-block">$$ t_{\text{transfer}} = \pi\sqrt{\frac{(48{,}928)^3}{8(398{,}600)}} \approx 18{,}937 \text{ s} \approx 5.26 \text{ horas} $$</p>
-
-            <h3>Implicación práctica:</h3>
-            <p>Usando la <a href="tsiolkovski.html">ecuación de Tsiolkovski</a> con \( I_{sp} = 320 \) s (motor de apogeo típico):</p>
-            <p class="math-block">$$ v_e = 320 \times 9.81 = 3{,}139 \text{ m/s} = 3.14 \text{ km/s} $$</p>
-            <p class="math-block">$$ R = e^{4.04/3.14} = e^{1.287} \approx 3.62 $$</p>
-            <p>Por lo tanto, aproximadamente 72% de la masa del satélite en LEO debe ser propelente para alcanzar GEO.</p>
-        </section>
-
-        <section class="section">
-            <h2>Transferencia Interplanetaria</h2>
-            <p>La transferencia de Hohmann se aplica a viajes entre planetas, considerando las órbitas planetarias como aproximadamente circulares y coplanares.</p>
-
-            <h3>Delta-v para escape planetario</h3>
-            <p>Desde órbita baja del planeta origen, se necesita:</p>
-            <p class="math-block">$$ \Delta v_{\text{escape}} = \sqrt{v_\infty^2 + v_{\text{esc}}^2} - v_{\text{órbita}} $$</p>
-            <p>Donde:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( v_\infty \): Velocidad hiperbólica en el infinito (relativa al planeta)</li>
-                    <li>\( v_{\text{esc}} \): Velocidad de escape desde la órbita baja</li>
-                    <li>\( v_{\text{órbita}} \): Velocidad orbital en órbita baja</li>
-                </ul>
-            </section>
-
-            <h3>Ventanas de lanzamiento</h3>
-            <p>Los planetas deben estar en configuración correcta. El ángulo de fase \( \phi \) entre planeta origen y destino en el momento del lanzamiento debe ser:</p>
-            <p class="math-block">$$ \phi = 180° - 180°\left(\frac{T_{\text{transfer}}}{T_{\text{destino}}}\right) $$</p>
-            <p>Donde \( T_{\text{destino}} \) es el período orbital del planeta destino.</p>
-
-            <h3>Sinergia (período sinódico)</h3>
-            <p>Tiempo entre ventanas de lanzamiento consecutivas:</p>
-            <p class="math-block">$$ T_{\text{sin}} = \frac{T_1 T_2}{|T_2 - T_1|} $$</p>
-            <p>Para Tierra-Marte: \( T_{\text{sin}} \approx 2.135 \) años (ventanas cada 26 meses).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Transferencia Tierra-Marte</h2>
-            
-            <h3>Datos orbitales (aproximados):</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Órbita Tierra: \( r_1 = 1.00 \) UA = 149.6 millones km</li>
-                    <li>Órbita Marte: \( r_2 = 1.52 \) UA = 227.9 millones km</li>
-                    <li>\( \mu_{\odot} = 1.327 \times 10^{11} \) km³/s²</li>
-                </ul>
-            </section>
-
-            <h3>Velocidades orbitales:</h3>
-            <p class="math-block">$$ v_{\text{Tierra}} = \sqrt{\frac{1.327 \times 10^{11}}{1.496 \times 10^8} \approx 29.78 \text{ km/s} $$</p>
-            <p class="math-block">$$ v_{\text{Marte}} = \sqrt{\frac{1.327 \times 10^{11}}{2.279 \times 10^8} \approx 24.13 \text{ km/s} $$</p>
-
-            <h3>Semieje mayor de transferencia:</h3>
-            <p class="math-block">$$ a_t = \frac{1.496 + 2.279}{2} = 1.888 \times 10^8 \text{ km} $$</p>
-
-            <h3>Velocidades en transferencia:</h3>
-            <p class="math-block">$$ v_{t,\text{Tierra}} \approx 32.73 \text{ km/s} $$</p>
-            <p class="math-block">$$ v_{t,\text{Marte}} \approx 21.48 \text{ km/s} $$</p>
-
-            <h3>Delta-v heliocéntrico:</h3>
-            <p class="math-block">$$ \Delta v_1 = 32.73 - 29.78 = 2.95 \text{ km/s} \text{ (salida de órbita terrestre)} $$</p>
-            <p class="math-block">$$ \Delta v_2 = 24.13 - 21.48 = 2.65 \text{ km/s} \text{ (captura en Marte)} $$</p>
-
-            <h3>Tiempo de viaje:</h3>
-            <p class="math-block">$$ t_{\text{transfer}} = \pi\sqrt{\frac{(1.888 \times 10^8)^3}{8(1.327 \times 10^{11})}} \approx 2.24 \times 10^7 \text{ s} \approx 259 \text{ días} $$</p>
-
-            <h3>Delta-v total desde LEO:</h3>
-            <p>Incluyendo escape de la Tierra y captura en Marte:</p>
-            <section class="math-block">
-                <ul>
-                    <li>LEO → Escape: ~3.6 km/s</li>
-                    <li>Maniobra heliocéntrica: ~2.95 km/s</li>
-                    <li>Captura Marte: ~2.65 km/s (o aerofrenado)</li>
-                    <li><strong>Total: ~9.2 km/s</strong> (sin aerofrenado en Marte)</li>
-                </ul>
-            </section>
-
-            <h3>Ángulo de fase de lanzamiento:</h3>
-            <p class="math-block">$$ \phi = 180° - 180°\left(\frac{259}{687}\right) \approx 180° - 68° = 112° $$</p>
-            <p>Marte debe estar 112° adelante de la Tierra en el momento del lanzamiento.</p>
-        </section>
-
-        <section class="section">
-            <h2>Bi-elíptica vs Hohmann</h2>
-            <p>Para cambios de órbita muy grandes (\( r_2/r_1 > 11.94 \)), una transferencia bi-elíptica puede ser más eficiente.</p>
-
-            <h3>Transferencia bi-elíptica</h3>
-            <p>Usa tres impulsos y dos órbitas elípticas:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ol>
-                    <li>Acelera a una órbita elíptica con apoapsis muy alto \( r_b \)</li>
-                    <li>En apoapsis \( r_b \), cambia plano/inclinación si necesario</li>
-                    <li>Desacelera a órbita final \( r_2 \)</li>
-                </ol>
-            </section>
-
-            <h3>Comparación de eficiencia</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Razón \( r_2/r_1 \)</th>
-                        <th>Transferencia óptima</th>
-                        <th>Ventaja</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>< 11.94</td>
-                        <td>Hohmann</td>
-                        <td>Menor \( \Delta v \) y más rápida</td>
-                    </tr>
-                    <tr>
-                        <td>= 11.94</td>
-                        <td>Ambas iguales</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td>> 11.94</td>
-                        <td>Bi-elíptica</td>
-                        <td>Menor \( \Delta v \) pero mucho más lenta</td>
-                    </tr>
-                    <tr>
-                        <td>\( \to \infty \)</td>
-                        <td>Bi-elíptica</td>
-                        <td>Ahorro → 12.5%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Cambio de Plano Orbital</h2>
-            <p>Cambiar la inclinación orbital es muy costoso en términos de \( \Delta v \).</p>
-
-            <h3>Cambio de inclinación puro</h3>
-            <p class="math-block">$$ \Delta v = 2v\sin\left(\frac{\Delta i}{2}\right) $$</p>
-            <p>Donde \( \Delta i \) es el cambio de inclinación y \( v \) es la velocidad orbital.</p>
-
-            <h3>Cambio combinado (Hohmann + inclinación)</h3>
-            <p>Lo más eficiente es realizar el cambio de plano en el apoapsis de la transferencia de Hohmann, donde la velocidad es menor:</p>
-            <p class="math-block">$$ \Delta v_2 = \sqrt{v_2^2 + v_{t2}^2 - 2v_2v_{t2}\cos(\Delta i)} $$</p>
-
-            <h3>Ejemplo: LEO a GEO con cambio de 28° a 0°</h3>
-            <p>Si se hace en LEO (\( v = 7.67 \) km/s):</p>
-            <p class="math-block">$$ \Delta v = 2(7.67)\sin(14°) \approx 3.71 \text{ km/s} $$</p>
-            <p>Si se hace en apogeo de transferencia (\( v = 1.61 \) km/s):</p>
-            <p class="math-block">$$ \Delta v \approx 0.78 \text{ km/s (adicional al Hohmann)} $$</p>
-            <p>¡Ahorro de casi 3 km/s!</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de la transferencia de Hohmann</h2>
-            <ul>
-                <li><strong>Satélites geoestacionarios:</strong> Ascenso desde LEO a GEO</li>
-                <li><strong>Misiones interplanetarias:</strong> Tierra-Marte, Tierra-Venus, etc.</li>
-                <li><strong>Reentrada controlada:</strong> Descenso de órbita (Hohmann inverso)</li>
-                <li><strong>Mantenimiento de estación:</strong> Correcciones orbitales de satélites</li>
-                <li><strong>Rendez-vous:</strong> Encuentro con ISS u otras naves (con modificaciones)</li>
-                <li><strong>Cambio de órbita:</strong> Ajustes de altitud para satélites de observación</li>
-                <li><strong>Optimización de misiones:</strong> Minimizar consumo de propelente</li>
-                <li><strong>Planificación de trayectorias:</strong> Baseline para comparar otras maniobras</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( r_1 \): Radio de órbita inicial (m o km)</li>
-                <li>\( r_2 \): Radio de órbita final (m o km)</li>
-                <li>\( a_t \): Semieje mayor de órbita de transferencia (m o km)</li>
-                <li>\( e \): Excentricidad de órbita de transferencia</li>
-                <li>\( v_1, v_2 \): Velocidades orbitales circulares (m/s o km/s)</li>
-                <li>\( v_{t1}, v_{t2} \): Velocidades en transferencia (m/s o km/s)</li>
-                <li>\( \Delta v \): Delta-v requerido (m/s o km/s)</li>
-                <li>\( \mu = GM \): Parámetro gravitacional estándar (m³/s² o km³/s²)</li>
-                <li>\( T_t \): Período de órbita de transferencia (s)</li>
-                <li>\( t_{\text{transfer}} \): Tiempo de transferencia (s)</li>
-                <li>\( \Delta i \): Cambio de inclinación orbital (grados o radianes)</li>
-                <li>UA: Unidad Astronómica = 149.6 millones km</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de transferencias planetarias</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Destino desde Tierra</th>
-                        <th>\( \Delta v \) (km/s)</th>
-                        <th>Tiempo (días)</th>
-                        <th>Sinergia (años)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Venus</td>
-                        <td>3.5</td>
-                        <td>146</td>
-                        <td>1.6</td>
-                    </tr>
-                    <tr>
-                        <td>Marte</td>
-                        <td>3.6</td>
-                        <td>259</td>
-                        <td>2.1</td>
-                    </tr>
-                    <tr>
-                        <td>Júpiter</td>
-                        <td>6.3</td>
-                        <td>997</td>
-                        <td>1.1</td>
-                    </tr>
-                    <tr>
-                        <td>Saturno</td>
-                        <td>7.3</td>
-                        <td>2,188</td>
-                        <td>1.0</td>
-                    </tr>
-                    <tr>
-                        <td>Urano</td>
-                        <td>8.2</td>
-                        <td>5,847</td>
-                        <td>1.0</td>
-                    </tr>
-                    <tr>
-                        <td>Neptuno</td>
-                        <td>8.6</td>
-                        <td>10,950</td>
-                        <td>1.0</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Nota: Los valores son aproximados y asumen órbitas circulares y coplanares. Las misiones reales usan asistencias gravitacionales para reducir \( \Delta v \).</p>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

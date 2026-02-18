@@ -1,244 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformadas de Fourier - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transformadas de Fourier — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="advmath.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Transformadas de <em>Fourier</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="advmath.html">← Volver</a></h3>
-        <h1>Transformadas de Fourier</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Transformada de Fourier (FT)</div>
+    <p class="math-block">$$ \mathcal{F}\{f(t)\}=X(\omega)=\int_{-\infty}^{\infty}f(t)e^{-i\omega t}\,dt $$</p>
+    <p>Inversa:</p>
+    <p class="math-block">$$ f(t)=\frac{1}{2\pi}\int_{-\infty}^{\infty}F(\omega)e^{i\omega t}\,d\omega $$</p>
+    <p>Operador lineal que asigna a \( f(t)\in L^1(\mathbb{R}) \) o \( L^2(\mathbb{R}) \) una representación equivalente en el dominio de las frecuencias mediante una descomposición en funciones base ortogonales \( e^{i\omega t} \). La representación es única, y la base es completa.</p>
+  </div>
 
-    <main>
-        <hr>
-        <section>
-            <h2>Transformada de Fourier (FT)</h2>
-            <h1 class="math-block">$$ \mathcal{F}\{f(t)\}=X(\omega)=\int_{-\infty}^{\infty}f(t) e^{-i \omega t} dt $$</h1>
-            <p>Y su inversa:</p>
-            <h1 class="math-block">$$ f^{-1}(t)=\frac{1}{2\pi}\int_{-\infty}^{\infty}F(\omega) e^{i \omega t} d\omega $$</h1>
-            <p>La transformada de Fourier es un operador lineal que asigna a una función \( f(t) \) en el espacio \( L^1(\mathbb{R}) \) o \( L^2(\mathbb{R}) \) una representación equivalente en el dominio de las frecuencias mediante una descomposición en funciones base ortogonales \( e^{i \omega t} \). Esa representación es única, y la base es completa en su espacio funcional.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Transformada Discreta de Fourier (DFT)</div>
+    <p class="math-block">$$ X_k=\sum_{n=0}^{N-1}x_n e^{-i2\pi kn/N},\quad k=0,\ldots,N-1 $$</p>
+    <p><strong>Ejemplo con \( N=4 \)</strong>, señal \( x=[1,0,-1,0] \):</p>
+    <div class="info-box">
+      <ul>
+        <li>\( X_0=1+0-1+0=0 \)</li>
+        <li>\( X_1=1+0\cdot e^{-i\pi/2}+(-1)e^{-i\pi}+0=1+1=2 \)</li>
+        <li>\( X_2=1+0-1+0=0 \)</li>
+        <li>\( X_3=1+0+(-1)e^{-i3\pi}+0=1+1=2 \)</li>
+      </ul>
+    </div>
+    <p class="math-block">$$ X=[0,2,0,2] $$</p>
+  </div>
 
-        <section>
-        <h2>Otros tipos de transformadas</h2>
-            <ol>
-                <li>
-                    <h2>Transformada Discreta de Fourier (DFT)</h2>
-                    <h1 class="math-block">$$ X_k=\sum_{n=0}^{N-1}x_ne^{\frac{-i2\pi kn}{N}},\quad k=0,\dots,N-1 $$</h1>
-                    <p>Y su inversa:</p>
-                    <h1 class="math-block">$$ x_n^{-1}=\frac{1}{N}\sum_{k=0}^{N-1}K_ke^{\frac{-i2\pi kn}{N}} $$</h1>
-                    <p>La DFT toma una secuencia finita de valores reales o complejos \( x_0,x_1,\dots,x_{N-1} \) y la expresa como una combinación discreta de exponenciales complejas periódicas.</p>
-                    <p><strong>Ejemplo con \( N=4 \):</strong></p>
-                    <p>Sea la señal:</p>
-                    <p class="math-block">$$ x=[1,0,-1,0] $$</p>
-                    <p>Cálculo de cada \( X_k \):</p>
-                    <section class="math-block">
-                        <ul>
-                            <li>\( X_0=1+0-1+0=0 \)</li>
-                            <li>\( X_1=1+0\cdot e^{-\frac{i\pi}{2}}+(-1)\cdot e^{-i\pi}+0=1-(-1)=2 \)</li>
-                            <li>\( X_2=1+0\cdot e^{-i\pi}+(-1)\cdot e^{-i2\pi}+0=1-1=0 \)</li>
-                            <li>\( X_3=1+0\cdot e^{-\frac{-i3\pi}{2}}+(-1)\cdot e^{-i3\pi}=1-(-1)=2 \)</li>
-                        </ul>
-                    </section>
-                    <p>Resultado:</p>
-                    <p class="math-block">$$ X=[0,2,0,2] $$</p>
-                </li>
-                <li>
-                    <h2>Transformada Rápida de Fourier (FFT)</h2>
-                    <p>Explicamos el algoritmo Cooley-Tukey cuando \( N \) es par:</p>
-                    <h1 class="math-block">$$ \begin{array} X_k=E_k+e^{\frac{-i2\pi k}{N}}O_k \\ X_{\frac{k+N}{2}}=E_k-e^{-\frac{-i2\pi k}{N}}O_k \end{array} $$</h1>
-                    <p>Con:</p>
-                    <section class="math-block">
-                        <ul>
-                            <li>\( E_k \) es la DFT de los índices pares,</li>
-                            <li>\( O_k \) es la DFT de los impares.</li>
-                        </ul>
-                    </section>
-                    <p><strong>Ejemplo con \( N=4 \):</strong></p>
-                    <p>Tomamos el mismo vector que en el ejemplo de la DFT:</p>
-                    <ol>
-                        <li>Separación:</li>
-                        <ul>
-                            <li>pares: \( x_e=[1,-1] \)</li>
-                            <li>impares: \( x_o=[0,0] \)</li>
-                        </ul>
-                        <li>DFT de cada mitad:</li>
-                        <ul>
-                            <li>\( E=[1-1,1-(-1)]=[0,2] \)</li>
-                            <li>\( O=[0,0] \)</li>
-                        </ul>
-                        <li>Combinación:</li>
-                        <ul>
-                            <li>\( X_0=E_0+O_0=0 \)</li>
-                            <li>\( X_1=E_1+e^{-\frac{i\pi}{2}}O_1=2 \)</li>
-                            <li>\( X_2=E_0=O \)</li>
-                            <li>\( X_3=E_1-e^{-\frac{i\pi}{2}}O_1=2 \)</li>
-                        </ul>
-                    </ol>
-                    <p>Resultado: \( X=[0,2,0,2] \). La diferencia es que en este método, la cantidad y complejidad de los cálculos es mucho menor.</p>
-                </li>
-            </ol>
-        </section>
+  <div class="card">
+    <div class="card-label">Transformada Rápida de Fourier (FFT) — Cooley-Tukey</div>
+    <p>Cuando \( N \) es par, la DFT se divide recursivamente:</p>
+    <p class="math-block">$$ X_k=E_k+e^{-i2\pi k/N}O_k \qquad X_{k+N/2}=E_k-e^{-i2\pi k/N}O_k $$</p>
+    <p>Donde \( E_k \) es la DFT de los índices pares y \( O_k \) la de los impares. Mismo vector \( [1,0,-1,0] \): 1) Separación: pares \( [1,-1] \), impares \( [0,0] \). 2) DFT de cada mitad: \( E=[0,2] \), \( O=[0,0] \). 3) Combinación: \( X=[0,2,0,2] \). La ventaja es reducir la complejidad de \( O(N^2) \) a \( O(N\log N) \).</p>
+  </div>
 
-        <section>
-            <h2>Propiedades</h2>
-            <table>
-                <thead>
-                    <th>Propiedad</th>
-                    <th>Expresión</th>
-                    <th>Notas</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Linealidad</td>
-                        <td>\( a\cdot f(t)+b\cdot g(t)\mapsto a\cdot F(\omega)+b\cdot G(\omega) \)</td>
-                        <td>Si sumas señales, sus frecuencias también se suman: \( \mathcal{F}\{af+bg\}=aF+bG \)</td>
-                    </tr>
-                    <tr>
-                        <td>Desplazamiento en el tiempo</td>
-                        <td>\( f(t-t_0)\mapsto w^{-j\omega t_0}F(\omega) \)</td>
-                        <td>Multiplicar por una exponencial compleja desplaza todo el espectro..</td>
-                    </tr>
-                    <tr>
-                        <td>Desplazamiento en frecuencia</td>
-                        <td>\( e^{-j\omega t_0}f(t)\mapsto F(\omega-\omega_0) \)</td>
-                        <td>Mover una fase en el tiempo agrega una fase en el dominio frecuencial.</td>
-                    </tr>
-                    <tr>
-                        <td>Escalamiento</td>
-                        <td>\( f(at)\mapsto\frac{1}{|a|}F(\frac{\omega}{a}) \)</td>
-                        <td>Si estiras la señal en el tiempo, se comprimirá en frecuencia y viceversa.</td>
-                    </tr>
-                    <tr>
-                        <td>Convolución</td>
-                        <td>\( \begin{array}\\ \text{conv.}\rightarrow\text{mult.}\\ \text{mult.}\rightarrow\text{conv.} \end{array}\mapsto \begin{array}\\ F(\omega)\cdot G(\omega)\\ (F\cdot G)(\omega) \end{array}\)</td>
-                        <td>\( a \) en tiempo ↦ \( b \) en frecuencia.</td>
-                    </tr>
-                    <tr>
-                        <td>Derivadas</td>
-                        <td>\( \frac{d}{dt}f(t)\mapsto j\omega F(\omega) \)</td>
-                        <td>En cada derivada se agrega un factor \( j\omega \).</td>
-                    </tr>
-                    <tr>
-                        <td>Paridad</td>
-                        <td>\( F(-\omega)=F\cdot\omega \)</td>
-                        <td>Si \( f(t)\in\mathbb{R}\therefore F(\omega) \) tiene simetría Hermítica.</td>
-                    </tr>
-                    <tr>
-                        <td>Energía (Parseval/Plancderel)</td>
-                        <td>\( \int|f(t)|^2dt=\frac{1}{2\pi}\int|F(\omega)|^2d\omega \)</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Dualidad</td>
-                        <td></td>
-                        <td>Aplicar transformada dos veces devuelve una aproximación de la señal original invertida.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+  <div class="card">
+    <div class="card-label">Propiedades</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Propiedad</th><th>Expresión</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td>Linealidad</td><td>\( af+bg\mapsto aF+bG \)</td><td>Suma de señales → suma de espectros</td></tr>
+          <tr><td>Desplazamiento en tiempo</td><td>\( f(t-t_0)\mapsto e^{-j\omega t_0}F(\omega) \)</td><td>Desplazar en tiempo → fase en frecuencia</td></tr>
+          <tr><td>Desplazamiento en frecuencia</td><td>\( e^{j\omega_0 t}f(t)\mapsto F(\omega-\omega_0) \)</td><td>Modulación</td></tr>
+          <tr><td>Escalamiento</td><td>\( f(at)\mapsto\frac{1}{|a|}F(\omega/a) \)</td><td>Comprimir en tiempo → expandir en frec.</td></tr>
+          <tr><td>Convolución</td><td>\( (f*g)(t)\mapsto F(\omega)G(\omega) \)</td><td>Convolución ↔ multiplicación</td></tr>
+          <tr><td>Derivada</td><td>\( f'(t)\mapsto j\omega F(\omega) \)</td><td>Derivación ↔ multiplicar por \( j\omega \)</td></tr>
+          <tr><td>Paridad (Hermítica)</td><td>\( F(-\omega)=F^*(\omega) \)</td><td>Si \( f(t)\in\mathbb{R} \)</td></tr>
+          <tr><td>Parseval / Plancherel</td><td>\( \int|f|^2dt=\frac{1}{2\pi}\int|F|^2d\omega \)</td><td>Conservación de energía</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>Las Transformadas de Fourier tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Telecomunicaciones generales.</li>
-                <li>Diagnóstico de vibraciones en maquinaria.</li>
-                <li>Procesamiento de señales.</li>
-                <li>Astronomía y radar.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Tabla de transformadas</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>\( f(t) \)</th><th>\( F(\omega) \)</th></tr></thead>
+        <tbody>
+          <tr><td>\( 1 \)</td><td>\( 2\pi\delta(\omega) \)</td></tr>
+          <tr><td>\( \delta(t) \)</td><td>\( 1 \)</td></tr>
+          <tr><td>\( e^{-at}u(t) \)</td><td>\( \dfrac{1}{a+j\omega} \)</td></tr>
+          <tr><td>\( \cos(\omega_0 t) \)</td><td>\( \pi[\delta(\omega-\omega_0)+\delta(\omega+\omega_0)] \)</td></tr>
+          <tr><td>\( \sin(\omega_0 t) \)</td><td>\( \dfrac{\pi}{j}[\delta(\omega-\omega_0)-\delta(\omega+\omega_0)] \)</td></tr>
+          <tr><td>\( \text{rect}(t/T) \)</td><td>\( T\operatorname{sinc}(\omega T/2) \)</td></tr>
+          <tr><td>\( e^{-t^2/(2\sigma^2)} \)</td><td>\( \sigma\sqrt{2\pi}\,e^{-\omega^2\sigma^2/2} \)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico</h2>
-            <p>Supongamos una turbobomba de oxígeno líquido con un sensor de aceleración que registra vibraciones en el tiempo:</p>
-            <p class="math-block">$$ f(t)=\frac{1}{10}\sin(120t)+\frac{3}{100}\sin(240t)+\text{ruido} $$</p>
-            <p>Al colocar la señal en una FFT, el espectro resultante muestra picos en:</p>
-            <ul>
-                <li>\( 120\frac{rad}{s} \)</li>
-                <li>\( 240\frac{rad}{s} \)</li>
-            </ul>
-            <p>Esto corresponde a:</p>
-            <ul>
-                <li>\( 1\times \) la frecuencia nominal del eje</li>
-                <li>\( 2\times \) la frecuencia nominal del eje (posible desbalance o holgura)</li>
-            </ul>
-            <p>Si el segundo pico crece con el tiempo, la turbobomba se tensará hasta el punto de quiebre. Sin la transformada de Fourier, esta vibración queda escondida dentro de la señal, y a simple vista parece ruido leve.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Diagnóstico de turbobomba</div>
+    <p>Sensor de aceleración en una turbobomba de oxígeno líquido registra:</p>
+    <p class="math-block">$$ f(t)=\tfrac{1}{10}\sin(120t)+\tfrac{3}{100}\sin(240t)+\text{ruido} $$</p>
+    <p>La FFT del espectro muestra picos en \( 120 \) rad/s (\( 1\times \) frecuencia nominal del eje) y \( 240 \) rad/s (\( 2\times \) frecuencia — posible desbalance o holgura). Si el segundo pico crece con el tiempo, la turbobomba alcanzará el punto de quiebre. Sin la transformada de Fourier, esta vibración queda escondida en el ruido.</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \omega=2\pi f \) : Frecuencia angular de la señal. \( f \) es la frecuancia en hertz (Hz).</li>
-                <li>\( f(t) \) : Señal en el tiempo.</li>
-                <li>\( F(\omega) \) : Señal en frecuencia.</li>
-                <li>\( \omega \) : Frecuencia angular (rad/s).</li>
-                <li>\( \xi, \nu \) : Variables de frecuencia alternativas.</li>
-                <li>\( \mathcal{F}(\cdot) \) : Transformada de Fourier.</li>
-                <li>\( \mathcal{F}^{-1}(\cdot) \) : Transformada inversa.</li>
-                <li>\( e^{i\theta} \) : Rotación compleja (función base).</li>
-                <li>\( \int_{-\infty}^{\infty} \) : Integral sobre todo el dominio.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>Telecomunicaciones:</strong> modulación AM/FM, análisis de espectro y compresión de datos.</li>
+      <li><strong>Diagnóstico de maquinaria:</strong> análisis de vibraciones para mantenimiento predictivo.</li>
+      <li><strong>Procesamiento de señales:</strong> filtrado, compresión de audio (MP3) e imagen (JPEG).</li>
+      <li><strong>Astronomía y radar:</strong> VLBI, análisis espectral de estrellas, procesamiento de pulsos.</li>
+      <li><strong>Mecánica cuántica:</strong> la FT conecta las representaciones de posición y momento.</li>
+    </ul>
+  </div>
 
-        <section class="section">
-        <h2>Tablas</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Función \( f(t) \)</th>
-              <th>Transformada \( F(\omega) \)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>\( 1 \)</td>
-              <td>\( 2\pi\delta(\omega) \)</td>
-            </tr>
-            <tr>
-              <td>\( \delta(t) \)</td>
-              <td>\( 1 \)</td>
-            </tr>
-            <tr>
-              <td>\( e^{-at}u(t) \)</td>
-              <td>\( \frac{1}{a+t\omega} \)</td>
-            </tr>
-            <tr>
-              <td>\( \cos(\omega_0t) \)</td>
-              <td>\( \pi[\delta(\omega-\omega_0)+\delta(\omega+\omega_0)] \)</td>
-            </tr>
-            <tr>
-              <td>\( \sin(\omega_0t) \)</td>
-              <td>\( \frac{\pi}{i}[\delta(\omega-\omega_0)-\delta(\omega+\omega_0)] \)</td>
-            </tr>
-            <tr>
-              <td>Rectangular \( \text{rect}(\frac{t}{T}) \)</td>
-              <td>\( T\text{ sinc}(\frac{\omega T}{2}) \)</td>
-            </tr>
-            <tr>
-              <td>Gaussiana \( e^{-\frac{t^2}{2\sigma^2}} \)</td>
-              <td>\( \sigma\sqrt{2\pi}e^{-\frac{\omega^2\sigma^2}{2}} \)</td>
-            </tr>
-          </tbody>
-        </table>           
-      </section>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \omega=2\pi f \) — frecuencia angular (rad/s)</li>
+      <li>\( f(t) \) — señal en el dominio del tiempo</li>
+      <li>\( F(\omega) \) — espectro en el dominio de frecuencias</li>
+      <li>\( \mathcal{F}\{\cdot\} \) — operador Transformada de Fourier</li>
+      <li>\( \delta(\omega) \) — delta de Dirac</li>
+      <li>\( e^{j\theta} \) — rotación compleja (función base)</li>
+      <li>\( x_n,\,X_k \) — secuencias temporal y espectral en la DFT</li>
+      <li>\( E_k,\,O_k \) — DFT de índices pares e impares (FFT)</li>
+    </ul>
+  </div>
 
-    </main>
-
-    <footer>
-      <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

@@ -1,372 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tensores - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cálculo Tensorial — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="relatividad.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Cálculo <em>Tensorial</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="relatividad.html">← Volver</a></h3>
-        <h1>Cálculo Tensorial</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>Los tensores generalizan escalares, vectores y matrices a dimensiones arbitrarias. Son fundamentales en Relatividad General, mecánica continua y teoría de campos. Su poder radica en que una ecuación tensorial válida en un sistema de coordenadas es válida en todos —expresan leyes físicas de forma intrínseca, independiente del sistema elegido.</p>
+    <p class="math-block">$$ T: \underbrace{V^*\times\cdots\times V^*}_{r}\times\underbrace{V\times\cdots\times V}_{s}\to\mathbb{R} $$</p>
+    <p>Un tensor de tipo \( (r,s) \) recibe \( r \) covectores y \( s \) vectores, produciendo un escalar.</p>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>Los tensores son objetos matemáticos que generalizan escalares, <a href="vectores.html">vectores</a> y matrices a dimensiones arbitrarias. Son fundamentales en física teórica, especialmente en <a href="relatividad_general.html">Relatividad General</a>, mecánica continua y teoría de campos.</p>
-            <p>La potencia de los tensores radica en su capacidad para expresar leyes físicas de forma independiente del sistema de coordenadas elegido. Una ecuación tensorial válida en un sistema de coordenadas es válida en todos los sistemas de coordenadas.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Notación de índices y rango</div>
+    <p>Un tensor de tipo \( (r,s) \) tiene \( r \) índices superiores (contravariantes) y \( s \) inferiores (covariantes):</p>
+    <p class="math-block">$$ T^{\mu_1\cdots\mu_r}_{\phantom{\mu_1\cdots\mu_r}\nu_1\cdots\nu_s} $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rango</th><th>Tipo</th><th>Ejemplo en relatividad</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>Escalar</td><td>Temperatura, densidad, curvatura escalar \( R \)</td></tr>
+          <tr><td>1</td><td>Vector / covector</td><td>4-velocidad \( u^\mu \), gradiente \( \partial_\mu\phi \)</td></tr>
+          <tr><td>2</td><td>Tensor rango 2</td><td>Métrica \( g_{\mu\nu} \), tensor energía-momento \( T^{\mu\nu} \)</td></tr>
+          <tr><td>3</td><td>Tensor rango 3</td><td>Tensor de torsión \( T^\lambda_{\phantom\lambda\mu\nu} \)</td></tr>
+          <tr><td>4</td><td>Tensor rango 4</td><td>Tensor de Riemann \( R^\rho_{\phantom\rho\sigma\mu\nu} \)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:14px;"><strong>Convención de Einstein:</strong> índice repetido arriba y abajo implica suma: \( A^\mu B_\mu = \sum_\mu A^\mu B_\mu \).</p>
+  </div>
 
-        <section class="section">
-            <h2>Definición Formal</h2>
-            <p>Un tensor de tipo \( (r,s) \) es un objeto multilineal que toma \( s \) vectores y \( r \) covectores (formas lineales) como entrada y produce un escalar:</p>
-            <p class="math-block">$$ T: \underbrace{V^* \times \cdots \times V^*}_{r \text{ veces}} \times \underbrace{V \times \cdots \times V}_{s \text{ veces}} \to \mathbb{R} $$</p>
-            <p>Donde \( V \) es un espacio vectorial y \( V^* \) es su espacio dual.</p>
+  <div class="card">
+    <div class="card-label">Ley de transformación</div>
+    <p><strong>Contravariante:</strong></p>
+    <p class="math-block">$$ V'^\mu=\frac{\partial x'^\mu}{\partial x^\nu}V^\nu $$</p>
+    <p><strong>Covariante:</strong></p>
+    <p class="math-block">$$ \omega'_\mu=\frac{\partial x^\nu}{\partial x'^\mu}\omega_\nu $$</p>
+    <p><strong>General \( (r,s) \):</strong></p>
+    <p class="math-block">$$ T'^{\mu_1\cdots\mu_r}_{\phantom{\mu_1\cdots\mu_r}\nu_1\cdots\nu_s} = \frac{\partial x'^{\mu_1}}{\partial x^{\alpha_1}}\cdots\frac{\partial x^{\beta_s}}{\partial x'^{\nu_s}}\,T^{\alpha_1\cdots\alpha_r}_{\phantom{\alpha_1\cdots\alpha_r}\beta_1\cdots\beta_s} $$</p>
+  </div>
 
-            <h3>Notación de índices</h3>
-            <p>Un tensor de tipo \( (r,s) \) se escribe con \( r \) índices superiores (contravariantes) y \( s \) índices inferiores (covariantes):</p>
-            <p class="math-block">$$ T^{\mu_1\mu_2\cdots\mu_r}_{\phantom{\mu_1\mu_2\cdots\mu_r}\nu_1\nu_2\cdots\nu_s} $$</p>
+  <div class="card">
+    <div class="card-label">Operaciones tensoriales</div>
+    <p><strong>Suma</strong> (mismo tipo): \( (S+T)^\mu_{\phantom\mu\nu}=S^\mu_{\phantom\mu\nu}+T^\mu_{\phantom\mu\nu} \)</p>
+    <p><strong>Producto tensorial \( \otimes \)</strong> — sube el rango:</p>
+    <p class="math-block">$$ (S\otimes T)^{\mu\nu}_{\phantom{\mu\nu}\rho\sigma}=S^\mu_{\phantom\mu\rho}T^\nu_{\phantom\nu\sigma} $$</p>
+    <p><strong>Contracción</strong> — baja el rango en 2 sumando sobre un par:</p>
+    <p class="math-block">$$ T^\mu_{\phantom\mu\mu}=T^0_{\phantom00}+T^1_{\phantom11}+T^2_{\phantom22}+T^3_{\phantom33} $$</p>
+    <p><strong>Subir y bajar índices</strong> con el tensor métrico:</p>
+    <p class="math-block">$$ V_\mu=g_{\mu\nu}V^\nu \qquad V^\mu=g^{\mu\nu}V_\nu $$</p>
+  </div>
 
-            <h3>Rango del tensor</h3>
-            <p>El rango es \( r + s \), el número total de índices:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Rango 0:</strong> Escalar (temperatura, densidad, presión)</li>
-                    <li><strong>Rango 1:</strong> Vector contravariante \( V^\mu \) o covector \( \omega_\mu \)</li>
-                    <li><strong>Rango 2:</strong> Matriz, tensor métrico \( g_{\mu\nu} \), tensor electromagnético \( F^{\mu\nu} \)</li>
-                    <li><strong>Rango 3:</strong> Tensor de torsión \( T^\lambda_{\phantom{\lambda}\mu\nu} \)</li>
-                    <li><strong>Rango 4:</strong> Tensor de Riemann \( R^\rho_{\phantom{\rho}\sigma\mu\nu} \)</li>
-                </ul>
-            </section>
-        </section>
+  <div class="card">
+    <div class="card-label">Tensor métrico</div>
+    <p class="math-block">$$ g_{\mu\nu}=g_{\nu\mu} \qquad ds^2=g_{\mu\nu}dx^\mu dx^\nu $$</p>
+    <p>El tensor métrico es simétrico y determina la geometría: distancias, ángulos, volúmenes, geodésicas y curvatura. El elemento de volumen invariante es:</p>
+    <p class="math-block">$$ dV=\sqrt{|g|}\,dx^0dx^1dx^2dx^3 \qquad g=\det(g_{\mu\nu}) $$</p>
+  </div>
 
-        <section class="section">
-            <h2>Ley de Transformación</h2>
-            <p>Lo que define a un tensor es cómo sus componentes se transforman bajo cambios de coordenadas.</p>
+  <div class="card">
+    <div class="card-label">Derivada covariante y símbolos de Christoffel</div>
+    <p class="math-block">$$ \nabla_\mu V^\nu=\partial_\mu V^\nu+\Gamma^\nu_{\mu\lambda}V^\lambda $$</p>
+    <p class="math-block">$$ \Gamma^\lambda_{\mu\nu}=\frac{1}{2}g^{\lambda\sigma}\!\left(\partial_\mu g_{\nu\sigma}+\partial_\nu g_{\mu\sigma}-\partial_\sigma g_{\mu\nu}\right) $$</p>
+    <p>Los símbolos de Christoffel no son tensores, pero codifican cómo varían los vectores base (la conexión). Propiedad clave: \( \nabla_\lambda g_{\mu\nu}=0 \) (compatibilidad métrica).</p>
+    <p>Para un tensor general \( T^\mu_{\phantom\mu\nu} \): cada índice superior agrega \( +\Gamma \), cada inferior agrega \( -\Gamma \):</p>
+    <p class="math-block">$$ \nabla_\lambda T^\mu_{\phantom\mu\nu}=\partial_\lambda T^\mu_{\phantom\mu\nu}+\Gamma^\mu_{\lambda\sigma}T^\sigma_{\phantom\sigma\nu}-\Gamma^\sigma_{\lambda\nu}T^\mu_{\phantom\mu\sigma} $$</p>
+  </div>
 
-            <h3>Vectores contravariantes</h3>
-            <p class="math-block">$$ V'^{\mu} = \frac{\partial x'^\mu}{\partial x^\nu}V^\nu $$</p>
-            <p>Transforman con las derivadas parciales de las nuevas coordenadas respecto a las antiguas.</p>
+  <div class="card">
+    <div class="card-label">Tensor de Riemann y curvatura</div>
+    <p class="math-block">$$ R^\rho_{\phantom\rho\sigma\mu\nu}=\partial_\mu\Gamma^\rho_{\nu\sigma}-\partial_\nu\Gamma^\rho_{\mu\sigma}+\Gamma^\rho_{\mu\lambda}\Gamma^\lambda_{\nu\sigma}-\Gamma^\rho_{\nu\lambda}\Gamma^\lambda_{\mu\sigma} $$</p>
+    <p>Mide la curvatura intrínseca. En 4D tiene \( \frac{4^2(4^2-1)}{12}=20 \) componentes independientes.</p>
+    <p><strong>Tensor de Ricci:</strong> \( R_{\mu\nu}=R^\lambda_{\phantom\lambda\mu\lambda\nu} \)</p>
+    <p><strong>Escalar de curvatura:</strong> \( R=g^{\mu\nu}R_{\mu\nu} \)</p>
+    <p><strong>Tensor de Einstein:</strong></p>
+    <p class="math-block">$$ G_{\mu\nu}=R_{\mu\nu}-\frac{1}{2}Rg_{\mu\nu} \qquad \nabla^\mu G_{\mu\nu}=0 $$</p>
+  </div>
 
-            <h3>Vectores covariantes (formas)</h3>
-            <p class="math-block">$$ \omega'_\mu = \frac{\partial x^\nu}{\partial x'^\mu}\omega_\nu $$</p>
-            <p>Transforman con las derivadas inversas.</p>
+  <div class="card">
+    <div class="card-label">Geodésicas</div>
+    <p class="math-block">$$ \frac{d^2x^\mu}{d\lambda^2}+\Gamma^\mu_{\rho\sigma}\frac{dx^\rho}{d\lambda}\frac{dx^\sigma}{d\lambda}=0 $$</p>
+    <p>Trayectorias de "línea recta" en espacios curvos. En Relatividad General, las partículas libres siguen geodésicas del espacio-tiempo.</p>
+    <div class="info-box">
+      <ul>
+        <li>En espacio plano (\( \Gamma=0 \)): líneas rectas</li>
+        <li>Partículas masivas — geodésicas tipo tiempo (\( ds^2<0 \)), parametrizadas por \( \tau \)</li>
+        <li>Fotones — geodésicas tipo luz (\( ds^2=0 \)), parametrizadas por \( \lambda \)</li>
+        <li>La gravedad newtoniana emerge como corrección en el límite de velocidades bajas y campos débiles</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3>Tensor general de tipo (r,s)</h3>
-            <p class="math-block">$$ T'^{\mu_1\cdots\mu_r}_{\phantom{\mu_1\cdots\mu_r}\nu_1\cdots\nu_s} = \frac{\partial x'^\mu_1}{\partial x^{\alpha_1}}\cdots\frac{\partial x'^\mu_r}{\partial x^{\alpha_r}}\frac{\partial x^{\beta_1}}{\partial x'^\nu_1}\cdots\frac{\partial x^{\beta_s}}{\partial x'^\nu_s}T^{\alpha_1\cdots\alpha_r}_{\phantom{\alpha_1\cdots\alpha_r}\beta_1\cdots\beta_s} $$</p>
-            <p>Cada índice contravariante contribuye con una derivada \( \frac{\partial x'}{\partial x} \), y cada covariante con \( \frac{\partial x}{\partial x'} \).</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Esfera \( S^2 \)</div>
+    <p>Métrica: \( ds^2=R^2(d\theta^2+\sin^2\theta\,d\phi^2) \)</p>
+    <p><strong>Símbolos de Christoffel no nulos:</strong></p>
+    <p class="math-block">$$ \Gamma^\theta_{\phi\phi}=-\sin\theta\cos\theta \qquad \Gamma^\phi_{\theta\phi}=\Gamma^\phi_{\phi\theta}=\cot\theta $$</p>
+    <p><strong>Escalar de curvatura:</strong> \( R=2/R^2 \) — curvatura constante positiva. Una esfera más pequeña es más curva.</p>
+    <p><strong>Geodésicas:</strong> grandes círculos (ecuador, meridianos) — las distancias mínimas sobre la superficie esférica.</p>
+  </div>
 
-        <section class="section">
-            <h2>Operaciones con Tensores</h2>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>Índices griegos \( \mu,\nu,\rho,\sigma\in\{0,1,2,3\} \) — espacio-tiempo (tiempo + 3 espaciales)</li>
+      <li>Índices latinos \( i,j,k\in\{1,2,3\} \) — solo componentes espaciales</li>
+      <li>\( \partial_\mu=\partial/\partial x^\mu \) — derivada parcial</li>
+      <li>\( \nabla_\mu \) — derivada covariante</li>
+      <li>\( \Gamma^\lambda_{\mu\nu} \) — símbolos de Christoffel (conexión)</li>
+      <li>\( R^\rho_{\phantom\rho\sigma\mu\nu} \) — tensor de Riemann; \( R_{\mu\nu} \) — tensor de Ricci; \( R \) — escalar</li>
+      <li>\( G_{\mu\nu} \) — tensor de Einstein; \( T_{\mu\nu} \) — tensor energía-momento</li>
+      <li>\( g=\det(g_{\mu\nu}) \) — determinante de la métrica</li>
+    </ul>
+  </div>
 
-            <h3>Suma y resta</h3>
-            <p>Solo se pueden sumar tensores del mismo tipo:</p>
-            <p class="math-block">$$ (S + T)^{\mu}_{\phantom{\mu}\nu} = S^{\mu}_{\phantom{\mu}\nu} + T^{\mu}_{\phantom{\mu}\nu} $$</p>
-
-            <h3>Producto tensorial (⊗)</h3>
-            <p>Combina tensores aumentando el rango:</p>
-            <p class="math-block">$$ (S \otimes T)^{\mu\nu}_{\phantom{\mu\nu}\rho\sigma} = S^{\mu}_{\phantom{\mu}\rho}T^{\nu}_{\phantom{\nu}\sigma} $$</p>
-            <p>Un tensor \( (r_1, s_1) \) con uno \( (r_2, s_2) \) produce un tensor \( (r_1+r_2, s_1+s_2) \).</p>
-
-            <h3>Contracción</h3>
-            <p>Suma sobre un índice superior y uno inferior, reduciendo el rango en 2:</p>
-            <p class="math-block">$$ T^\mu_{\phantom{\mu}\mu} = T^0_{\phantom{0}0} + T^1_{\phantom{1}1} + T^2_{\phantom{2}2} + T^3_{\phantom{3}3} $$</p>
-            <p>La contracción es invariante: produce el mismo resultado en cualquier sistema de coordenadas.</p>
-
-            <h3>Producto interno</h3>
-            <p>Usando el tensor métrico \( g_{\mu\nu} \):</p>
-            <p class="math-block">$$ V \cdot W = g_{\mu\nu}V^\mu W^\nu $$</p>
-            <p>El producto interno de un vector consigo mismo da su norma al cuadrado:</p>
-            <p class="math-block">$$ V^2 = g_{\mu\nu}V^\mu V^\nu $$</p>
-
-            <h3>Subir y bajar índices</h3>
-            <p>El tensor métrico convierte índices contravariantes en covariantes y viceversa:</p>
-            <p class="math-block">$$ V_\mu = g_{\mu\nu}V^\nu \quad \text{(bajar)} $$</p>
-            <p class="math-block">$$ V^\mu = g^{\mu\nu}V_\nu \quad \text{(subir)} $$</p>
-            <p>Donde \( g^{\mu\nu} \) es la inversa de \( g_{\mu\nu} \): \( g^{\mu\lambda}g_{\lambda\nu} = \delta^\mu_\nu \)</p>
-        </section>
-
-        <section class="section">
-            <h2>Tensor Métrico</h2>
-            <p class="math-block">$$ g_{\mu\nu} = g_{\nu\mu} $$</p>
-            <p>El tensor métrico es simétrico y define la geometría del espacio. Determina:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Distancias entre puntos: \( ds^2 = g_{\mu\nu}dx^\mu dx^\nu \)</li>
-                    <li>Ángulos entre vectores</li>
-                    <li>Volúmenes en el espacio</li>
-                    <li>Ecuaciones geodésicas (trayectorias de partículas libres)</li>
-                    <li>Curvatura del espacio-tiempo</li>
-                </ul>
-            </section>
-
-            <h3>Ejemplos de métricas</h3>
-
-            <h4>Espacio euclidiano 3D</h4>
-            <p class="math-block">$$ ds^2 = dx^2 + dy^2 + dz^2 $$</p>
-            <p class="math-block">$$ g_{\mu\nu} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$</p>
-
-            <h4>Espacio de Minkowski (relatividad especial)</h4>
-            <p class="math-block">$$ ds^2 = -c^2dt^2 + dx^2 + dy^2 + dz^2 $$</p>
-            <p class="math-block">$$ \eta_{\mu\nu} = \begin{pmatrix} -1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{pmatrix} $$</p>
-
-            <h4>Espacio-tiempo de Schwarzschild</h4>
-            <p>Ver <a href="relatividad_general.html">Relatividad General</a> para la expresión completa.</p>
-
-            <h3>Determinante y volumen</h3>
-            <p>El elemento de volumen invariante se construye con:</p>
-            <p class="math-block">$$ dV = \sqrt{|g|}\,dx^0dx^1dx^2dx^3 $$</p>
-            <p>Donde \( g = \det(g_{\mu\nu}) \) es el determinante de la métrica.</p>
-        </section>
-
-        <section class="section">
-            <h2>Derivada Covariante</h2>
-            <p>La derivada ordinaria de un tensor generalmente no produce un tensor. La derivada covariante sí lo hace:</p>
-            <p class="math-block">$$ \nabla_\mu V^\nu = \partial_\mu V^\nu + \Gamma^\nu_{\mu\lambda}V^\lambda $$</p>
-            <p class="math-block">$$ \nabla_\mu \omega_\nu = \partial_\mu \omega_\nu - \Gamma^\lambda_{\mu\nu}\omega_\lambda $$</p>
-
-            <h3>Símbolos de Christoffel</h3>
-            <p class="math-block">$$ \Gamma^\lambda_{\mu\nu} = \frac{1}{2}g^{\lambda\sigma}\left(\partial_\mu g_{\nu\sigma} + \partial_\nu g_{\mu\sigma} - \partial_\sigma g_{\mu\nu}\right) $$</p>
-            <p>Los símbolos de Christoffel no son tensores, pero codifican la información sobre cómo varían los vectores base de un punto a otro (conexión).</p>
-
-            <h3>Propiedades</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>La derivada covariante de la métrica es cero: \( \nabla_\lambda g_{\mu\nu} = 0 \)</li>
-                    <li>Satisface la regla de Leibniz (linealidad)</li>
-                    <li>Conmuta con subir/bajar índices</li>
-                    <li>La derivada covariante de un escalar es la derivada ordinaria</li>
-                </ul>
-            </section>
-
-            <h3>Derivada covariante de tensor general</h3>
-            <p>Para un tensor \( T^{\mu}_{\phantom{\mu}\nu} \):</p>
-            <p class="math-block">$$ \nabla_\lambda T^{\mu}_{\phantom{\mu}\nu} = \partial_\lambda T^{\mu}_{\phantom{\mu}\nu} + \Gamma^\mu_{\lambda\sigma}T^\sigma_{\phantom{\sigma}\nu} - \Gamma^\sigma_{\lambda\nu}T^\mu_{\phantom{\mu}\sigma} $$</p>
-            <p>Cada índice superior agrega un término \( +\Gamma \), cada inferior agrega \( -\Gamma \).</p>
-        </section>
-
-        <section class="section">
-            <h2>Tensor de Curvatura de Riemann</h2>
-            <p class="math-block">$$ R^\rho_{\phantom{\rho}\sigma\mu\nu} = \partial_\mu\Gamma^\rho_{\nu\sigma} - \partial_\nu\Gamma^\rho_{\mu\sigma} + \Gamma^\rho_{\mu\lambda}\Gamma^\lambda_{\nu\sigma} - \Gamma^\rho_{\nu\lambda}\Gamma^\lambda_{\mu\sigma} $$</p>
-            <p>El tensor de Riemann mide la curvatura intrínseca del espacio. Tiene 4 índices y en \( n \) dimensiones tiene \( \frac{n^2(n^2-1)}{12} \) componentes independientes.</p>
-
-            <h3>Simetrías del tensor de Riemann</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Antisimétrico en los últimos dos índices: \( R^\rho_{\phantom{\rho}\sigma\mu\nu} = -R^\rho_{\phantom{\rho}\sigma\nu\mu} \)</li>
-                    <li>Antisimétrico en los primeros dos (con índices bajados): \( R_{\rho\sigma\mu\nu} = -R_{\sigma\rho\mu\nu} \)</li>
-                    <li>Simétrico bajo intercambio de pares: \( R_{\rho\sigma\mu\nu} = R_{\mu\nu\rho\sigma} \)</li>
-                    <li>Identidad de Bianchi: \( R^\rho_{\phantom{\rho}\sigma[\mu\nu;\lambda]} = 0 \)</li>
-                </ul>
-            </section>
-
-            <h3>Tensor de Ricci</h3>
-            <p>Contracción del tensor de Riemann:</p>
-            <p class="math-block">$$ R_{\mu\nu} = R^\lambda_{\phantom{\lambda}\mu\lambda\nu} $$</p>
-            <p>Tensor simétrico con \( \frac{n(n+1)}{2} \) componentes independientes.</p>
-
-            <h3>Escalar de curvatura</h3>
-            <p>Contracción adicional:</p>
-            <p class="math-block">$$ R = g^{\mu\nu}R_{\mu\nu} = R^\mu_{\phantom{\mu}\mu} $$</p>
-            <p>Escalar que resume la curvatura total en un punto.</p>
-
-            <h3>Tensor de Einstein</h3>
-            <p class="math-block">$$ G_{\mu\nu} = R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} $$</p>
-            <p>Aparece en las ecuaciones de campo de la Relatividad General. Satisface automáticamente la conservación \( \nabla^\mu G_{\mu\nu} = 0 \).</p>
-        </section>
-
-        <section class="section">
-            <h2>Geodésicas</h2>
-            <p>Las geodésicas son las trayectorias de "línea recta" en espacios curvos. En Relatividad General, son las trayectorias de partículas libres (sin fuerzas no gravitacionales).</p>
-
-            <h3>Ecuación de la geodésica</h3>
-            <p class="math-block">$$ \frac{d^2x^\mu}{d\lambda^2} + \Gamma^\mu_{\rho\sigma}\frac{dx^\rho}{d\lambda}\frac{dx^\sigma}{d\lambda} = 0 $$</p>
-            <p>Donde \( \lambda \) es un parámetro afín a lo largo de la curva (tiempo propio para partículas masivas).</p>
-
-            <h3>Interpretación física</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>En espacio plano (\( \Gamma = 0 \)): líneas rectas</li>
-                    <li>En espacio curvo: trayectorias que "minimizan" (o extremizan) la distancia</li>
-                    <li>Partículas libres siguen geodésicas del espacio-tiempo</li>
-                    <li>La luz sigue geodésicas nulas (\( ds^2 = 0 \))</li>
-                </ul>
-            </section>
-
-            <h3>Geodésicas tipo tiempo vs tipo luz</h3>
-            <p><strong>Tipo tiempo (\( ds^2 < 0 \)):</strong> Partículas masivas</p>
-            <p class="math-block">$$ \frac{d^2x^\mu}{d\tau^2} + \Gamma^\mu_{\rho\sigma}\frac{dx^\rho}{d\tau}\frac{dx^\sigma}{d\tau} = 0 $$</p>
-            <p>Parametrizadas por tiempo propio \( \tau \).</p>
-
-            <p><strong>Tipo luz (\( ds^2 = 0 \)):</strong> Fotones</p>
-            <p class="math-block">$$ \frac{d^2x^\mu}{d\lambda^2} + \Gamma^\mu_{\rho\sigma}\frac{dx^\rho}{d\lambda}\frac{dx^\sigma}{d\lambda} = 0 $$</p>
-            <p>Parametrizadas por parámetro afín arbitrario \( \lambda \).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Métrica de la esfera</h2>
-            <p>La superficie de una esfera de radio \( R \) tiene métrica (en coordenadas \( \theta, \phi \)):</p>
-            <p class="math-block">$$ ds^2 = R^2(d\theta^2 + \sin^2\theta\, d\phi^2) $$</p>
-
-            <h3>Tensor métrico</h3>
-            <p class="math-block">$$ g_{ij} = \begin{pmatrix} R^2 & 0 \\ 0 & R^2\sin^2\theta \end{pmatrix} $$</p>
-
-            <h3>Símbolos de Christoffel (no nulos)</h3>
-            <p class="math-block">$$ \Gamma^\theta_{\phi\phi} = -\sin\theta\cos\theta $$</p>
-            <p class="math-block">$$ \Gamma^\phi_{\theta\phi} = \Gamma^\phi_{\phi\theta} = \cot\theta $$</p>
-
-            <h3>Escalar de curvatura</h3>
-            <p class="math-block">$$ R = \frac{2}{R^2} $$</p>
-            <p>Curvatura constante positiva. Una esfera más pequeña tiene mayor curvatura.</p>
-
-            <h3>Geodésicas</h3>
-            <p>Las geodésicas en la esfera son los círculos máximos (como el ecuador o los meridianos). Estas son las trayectorias más cortas entre dos puntos sobre la superficie esférica.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de los Tensores</h2>
-            <ul>
-                <li><strong>Relatividad General:</strong> Ecuaciones de Einstein, curvatura del espacio-tiempo</li>
-                <li><strong>Mecánica continua:</strong> Tensor de esfuerzos, tensor de deformaciones</li>
-                <li><strong>Electromagnetismo:</strong> Tensor electromagnético \( F^{\mu\nu} \), ecuaciones de Maxwell</li>
-                <li><strong>Mecánica cuántica de campos:</strong> Tensor energía-momento, propagadores</li>
-                <li><strong>Geometría diferencial:</strong> Clasificación de variedades, teoremas de curvatura</li>
-                <li><strong>Visión por computadora:</strong> Tensor de estructura, análisis de texturas</li>
-                <li><strong>Machine Learning:</strong> Operaciones tensoriales en redes neuronales profundas</li>
-                <li><strong>Física de materiales:</strong> Tensores de conductividad, permitividad, permeabilidad</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>Índices griegos \( \mu, \nu, \rho, \sigma, \lambda \): 0,1,2,3 (espacio-tiempo)</li>
-                <li>Índices latinos \( i, j, k \): 1,2,3 (solo espacio)</li>
-                <li>\( g_{\mu\nu} \): Tensor métrico covariante</li>
-                <li>\( g^{\mu\nu} \): Tensor métrico contravariante (inversa)</li>
-                <li>\( \Gamma^\lambda_{\mu\nu} \): Símbolos de Christoffel (conexión)</li>
-                <li>\( \nabla_\mu \): Derivada covariante</li>
-                <li>\( \partial_\mu \): Derivada parcial ordinaria</li>
-                <li>\( R^\rho_{\phantom{\rho}\sigma\mu\nu} \): Tensor de Riemann</li>
-                <li>\( R_{\mu\nu} \): Tensor de Ricci</li>
-                <li>\( R \): Escalar de curvatura</li>
-                <li>\( G_{\mu\nu} \): Tensor de Einstein</li>
-                <li>\( \delta^\mu_\nu \): Delta de Kronecker</li>
-                <li>Convención de suma de Einstein: índices repetidos se suman</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Jerarquía tensorial</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Rango</th>
-                        <th>Tipo</th>
-                        <th>Notación</th>
-                        <th>Componentes (en 4D)</th>
-                        <th>Ejemplo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>Escalar</td>
-                        <td>\( \phi \)</td>
-                        <td>1</td>
-                        <td>Temperatura, densidad</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Vector/Covector</td>
-                        <td>\( V^\mu \) o \( \omega_\mu \)</td>
-                        <td>4</td>
-                        <td>Velocidad, gradiente</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Matriz</td>
-                        <td>\( T^{\mu\nu} \), \( T_{\mu\nu} \), \( T^\mu_{\phantom{\mu}\nu} \)</td>
-                        <td>16</td>
-                        <td>Métrica, tensor electromagnético</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>—</td>
-                        <td>\( T^{\mu\nu\rho} \)</td>
-                        <td>64</td>
-                        <td>Tensor de torsión</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>—</td>
-                        <td>\( R^\rho_{\phantom{\rho}\sigma\mu\nu} \)</td>
-                        <td>256 (20 independientes)</td>
-                        <td>Tensor de Riemann</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Propiedades de simetría</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tensor</th>
-                        <th>Simetría</th>
-                        <th>Componentes independientes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Métrico \( g_{\mu\nu} \)</td>
-                        <td>Simétrico: \( g_{\mu\nu} = g_{\nu\mu} \)</td>
-                        <td>10 (en 4D)</td>
-                    </tr>
-                    <tr>
-                        <td>Electromagnético \( F^{\mu\nu} \)</td>
-                        <td>Antisimétrico: \( F^{\mu\nu} = -F^{\nu\mu} \)</td>
-                        <td>6 (en 4D)</td>
-                    </tr>
-                    <tr>
-                        <td>Ricci \( R_{\mu\nu} \)</td>
-                        <td>Simétrico</td>
-                        <td>10 (en 4D)</td>
-                    </tr>
-                    <tr>
-                        <td>Riemann \( R_{\mu\nu\rho\sigma} \)</td>
-                        <td>Múltiples simetrías</td>
-                        <td>20 (en 4D)</td>
-                    </tr>
-                    <tr>
-                        <td>Energía-momento \( T_{\mu\nu} \)</td>
-                        <td>Simétrico</td>
-                        <td>10 (en 4D)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

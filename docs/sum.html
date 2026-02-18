@@ -1,142 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sumatorias - Calculadora Científica</title>
-    
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sumatorias — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="advmath.html" class="back-link">← Volver</a>
+  <h1 class="page-title"><em>Sumatorias</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="advmath.html">← Volver</a></h3>
-        <h1>Sumatorias</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ \sum_{i=a}^{b}f(i) := \operatorname{fold}_{+}\!\bigl(\{f(i)\mid i\in\mathbb{Z},\,a\le i\le b\}\bigr) $$</p>
+    <p>La sumatoria es el operador que asigna a una familia finita de elementos indexados el resultado de aplicar repetidamente la operación suma, en cualquier orden, partiendo del elemento neutro. Cuando \( a \) o \( b \) son infinitos, la sumatoria se extiende como un límite.</p>
+  </div>
 
-    <main>
-        <hr>
-        <section class="section">
-            <h2>Definición</h2>
-            <h1 class="math-block">$$ \sum_{i=a}^{b}f(i):=\text{fold}_{+}(\{f(i)|i\in\mathbb{Z},a\le i\le b\}) $$</h1>
-            <p>La sumatoria es el operador que asigna a una familia finita de elementos indexados el resultado de aplicar repetidamente la operación suma, en cualquier orden, partiendo del elemento neutro. Cuando \( a \) o \( b \) no existen o son infinitos, la sumatoria se extiende hasta donde abarquen los datos.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Propiedades</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Propiedad</th><th>Expresión</th></tr></thead>
+        <tbody>
+          <tr><td>Linealidad</td><td>\( \displaystyle\sum_{i=a}^b(f+g)=\sum f+\sum g \quad\text{y}\quad \sum cf=c\sum f \)</td></tr>
+          <tr><td>Aditividad del dominio</td><td>\( \displaystyle\sum_{i=a}^b f=\sum_{i=a}^k f+\sum_{i=k+1}^b f \)</td></tr>
+          <tr><td>Invarianza por reordenamiento</td><td>\( \displaystyle\sum_{i=1}^N x_i=\sum_{i=1}^N x_{\pi(i)} \)</td></tr>
+          <tr><td>Monotonía</td><td>\( f(i)\ge g(i)\;\Rightarrow\;\sum f\ge\sum g \)</td></tr>
+          <tr><td>Acotación</td><td>\( |f(i)|\le M\;\Rightarrow\;\left|\sum f\right|\le M(b-a+1) \)</td></tr>
+          <tr><td>Cambio de índice</td><td>\( j=i+k\;\Rightarrow\;\displaystyle\sum_{i=a}^b f(i)=\sum_{j=a+k}^{b+k}f(j-k) \)</td></tr>
+          <tr><td>Intervalo vacío</td><td>\( b<a\;\Rightarrow\;\displaystyle\sum_{i=a}^b f(i)=0 \)</td></tr>
+          <tr><td>Compatibilidad con límites</td><td>\( \displaystyle\sum_{i=1}^\infty f(i)=\lim_{N\to\infty}\sum_{i=1}^N f(i) \)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Propiedades</h2>
-            <table>
-                <thead>
-                  <tr>
-                    <th>Propiedad</th>
-                    <th>Expresión</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Linealidad</td>
-                    <td>$$ \sum_{i=a}^b(f(i)+g(i))=\sum_{i=a}^bf(i)+\sum_{i=a}^bg(i),\quad\sum_{i=a}^bcf(i)=c\sum_{i=a}^bf(i) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Aditividad del dominio</td>
-                    <td>$$ \sum_{i=a}^bf(i)=\sum_{i=a}^kf(i)+\sum_{i=k+1}^bf(i) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Invarianza por reordenamiento</td>
-                    <td>$$ \sum_{i=1}^Nx_i=\sum_{i=1}^Nx_{\pi(i)} $$</td>
-                  </tr>
-                  <tr>
-                    <td>Neutralidad del cero</td>
-                    <td>$$ \sum_{i}x_i=\sum_i(x_i+0) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Monotonía</td>
-                    <td>$$ \forall i/f(i)\ge g(i):\sum_{i=a}^bf(i)\ge\sum_{i=a}^bg(i) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Acotación</td>
-                    <td>$$ |f(i)|\le M:\left|\sum_{i=a}^bf(i)\right|\le M(b-a+1) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Cambio de índice</td>
-                    <td>$$ \forall j=i+k:\sum_{i=a}^bf(i)=\sum_{j=a+k}^{b+k}f(j-k) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Distributividad sobre intervalos vacíos</td>
-                    <td>$$ \forall b\lt a:\sum_{i=a}^bf(i)=0 $$</td>
-                  </tr>
-                  <tr>
-                    <td>Compatibilidad con límites</td>
-                    <td>$$ \sum_{i=1}^\infty f(i)=\lim_{N\to\infty}\sum_{i=1}^Nf(i) $$</td>
-                  </tr>
-                  <tr>
-                    <td>Estructura algebraica subyacente</td>
-                    <td>La sumatoria está bien definida si:
-                      <ul>
-                        <li>la operación es asociativa,</li>
-                        <li>existe elemento neutro,</li>
-                        <li>y el conjunto es finito (o convergente).</li>
-                      </ul>
-                    </td>
-                  </tr>
-                </tbody>
-            </table>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>Trabajo mecánico discreto:</strong> suma de fuerzas por desplazamientos en puntos discretos.</li>
+      <li><strong>Centro de masa:</strong> \( \bar{x}=\frac{1}{M}\sum m_i x_i \)</li>
+      <li><strong>Carga total en una estructura:</strong> suma de cargas puntuales.</li>
+      <li><strong>Consumo energético acumulado:</strong> integral numérica como sumatoria de Riemann.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>La sumatoria tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Trabajo mecánico discreto.</li>
-                <li>Centro de masa.</li>
-                <li>Carga total en una estructura.</li>
-                <li>Consumo energético acumulado.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Resolución — Regresión lineal por mínimos cuadrados</div>
+    <p>Dados \( N \) puntos \( (x_i,y_i) \), ajustar \( y=mx+b \) minimizando:</p>
+    <p class="math-block">$$ S(m,b)=\sum_{i=1}^N(y_i-mx_i-b)^2 $$</p>
+    <p>Derivando e igualando a cero, el sistema normal es:</p>
+    <p class="math-block">$$ m=\frac{N\sum x_iy_i-\sum x_i\sum y_i}{N\sum x_i^2-(\sum x_i)^2} \qquad b=\frac{\sum y_i-m\sum x_i}{N} $$</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Resolución</h2>
-            <p>Dados \( N \) puntos experimentales: \( (x_{N_0},y_{N_0}), (x_{N_{0+1}},y_{N_{0+1}}),\dots,(x_{N},y_{N}) \) queremos ajustar una recta \( y=mx+b \).</p>
-            <p>El error cuadrático total (\( R^2 \)):</p>
-            <p class="math-block">$$ S(m,b)=\sum_{i=1}^N(y_i-(mx_i+b))^2 $$</p>
-            <p>Derivamos e igualamos a cero:</p>
-            <p class="math-block">$$ \frac{\delta S}{\delta m}=0,\quad\frac{\delta S}{\delta b}=0 $$</p>
-            <p>Esto lleva al sistema normal:</p>
-            <p class="math-block">$$ \begin{cases} m\sum x_i^2+b\sum x_i=\sum x_iy_i \\ m\sum x_i+bN=\sum y_i \end{cases} $$</p>
-            <p>Resolviendo el sistema:</p>
-            <p class="math-block">$$ m=\frac{N\sum x_iy_i-\sum x_i\sum y_i}{N\sum x_i^2-(\sum x_i)^2} $$</p>
-            <p class="math-block">$$ b=\frac{\sum y_i-m\sum x_i}{N} $$</p>
-            <h2>Ejemplo numérico</h2>
-            <p>Dado el conjunto \( (1,2),(2,3),(3,5) \):</p>
-            <p class="math-block">$$ \sum x_i=6,\quad\sum y_i=10,\quad\sum x_i^2=14,\quad\sum x_iy_i=23,\quad N=3 $$</p>
-            <p>Pendiente:</p>
-            <p class="math-block">$$ m=\frac{3\cdot23-6\cdot10}{3\cdot14-36}=\frac{69-60}{42-36}=\frac{9}{6}=\frac{3}{2}=1.5 $$</p>
-            <p>Ordenada:</p>
-            <p class="math-block">$$ b=\frac{10-1-5\cdot6}{3}=\frac{1}{3} $$</p>
-            <p>Resultado:</p>
-            <p class="math-block">$$ \boxed{y=1.5x+0.33} $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo numérico</div>
+    <p>Puntos: \( (1,2),(2,3),(3,5) \)</p>
+    <p class="math-block">$$ \sum x_i=6 \quad \sum y_i=10 \quad \sum x_i^2=14 \quad \sum x_iy_i=23 \quad N=3 $$</p>
+    <p class="math-block">$$ m=\frac{3(23)-6(10)}{3(14)-36}=\frac{9}{6}=1.5 \qquad b=\frac{10-1.5(6)}{3}=\frac{1}{3}\approx0.33 $$</p>
+    <p class="math-block">$$ \boxed{y=1.5x+0.33} $$</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \sum \) : Símbolo de sumatoria.</li>
-                <li>\( i=a \) : Iteración inicial.</li>
-                <li>\( b \) : Iteración final.</li>
-                <li>\( f(i) \) : Función a sumar.</li>
-            </ul>
-        </section>
-        <hr>
-    </main>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \sum \) — símbolo de sumatoria</li>
+      <li>\( i=a \) — índice e iteración inicial</li>
+      <li>\( b \) — iteración final</li>
+      <li>\( f(i) \) — función a sumar (término general)</li>
+      <li>\( \pi \) — permutación de índices</li>
+      <li>\( M \) — cota superior de \( |f(i)| \)</li>
+    </ul>
+  </div>
 
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

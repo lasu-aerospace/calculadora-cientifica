@@ -1,427 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vectores - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vectores — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="math.html" class="back-link">← Volver</a>
+  <h1 class="page-title"><em>Vectores</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="math.html">← Volver</a></h3>
-        <h1>Vectores</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Definición y magnitud</div>
+    <p>Un vector es un objeto matemático con magnitud y dirección. Se representa como una flecha orientada, o algebraicamente con sus componentes en una base.</p>
+    <p class="math-block">$$ \vec{v}=v_x\hat{i}+v_y\hat{j}+v_z\hat{k} \qquad |\vec{v}|=\sqrt{v_x^2+v_y^2+v_z^2} $$</p>
+    <p>El <strong>vector unitario</strong> tiene magnitud 1: \( \hat{v}=\vec{v}/|\vec{v}| \). Los vectores canónicos \( \hat{i},\hat{j},\hat{k} \) apuntan en los ejes \( x,y,z \) respectivamente.</p>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Definición</h2>
-            <p>Un vector es un objeto matemático que posee magnitud (o módulo), dirección y sentido. A diferencia de los escalares, que solo tienen magnitud, los vectores permiten representar cantidades físicas que requieren especificar una orientación en el espacio, como la velocidad, la fuerza, el desplazamiento o el campo eléctrico.</p>
-            <p>Geométricamente, un vector se representa como un segmento de línea dirigido con un punto inicial (origen) y un punto final (extremo). La longitud del segmento representa su magnitud, y la flecha indica su dirección y sentido.</p>
-            
-            <h3>Notación</h3>
-            <p>Un vector se puede expresar de diversas formas:</p>
-            <section class="math-block">
-                <ul>
-                    <li><strong>Notación geométrica:</strong> \( \vec{v} \) o \( \overrightarrow{AB} \) (desde punto A hacia punto B)</li>
-                    <li><strong>Notación de componentes:</strong> \( \vec{v} = (v_x, v_y) \) en 2D o \( \vec{v} = (v_x, v_y, v_z) \) en 3D</li>
-                    <li><strong>Notación con vectores unitarios:</strong> \( \vec{v} = v_x\hat{i} + v_y\hat{j} + v_z\hat{k} \)</li>
-                    <li><strong>Notación columna:</strong> \( \vec{v} = \begin{pmatrix} v_x \\ v_y \\ v_z \end{pmatrix} \)</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Operaciones básicas</div>
+    <p class="math-block">$$ \vec{u}+\vec{v}=(u_x+v_x,\;u_y+v_y,\;u_z+v_z) $$</p>
+    <p class="math-block">$$ k\vec{v}=(kv_x,\;kv_y,\;kv_z) $$</p>
+    <div class="info-box">
+      <p>La suma vectorial es conmutativa y asociativa. Multiplicar por un escalar \( k \) escala la magnitud y, si \( k<0 \), invierte el sentido.</p>
+    </div>
+  </div>
 
-            <h3>Magnitud (Módulo)</h3>
-            <p>La magnitud de un vector \( \vec{v} \) se calcula mediante el teorema de Pitágoras generalizado:</p>
-            <p class="math-block">$$ |\vec{v}| = \|\vec{v}\| = \sqrt{v_x^2 + v_y^2 + v_z^2} $$</p>
-            <p>En dos dimensiones:</p>
-            <p class="math-block">$$ |\vec{v}| = \sqrt{v_x^2 + v_y^2} $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Producto escalar (Producto punto)</div>
+    <p class="math-block">$$ \vec{u}\cdot\vec{v}=u_xv_x+u_yv_y+u_zv_z=|\vec{u}||\vec{v}|\cos\theta $$</p>
+    <p>Produce un <strong>escalar</strong>. El ángulo entre los vectores:</p>
+    <p class="math-block">$$ \theta=\arccos\!\left(\frac{\vec{u}\cdot\vec{v}}{|\vec{u}||\vec{v}|}\right) $$</p>
+    <p>Ortogonalidad: \( \vec{u}\perp\vec{v}\;\Leftrightarrow\;\vec{u}\cdot\vec{v}=0 \)</p>
+    <p><strong>Proyección</strong> de \( \vec{v} \) sobre \( \vec{u} \):</p>
+    <p class="math-block">$$ \text{proy}_{\vec{u}}\vec{v}=\frac{\vec{u}\cdot\vec{v}}{|\vec{u}|} \qquad \vec{\text{proy}}_{\vec{u}}\vec{v}=\frac{\vec{u}\cdot\vec{v}}{|\vec{u}|^2}\vec{u} $$</p>
+  </div>
 
-        <section class="section">
-            <h2>Operaciones básicas</h2>
-            
-            <h3>Suma de vectores</h3>
-            <p>La suma de dos vectores \( \vec{u} \) y \( \vec{v} \) se realiza componente por componente:</p>
-            <p class="math-block">$$ \vec{u} + \vec{v} = (u_x + v_x, u_y + v_y, u_z + v_z) $$</p>
-            <p><strong>Propiedades:</strong></p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Conmutativa:</strong> \( \vec{u} + \vec{v} = \vec{v} + \vec{u} \)</li>
-                    <li><strong>Asociativa:</strong> \( (\vec{u} + \vec{v}) + \vec{w} = \vec{u} + (\vec{v} + \vec{w}) \)</li>
-                    <li><strong>Elemento neutro:</strong> \( \vec{v} + \vec{0} = \vec{v} \)</li>
-                    <li><strong>Elemento opuesto:</strong> \( \vec{v} + (-\vec{v}) = \vec{0} \)</li>
-                </ul>
-            </section>
-            <p><strong>Interpretación geométrica:</strong> La regla del paralelogramo o del triángulo. El vector suma es la diagonal del paralelogramo formado por los dos vectores.</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — Trabajo mecánico</div>
+    <p>Fuerza \( \vec{F}=(10,5,0) \) N, desplazamiento \( \vec{d}=(3,2,0) \) m:</p>
+    <p class="math-block">$$ W=\vec{F}\cdot\vec{d}=(10)(3)+(5)(2)=40\;\text{J} $$</p>
+    <p class="math-block">$$ |\vec{F}|=\sqrt{125}\approx11.18\;\text{N} \qquad |\vec{d}|=\sqrt{13}\approx3.61\;\text{m} $$</p>
+    <p class="math-block">$$ \theta=\arccos\!\frac{40}{11.18\times3.61}\approx7.6° $$</p>
+    <p>Fuerza y desplazamiento casi alineados: trabajo casi máximo posible.</p>
+  </div>
 
-            <h3>Resta de vectores</h3>
-            <p class="math-block">$$ \vec{u} - \vec{v} = (u_x - v_x, u_y - v_y, u_z - v_z) $$</p>
-            <p>Equivalentemente: \( \vec{u} - \vec{v} = \vec{u} + (-\vec{v}) \)</p>
+  <div class="card">
+    <div class="card-label">Producto vectorial (Producto cruz)</div>
+    <p class="math-block">$$ \vec{u}\times\vec{v}=\begin{vmatrix}\hat{i}&\hat{j}&\hat{k}\\u_x&u_y&u_z\\v_x&v_y&v_z\end{vmatrix}=(u_yv_z-u_zv_y)\hat{i}-(u_xv_z-u_zv_x)\hat{j}+(u_xv_y-u_yv_x)\hat{k} $$</p>
+    <p>Produce un <strong>vector</strong> perpendicular a ambos. Magnitud = área del paralelogramo:</p>
+    <p class="math-block">$$ |\vec{u}\times\vec{v}|=|\vec{u}||\vec{v}|\sin\theta $$</p>
+    <div class="info-box">
+      <ul>
+        <li><strong>Anticonmutativa:</strong> \( \vec{u}\times\vec{v}=-(\vec{v}\times\vec{u}) \)</li>
+        <li><strong>Dirección:</strong> regla de la mano derecha</li>
+        <li>Si \( \vec{u}\parallel\vec{v} \): \( \vec{u}\times\vec{v}=\vec{0} \)</li>
+        <li>\( \hat{i}\times\hat{j}=\hat{k} \) · \( \hat{j}\times\hat{k}=\hat{i} \) · \( \hat{k}\times\hat{i}=\hat{j} \)</li>
+      </ul>
+    </div>
+  </div>
 
-            <h3>Multiplicación por un escalar</h3>
-            <p>Al multiplicar un vector \( \vec{v} \) por un escalar \( k \):</p>
-            <p class="math-block">$$ k\vec{v} = (kv_x, kv_y, kv_z) $$</p>
-            <p><strong>Efectos:</strong></p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Si \( k > 1 \): el vector se alarga</li>
-                    <li>Si \( 0 < k < 1 \): el vector se acorta</li>
-                    <li>Si \( k < 0 \): el vector invierte su sentido</li>
-                    <li>Si \( k = 0 \): resulta el vector nulo \( \vec{0} \)</li>
-                </ul>
-            </section>
-            <p>La magnitud del vector resultante es: \( |k\vec{v}| = |k| \cdot |\vec{v}| \)</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Torque</div>
+    <p>Fuerza \( \vec{F}=(0,0,-50) \) N en punto \( \vec{r}=(2,3,0) \) m:</p>
+    <p class="math-block">$$ \vec{\tau}=\vec{r}\times\vec{F}=\begin{vmatrix}\hat{i}&\hat{j}&\hat{k}\\2&3&0\\0&0&-50\end{vmatrix}=(-150,100,0)\;\text{N·m} $$</p>
+    <p class="math-block">$$ |\vec{\tau}|=\sqrt{150^2+100^2}=\sqrt{32500}\approx180.3\;\text{N·m} $$</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Navegación aérea</h2>
-            <p>Un avión vuela con velocidad \( \vec{v}_a = (300, 50) \) km/h (Este-Norte) respecto al aire. Hay un viento con velocidad \( \vec{v}_w = (-40, 30) \) km/h. ¿Cuál es la velocidad resultante del avión respecto al suelo?</p>
-            <p class="math-block">$$ \vec{v}_r = \vec{v}_a + \vec{v}_w = (300-40, 50+30) = (260, 80) \text{ km/h} $$</p>
-            <p>La magnitud de la velocidad resultante es:</p>
-            <p class="math-block">$$ |\vec{v}_r| = \sqrt{260^2 + 80^2} = \sqrt{67600 + 6400} = \sqrt{74000} \approx 272.03 \text{ km/h} $$</p>
-            <p>El ángulo respecto al Este es:</p>
-            <p class="math-block">$$ \theta = \arctan\left(\frac{80}{260}\right) \approx 17.1° $$</p>
-            <p>Por lo tanto, el avión se desplaza a aproximadamente 272 km/h en dirección 17.1° al noreste del Este.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Producto mixto y volumen</div>
+    <p class="math-block">$$ \vec{u}\cdot(\vec{v}\times\vec{w})=\begin{vmatrix}u_x&u_y&u_z\\v_x&v_y&v_z\\w_x&w_y&w_z\end{vmatrix} $$</p>
+    <p>Es un escalar que representa el volumen del paralelepípedo formado por los tres vectores. Tres vectores son coplanares si y solo si su producto mixto es cero.</p>
+    <p>Propiedad cíclica: \( \vec{u}\cdot(\vec{v}\times\vec{w})=\vec{v}\cdot(\vec{w}\times\vec{u})=\vec{w}\cdot(\vec{u}\times\vec{v}) \)</p>
+  </div>
 
-        <section class="section">
-            <h2>Vector unitario</h2>
-            <p>Un vector unitario es aquel cuya magnitud es igual a 1. Se utiliza para indicar únicamente la dirección de un vector, sin considerar su magnitud.</p>
-            <p>Para obtener el vector unitario \( \hat{v} \) en la dirección de \( \vec{v} \):</p>
-            <p class="math-block">$$ \hat{v} = \frac{\vec{v}}{|\vec{v}|} = \frac{1}{\sqrt{v_x^2 + v_y^2 + v_z^2}}(v_x, v_y, v_z) $$</p>
-            
-            <h3>Vectores unitarios canónicos</h3>
-            <p>En el sistema de coordenadas cartesianas, los vectores unitarios fundamentales son:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( \hat{i} = (1, 0, 0) \) : dirección del eje X</li>
-                    <li>\( \hat{j} = (0, 1, 0) \) : dirección del eje Y</li>
-                    <li>\( \hat{k} = (0, 0, 1) \) : dirección del eje Z</li>
-                </ul>
-            </section>
-            <p>Cualquier vector puede expresarse como combinación lineal de estos vectores base:</p>
-            <p class="math-block">$$ \vec{v} = v_x\hat{i} + v_y\hat{j} + v_z\hat{k} $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo práctico — Navegación aérea</div>
+    <p>Aeronave con vector velocidad \( \vec{v}=(520,12,643) \) km/h. Rapidez total:</p>
+    <p class="math-block">$$ |\vec{v}|=\sqrt{520^2+12^2+643^2}=\sqrt{685873}\approx\boxed{829.2\;\text{km/h}} $$</p>
+    <p>Igual que el módulo de cualquier vector suma de componentes — una aplicación directa del Teorema de Pitágoras extendido a 3D.</p>
+  </div>
 
-        <section class="section">
-            <h2>Producto escalar (Producto punto)</h2>
-            <p class="math-block">$$ \vec{u} \cdot \vec{v} = u_xv_x + u_yv_y + u_zv_z = |\vec{u}||\vec{v}|\cos\theta $$</p>
-            <p>El producto escalar entre dos vectores produce un <strong>escalar</strong> (número real). Geométricamente, representa la proyección de un vector sobre otro, multiplicada por sus magnitudes.</p>
-            
-            <h3>Propiedades</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Conmutativa:</strong> \( \vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u} \)</li>
-                    <li><strong>Distributiva:</strong> \( \vec{u} \cdot (\vec{v} + \vec{w}) = \vec{u} \cdot \vec{v} + \vec{u} \cdot \vec{w} \)</li>
-                    <li><strong>Asociativa con escalares:</strong> \( (k\vec{u}) \cdot \vec{v} = k(\vec{u} \cdot \vec{v}) \)</li>
-                    <li><strong>Producto consigo mismo:</strong> \( \vec{v} \cdot \vec{v} = |\vec{v}|^2 \)</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Tabla de referencia</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operación</th><th>Fórmula</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Suma</td><td>\( (u_x+v_x,\;u_y+v_y,\;u_z+v_z) \)</td><td>Vector</td></tr>
+          <tr><td>Magnitud</td><td>\( \sqrt{v_x^2+v_y^2+v_z^2} \)</td><td>Escalar</td></tr>
+          <tr><td>Vector unitario</td><td>\( \vec{v}/|\vec{v}| \)</td><td>Vector</td></tr>
+          <tr><td>Producto escalar</td><td>\( u_xv_x+u_yv_y+u_zv_z \)</td><td>Escalar</td></tr>
+          <tr><td>Producto vectorial</td><td>\( (u_yv_z-u_zv_y,\;\ldots) \)</td><td>Vector</td></tr>
+          <tr><td>Producto mixto</td><td>\( \det[u|v|w] \)</td><td>Escalar = volumen</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Cálculo del ángulo entre vectores</h3>
-            <p>Despejando \( \theta \) de la definición del producto escalar:</p>
-            <p class="math-block">$$ \cos\theta = \frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|} \quad \Rightarrow \quad \theta = \arccos\left(\frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|}\right) $$</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \vec{v} \) o \( \mathbf{v} \) — vector; \( |\vec{v}| \) o \( \|\vec{v}\| \) — magnitud</li>
+      <li>\( \hat{v} \) — vector unitario en la dirección de \( \vec{v} \)</li>
+      <li>\( \hat{i},\hat{j},\hat{k} \) — vectores unitarios canónicos (ejes X, Y, Z)</li>
+      <li>\( \vec{u}\cdot\vec{v} \) — producto escalar; \( \vec{u}\times\vec{v} \) — producto vectorial</li>
+      <li>\( \theta \) — ángulo entre dos vectores</li>
+      <li>\( \vec{0} \) — vector nulo; \( \vec{u}\perp\vec{v} \) — ortogonales; \( \vec{u}\parallel\vec{v} \) — paralelos</li>
+    </ul>
+  </div>
 
-            <h3>Vectores ortogonales (perpendiculares)</h3>
-            <p>Dos vectores son ortogonales si y solo si su producto escalar es cero:</p>
-            <p class="math-block">$$ \vec{u} \perp \vec{v} \quad \Leftrightarrow \quad \vec{u} \cdot \vec{v} = 0 $$</p>
-            <p>Esto ocurre cuando \( \theta = 90° \), ya que \( \cos(90°) = 0 \).</p>
-
-            <h3>Proyección de un vector sobre otro</h3>
-            <p>La proyección escalar de \( \vec{v} \) sobre \( \vec{u} \) es:</p>
-            <p class="math-block">$$ \text{proy}_{\vec{u}}\vec{v} = \frac{\vec{u} \cdot \vec{v}}{|\vec{u}|} $$</p>
-            <p>La proyección vectorial es:</p>
-            <p class="math-block">$$ \vec{\text{proy}}_{\vec{u}}\vec{v} = \frac{\vec{u} \cdot \vec{v}}{|\vec{u}|^2}\vec{u} = \frac{\vec{u} \cdot \vec{v}}{\vec{u} \cdot \vec{u}}\vec{u} $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Trabajo mecánico</h2>
-            <p>Una fuerza \( \vec{F} = (10, 5, 0) \) N actúa sobre un objeto que se desplaza \( \vec{d} = (3, 2, 0) \) m. Calculemos el trabajo realizado:</p>
-            <p class="math-block">$$ W = \vec{F} \cdot \vec{d} = (10)(3) + (5)(2) + (0)(0) = 30 + 10 = 40 \text{ J} $$</p>
-            <p>El trabajo es 40 Joules. Ahora, calculemos el ángulo entre la fuerza y el desplazamiento:</p>
-            <p class="math-block">$$ |\vec{F}| = \sqrt{10^2 + 5^2} = \sqrt{125} \approx 11.18 \text{ N} $$</p>
-            <p class="math-block">$$ |\vec{d}| = \sqrt{3^2 + 2^2} = \sqrt{13} \approx 3.61 \text{ m} $$</p>
-            <p class="math-block">$$ \cos\theta = \frac{40}{(11.18)(3.61)} \approx \frac{40}{40.36} \approx 0.991 $$</p>
-            <p class="math-block">$$ \theta = \arccos(0.991) \approx 7.6° $$</p>
-            <p>La fuerza y el desplazamiento forman un ángulo de aproximadamente 7.6°, lo que indica que están casi alineados, maximizando así el trabajo realizado.</p>
-        </section>
-
-        <section class="section">
-            <h2>Producto vectorial (Producto cruz)</h2>
-            <p class="math-block">$$ \vec{u} \times \vec{v} = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ u_x & u_y & u_z \\ v_x & v_y & v_z \end{vmatrix} = (u_yv_z - u_zv_y)\hat{i} - (u_xv_z - u_zv_x)\hat{j} + (u_xv_y - u_yv_x)\hat{k} $$</p>
-            <p>El producto vectorial entre dos vectores produce otro <strong>vector</strong> perpendicular a ambos. Su magnitud es:</p>
-            <p class="math-block">$$ |\vec{u} \times \vec{v}| = |\vec{u}||\vec{v}|\sin\theta $$</p>
-            <p>donde \( \theta \) es el ángulo entre los vectores.</p>
-
-            <h3>Propiedades</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li><strong>Anticonmutativa:</strong> \( \vec{u} \times \vec{v} = -(\vec{v} \times \vec{u}) \)</li>
-                    <li><strong>Distributiva:</strong> \( \vec{u} \times (\vec{v} + \vec{w}) = \vec{u} \times \vec{v} + \vec{u} \times \vec{w} \)</li>
-                    <li><strong>NO asociativa:</strong> \( (\vec{u} \times \vec{v}) \times \vec{w} \neq \vec{u} \times (\vec{v} \times \vec{w}) \) en general</li>
-                    <li><strong>Vectores paralelos:</strong> \( \vec{u} \times \vec{v} = \vec{0} \) si \( \vec{u} \parallel \vec{v} \)</li>
-                    <li><strong>Producto consigo mismo:</strong> \( \vec{v} \times \vec{v} = \vec{0} \)</li>
-                </ul>
-            </section>
-
-            <h3>Regla de la mano derecha</h3>
-            <p>La dirección del vector resultante \( \vec{u} \times \vec{v} \) se determina mediante la regla de la mano derecha:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ol>
-                    <li>Apunta los dedos de tu mano derecha en la dirección de \( \vec{u} \)</li>
-                    <li>Dobla los dedos hacia \( \vec{v} \)</li>
-                    <li>Tu pulgar apunta en la dirección de \( \vec{u} \times \vec{v} \)</li>
-                </ol>
-            </section>
-
-            <h3>Productos de vectores unitarios</h3>
-            <p class="math-block">$$ \begin{array}{ccc} \hat{i} \times \hat{j} = \hat{k} & \hat{j} \times \hat{k} = \hat{i} & \hat{k} \times \hat{i} = \hat{j} \\ \hat{j} \times \hat{i} = -\hat{k} & \hat{k} \times \hat{j} = -\hat{i} & \hat{i} \times \hat{k} = -\hat{j} \end{array} $$</p>
-
-            <h3>Interpretación geométrica</h3>
-            <p>La magnitud del producto vectorial representa el área del paralelogramo formado por los dos vectores:</p>
-            <p class="math-block">$$ A_{\text{paralelogramo}} = |\vec{u} \times \vec{v}| = |\vec{u}||\vec{v}|\sin\theta $$</p>
-            <p>El área del triángulo formado por los vectores es la mitad:</p>
-            <p class="math-block">$$ A_{\text{triángulo}} = \frac{1}{2}|\vec{u} \times \vec{v}| $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Momento de una fuerza (Torque)</h2>
-            <p>Una fuerza \( \vec{F} = (0, 0, -50) \) N se aplica en el punto \( \vec{r} = (2, 3, 0) \) m desde el origen. Calculemos el momento (torque) respecto al origen:</p>
-            <p class="math-block">$$ \vec{\tau} = \vec{r} \times \vec{F} = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ 2 & 3 & 0 \\ 0 & 0 & -50 \end{vmatrix} $$</p>
-            <p>Expandiendo el determinante:</p>
-            <section class="math-block">
-                <ul>
-                    <li>Componente \( \hat{i} \): \( (3)(-50) - (0)(0) = -150 \)</li>
-                    <li>Componente \( \hat{j} \): \( -[(2)(-50) - (0)(0)] = -(-100) = 100 \)</li>
-                    <li>Componente \( \hat{k} \): \( (2)(0) - (3)(0) = 0 \)</li>
-                </ul>
-            </section>
-            <p class="math-block">$$ \vec{\tau} = (-150, 100, 0) \text{ N·m} $$</p>
-            <p>La magnitud del torque es:</p>
-            <p class="math-block">$$ |\vec{\tau}| = \sqrt{(-150)^2 + 100^2} = \sqrt{22500 + 10000} = \sqrt{32500} \approx 180.28 \text{ N·m} $$</p>
-            <p>Este torque tiende a rotar el objeto alrededor de un eje perpendicular al plano XY, con la dirección indicada por el vector resultante.</p>
-        </section>
-
-        <section class="section">
-            <h2>Producto mixto (Producto triple escalar)</h2>
-            <p class="math-block">$$ \vec{u} \cdot (\vec{v} \times \vec{w}) = \begin{vmatrix} u_x & u_y & u_z \\ v_x & v_y & v_z \\ w_x & w_y & w_z \end{vmatrix} $$</p>
-            <p>El producto mixto es un escalar que representa el volumen del paralelepípedo formado por los tres vectores. Su valor absoluto da el volumen:</p>
-            <p class="math-block">$$ V_{\text{paralelepípedo}} = |\vec{u} \cdot (\vec{v} \times \vec{w})| $$</p>
-
-            <h3>Propiedades</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Cíclicamente simétrico: \( \vec{u} \cdot (\vec{v} \times \vec{w}) = \vec{v} \cdot (\vec{w} \times \vec{u}) = \vec{w} \cdot (\vec{u} \times \vec{v}) \)</li>
-                    <li>Si el producto mixto es cero, los tres vectores son coplanares (están en el mismo plano)</li>
-                    <li>El signo indica la orientación: positivo si forman un sistema dextrógiro (mano derecha), negativo si levógiro</li>
-                </ul>
-            </section>
-
-            <h3>Coplanaridad</h3>
-            <p>Tres vectores son coplanares si y solo si:</p>
-            <p class="math-block">$$ \vec{u} \cdot (\vec{v} \times \vec{w}) = 0 $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de los vectores</h2>
-            <ul>
-                <li><strong>Física:</strong> Representación de fuerzas, velocidades, aceleraciones, campos eléctricos y magnéticos, momento angular.</li>
-                <li><strong>Ingeniería:</strong> Análisis de estructuras, cálculo de tensiones y deformaciones, dinámica de fluidos.</li>
-                <li><strong>Gráficos por computadora:</strong> Transformaciones geométricas, iluminación, detección de colisiones, renderizado 3D.</li>
-                <li><strong>Navegación:</strong> GPS, sistemas de navegación inercial, cálculo de trayectorias.</li>
-                <li><strong>Robótica:</strong> Cinemática de robots, planificación de trayectorias, control de manipuladores.</li>
-                <li><strong>Machine Learning:</strong> Espacios de características, algoritmos de clasificación, redes neuronales (los pesos son vectores).</li>
-                <li><strong>Economía:</strong> Modelos de equilibrio, optimización de carteras de inversión.</li>
-                <li><strong>Electromagnetismo:</strong> Ley de Lorentz, campo magnético generado por corrientes, teorema de Poynting.</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Campo magnético generado por una corriente</h2>
-            <p>La ley de Biot-Savart describe el campo magnético \( \vec{B} \) generado por un elemento de corriente \( I\vec{dl} \) en un punto \( \vec{r} \):</p>
-            <p class="math-block">$$ d\vec{B} = \frac{\mu_0 I}{4\pi}\frac{\vec{dl} \times \vec{r}}{|\vec{r}|^3} $$</p>
-            <p>Supongamos un cable recto infinito que lleva una corriente de 5 A en la dirección \( +\hat{k} \). Queremos calcular el campo magnético en el punto \( (2, 0, 0) \) m debido a un elemento de corriente en el origen con \( \vec{dl} = (0, 0, 0.01) \) m:</p>
-            <p class="math-block">$$ \vec{r} = (2, 0, 0) \text{ m} \quad |\vec{r}| = 2 \text{ m} $$</p>
-            <p class="math-block">$$ \vec{dl} \times \vec{r} = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ 0 & 0 & 0.01 \\ 2 & 0 & 0 \end{vmatrix} = (0, 0.02, 0) \text{ m}^2 $$</p>
-            <p>Con \( \mu_0 = 4\pi \times 10^{-7} \) T·m/A:</p>
-            <p class="math-block">$$ d\vec{B} = \frac{(4\pi \times 10^{-7})(5)}{4\pi}\frac{(0, 0.02, 0)}{8} = (0, 1.25 \times 10^{-9}, 0) \text{ T} $$</p>
-            <p>El campo magnético apunta en la dirección \( +\hat{j} \), consistente con la regla de la mano derecha para una corriente en \( +\hat{k} \).</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \vec{v} \) o \( \mathbf{v} \): Vector</li>
-                <li>\( |\vec{v}| \) o \( \|\vec{v}\| \): Magnitud o módulo del vector</li>
-                <li>\( \hat{v} \): Vector unitario en la dirección de \( \vec{v} \)</li>
-                <li>\( \hat{i}, \hat{j}, \hat{k} \): Vectores unitarios canónicos (ejes X, Y, Z)</li>
-                <li>\( \vec{u} \cdot \vec{v} \): Producto escalar (producto punto)</li>
-                <li>\( \vec{u} \times \vec{v} \): Producto vectorial (producto cruz)</li>
-                <li>\( \vec{0} \): Vector nulo o vector cero</li>
-                <li>\( \theta \): Ángulo entre dos vectores</li>
-                <li>\( \text{proy}_{\vec{u}}\vec{v} \): Proyección de \( \vec{v} \) sobre \( \vec{u} \)</li>
-                <li>\( \vec{u} \perp \vec{v} \): Los vectores \( \vec{u} \) y \( \vec{v} \) son ortogonales</li>
-                <li>\( \vec{u} \parallel \vec{v} \): Los vectores \( \vec{u} \) y \( \vec{v} \) son paralelos</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tablas de referencia</h2>
-            
-            <table>
-                <caption>Operaciones vectoriales básicas</caption>
-                <thead>
-                    <tr>
-                        <th>Operación</th>
-                        <th>Fórmula (componentes)</th>
-                        <th>Resultado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Suma</td>
-                        <td>\( \vec{u} + \vec{v} = (u_x+v_x, u_y+v_y, u_z+v_z) \)</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Resta</td>
-                        <td>\( \vec{u} - \vec{v} = (u_x-v_x, u_y-v_y, u_z-v_z) \)</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Multiplicación escalar</td>
-                        <td>\( k\vec{v} = (kv_x, kv_y, kv_z) \)</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Magnitud</td>
-                        <td>\( |\vec{v}| = \sqrt{v_x^2 + v_y^2 + v_z^2} \)</td>
-                        <td>Escalar</td>
-                    </tr>
-                    <tr>
-                        <td>Vector unitario</td>
-                        <td>\( \hat{v} = \frac{\vec{v}}{|\vec{v}|} \)</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Producto escalar</td>
-                        <td>\( \vec{u} \cdot \vec{v} = u_xv_x + u_yv_y + u_zv_z \)</td>
-                        <td>Escalar</td>
-                    </tr>
-                    <tr>
-                        <td>Producto vectorial</td>
-                        <td>\( \vec{u} \times \vec{v} = (u_yv_z-u_zv_y, u_zv_x-u_xv_z, u_xv_y-u_yv_x) \)</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Ángulo entre vectores</td>
-                        <td>\( \theta = \arccos\left(\frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|}\right) \)</td>
-                        <td>Escalar</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <table>
-                <caption>Propiedades de productos vectoriales</caption>
-                <thead>
-                    <tr>
-                        <th>Propiedad</th>
-                        <th>Producto escalar</th>
-                        <th>Producto vectorial</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Tipo de resultado</td>
-                        <td>Escalar</td>
-                        <td>Vector</td>
-                    </tr>
-                    <tr>
-                        <td>Conmutatividad</td>
-                        <td>\( \vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u} \)</td>
-                        <td>\( \vec{u} \times \vec{v} = -\vec{v} \times \vec{u} \) (anticonmutativo)</td>
-                    </tr>
-                    <tr>
-                        <td>Distributividad</td>
-                        <td>Sí</td>
-                        <td>Sí</td>
-                    </tr>
-                    <tr>
-                        <td>Asociatividad</td>
-                        <td>N/A</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Magnitud</td>
-                        <td>\( |\vec{u}||\vec{v}|\cos\theta \)</td>
-                        <td>\( |\vec{u}||\vec{v}|\sin\theta \)</td>
-                    </tr>
-                    <tr>
-                        <td>Vectores paralelos</td>
-                        <td>\( \vec{u} \cdot \vec{v} = \pm|\vec{u}||\vec{v}| \)</td>
-                        <td>\( \vec{u} \times \vec{v} = \vec{0} \)</td>
-                    </tr>
-                    <tr>
-                        <td>Vectores ortogonales</td>
-                        <td>\( \vec{u} \cdot \vec{v} = 0 \)</td>
-                        <td>\( |\vec{u} \times \vec{v}| = |\vec{u}||\vec{v}| \)</td>
-                    </tr>
-                    <tr>
-                        <td>Interpretación geométrica</td>
-                        <td>Proyección</td>
-                        <td>Área de paralelogramo</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <table>
-                <caption>Identidades vectoriales importantes</caption>
-                <thead>
-                    <tr>
-                        <th>Identidad</th>
-                        <th>Expresión</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Propiedad distributiva del producto cruz</td>
-                        <td>\( \vec{u} \times (\vec{v} + \vec{w}) = \vec{u} \times \vec{v} + \vec{u} \times \vec{w} \)</td>
-                    </tr>
-                    <tr>
-                        <td>Identidad de Lagrange</td>
-                        <td>\( |\vec{u} \times \vec{v}|^2 = |\vec{u}|^2|\vec{v}|^2 - (\vec{u} \cdot \vec{v})^2 \)</td>
-                    </tr>
-                    <tr>
-                        <td>Fórmula BAC-CAB</td>
-                        <td>\( \vec{u} \times (\vec{v} \times \vec{w}) = \vec{v}(\vec{u} \cdot \vec{w}) - \vec{w}(\vec{u} \cdot \vec{v}) \)</td>
-                    </tr>
-                    <tr>
-                        <td>Identidad de Jacobi</td>
-                        <td>\( \vec{u} \times (\vec{v} \times \vec{w}) + \vec{v} \times (\vec{w} \times \vec{u}) + \vec{w} \times (\vec{u} \times \vec{v}) = \vec{0} \)</td>
-                    </tr>
-                    <tr>
-                        <td>Producto mixto cíclico</td>
-                        <td>\( \vec{u} \cdot (\vec{v} \times \vec{w}) = \vec{v} \cdot (\vec{w} \times \vec{u}) = \vec{w} \cdot (\vec{u} \times \vec{v}) \)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

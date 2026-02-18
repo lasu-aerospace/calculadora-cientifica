@@ -1,468 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecuación del Cohete de Tsiolkovski - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecuación de Tsiolkovski — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="orbital.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Ecuación del Cohete de <em>Tsiolkovski</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="orbital.html">← Volver</a></h3>
-        <h1>Ecuación del Cohete de Tsiolkovski</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Introducción</div>
+    <p>Formulada en 1897 por Konstantin Tsiolkovski, esta ecuación es la relación fundamental que gobierna el movimiento de cohetes y propulsión a reacción. Describe cómo un vehículo se acelera expulsando masa (propelente) en dirección opuesta al movimiento. Establece los límites fundamentales del vuelo espacial mediante propulsión química, nuclear o eléctrica.</p>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Introducción</h2>
-            <p>La ecuación del cohete de Tsiolkovski, formulada en 1897 por Konstantin Tsiolkovski, es la relación fundamental que gobierna el movimiento de cohetes y propulsión a reacción. Describe cómo un vehículo puede acelerarse expulsando masa (propelente) en dirección opuesta al movimiento deseado.</p>
-            <p>Esta ecuación es la piedra angular de la astronáutica y establece los límites fundamentales del vuelo espacial mediante propulsión química, nuclear o eléctrica.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ecuación fundamental</div>
+    <p class="math-block">$$ \Delta v = v_e\ln\!\left(\frac{m_0}{m_f}\right) = v_e\ln(R) $$</p>
+    <div class="info-box">
+      <ul>
+        <li>\( \Delta v \) — cambio de velocidad total (m/s o km/s)</li>
+        <li>\( v_e \) — velocidad efectiva de expulsión (m/s)</li>
+        <li>\( m_0 \) — masa inicial (cohete + propelente)</li>
+        <li>\( m_f \) — masa final (cohete vacío + carga útil)</li>
+        <li>\( R = m_0/m_f \) — razón de masas</li>
+      </ul>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Ecuación Fundamental</h2>
-            <p class="math-block">$$ \Delta v = v_e \ln\left(\frac{m_0}{m_f}\right) = v_e \ln(R) $$</p>
-            <p>Donde:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( \Delta v \): Cambio de velocidad total (delta-v) alcanzado</li>
-                    <li>\( v_e \): Velocidad efectiva de escape del propelente (impulso específico × g)</li>
-                    <li>\( m_0 \): Masa inicial total (estructura + propelente + carga útil)</li>
-                    <li>\( m_f \): Masa final (después de consumir todo el propelente)</li>
-                    <li>\( R = \frac{m_0}{m_f} \): Razón de masas o fracción de masa</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Derivación</div>
+    <p>Aplicando conservación del momento a un cohete que expulsa un elemento de masa \( dm \) a velocidad \( v_e \) relativa al cohete:</p>
+    <p class="math-block">$$ m\,dv = -v_e\,dm \quad\Rightarrow\quad \int_0^{\Delta v}dv = -v_e\int_{m_0}^{m_f}\frac{dm}{m} $$</p>
+    <p class="math-block">$$ \boxed{\Delta v = v_e\ln\!\left(\frac{m_0}{m_f}\right)} $$</p>
+    <p>El signo negativo refleja que la masa del cohete disminuye al expulsar propelente.</p>
+  </div>
 
-            <h3>Derivación</h3>
-            <p>Partiendo de la conservación del momento lineal y considerando un cohete que expulsa masa \( dm \) con velocidad relativa \( v_e \):</p>
-            <p class="math-block">$$ F = \frac{dp}{dt} = -v_e\frac{dm}{dt} $$</p>
-            <p>Aplicando la segunda ley de Newton:</p>
-            <p class="math-block">$$ m\frac{dv}{dt} = -v_e\frac{dm}{dt} $$</p>
-            <p>Separando variables e integrando:</p>
-            <p class="math-block">$$ \int_{v_0}^{v_f} dv = -v_e\int_{m_0}^{m_f}\frac{dm}{m} $$</p>
-            <p class="math-block">$$ v_f - v_0 = -v_e[\ln m]_{m_0}^{m_f} = v_e\ln\left(\frac{m_0}{m_f}\right) $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Impulso específico</div>
+    <p class="math-block">$$ I_{sp} = \frac{v_e}{g_0} \qquad v_e = I_{sp}\cdot g_0 $$</p>
+    <p>El impulso específico \( I_{sp} \) (en segundos) es el tiempo durante el cual una unidad de peso de propelente produce una unidad de empuje. Es la figura de mérito estándar de un motor cohete.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Propulsión</th><th>\( I_{sp} \) (s)</th><th>\( v_e \) (km/s)</th></tr></thead>
+        <tbody>
+          <tr><td>Sólida (HTPB)</td><td>250–280</td><td>2.5–2.7</td></tr>
+          <tr><td>Kerosene/LOX (Merlin)</td><td>282–311</td><td>2.77–3.05</td></tr>
+          <tr><td>LH₂/LOX (RS-25)</td><td>366–453</td><td>3.59–4.44</td></tr>
+          <tr><td>Metano/LOX (Raptor)</td><td>327–380</td><td>3.21–3.73</td></tr>
+          <tr><td>Nuclear (NTR)</td><td>800–1000</td><td>7.8–9.8</td></tr>
+          <tr><td>Eléctrica (Hall)</td><td>1500–3000</td><td>14.7–29.4</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Impulso Específico</h2>
-            <p class="math-block">$$ I_{sp} = \frac{v_e}{g_0} $$</p>
-            <p>El impulso específico \( I_{sp} \) mide la eficiencia del motor de cohete: cuánto impulso (cambio de momento) se obtiene por unidad de peso de propelente consumido.</p>
-            <p>Unidades: segundos (s). Un \( I_{sp} \) de 300 s significa que cada kilogramo de propelente produce empuje equivalente a sostener 1 kg durante 300 segundos.</p>
+  <div class="card">
+    <div class="card-label">Razón de masas e implicaciones</div>
+    <p>Despejando \( R \):</p>
+    <p class="math-block">$$ R = \frac{m_0}{m_f} = e^{\Delta v/v_e} $$</p>
+    <p>La fracción de masa de propelente consumido:</p>
+    <p class="math-block">$$ \zeta = 1 - \frac{1}{R} = 1 - e^{-\Delta v/v_e} $$</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>\( \Delta v/v_e \)</th><th>\( R \)</th><th>Propelente (\( \zeta \))</th></tr></thead>
+        <tbody>
+          <tr><td>0.5</td><td>1.65</td><td>39%</td></tr>
+          <tr><td>1.0</td><td>2.72</td><td>63%</td></tr>
+          <tr><td>2.0</td><td>7.39</td><td>86%</td></tr>
+          <tr><td>3.0</td><td>20.1</td><td>95%</td></tr>
+          <tr><td>4.0</td><td>54.6</td><td>98.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>El crecimiento exponencial de \( R \) explica por qué una sola etapa no puede alcanzar la órbita fácilmente: una LEO requiere \( \Delta v\approx9.4 \) km/s y con \( v_e=3.2 \) km/s → \( R\approx18 \), es decir 94% de propelente.</p>
+  </div>
 
-            <h3>Relación con velocidad de escape</h3>
-            <p class="math-block">$$ v_e = I_{sp} \cdot g_0 $$</p>
-            <p>Donde \( g_0 = 9.80665 \) m/s² es la aceleración gravitacional estándar.</p>
+  <div class="card">
+    <div class="card-label">Múltiples etapas</div>
+    <p>Para un cohete de \( n \) etapas, el \( \Delta v \) total es la suma de cada etapa:</p>
+    <p class="math-block">$$ \Delta v_\text{total} = \sum_{i=1}^n v_{e,i}\ln(R_i) $$</p>
+    <p>La ventaja del escalonamiento es que se descarta la masa estructural vacía de etapas anteriores, reduciendo la razón de masas efectiva. Para etapas idénticas:</p>
+    <p class="math-block">$$ \Delta v_\text{total} = n\cdot v_e\ln(R_i) $$</p>
+  </div>
 
-            <h3>Valores típicos de \( I_{sp} \)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tipo de propulsión</th>
-                        <th>\( I_{sp} \) (s)</th>
-                        <th>\( v_e \) (km/s)</th>
-                        <th>Aplicación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Monopropelente (hidrazina)</td>
-                        <td>220-230</td>
-                        <td>2.1-2.3</td>
-                        <td>Control de actitud, satélites</td>
-                    </tr>
-                    <tr>
-                        <td>Propelente sólido</td>
-                        <td>250-280</td>
-                        <td>2.5-2.7</td>
-                        <td>Boosters, misiles</td>
-                    </tr>
-                    <tr>
-                        <td>Keroseno/LOX (RP-1)</td>
-                        <td>300-340</td>
-                        <td>2.9-3.3</td>
-                        <td>Primera etapa (Falcon 9, Soyuz)</td>
-                    </tr>
-                    <tr>
-                        <td>Hidrógeno/LOX (LH₂)</td>
-                        <td>420-465</td>
-                        <td>4.1-4.6</td>
-                        <td>Etapas superiores (RS-25, RL-10)</td>
-                    </tr>
-                    <tr>
-                        <td>Nuclear térmico</td>
-                        <td>800-1000</td>
-                        <td>7.8-9.8</td>
-                        <td>Propuesto para Marte</td>
-                    </tr>
-                    <tr>
-                        <td>Motor iónico (xenón)</td>
-                        <td>3000-5000</td>
-                        <td>29-49</td>
-                        <td>Misiones interplanetarias</td>
-                    </tr>
-                    <tr>
-                        <td>Motor de efecto Hall</td>
-                        <td>1500-3000</td>
-                        <td>15-29</td>
-                        <td>Satélites, sondas espaciales</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Falcon 9 primera etapa</div>
+    <p>Datos del Falcon 9 Block 5:</p>
+    <ul>
+      <li>Masa de despegue: 549,054 kg</li>
+      <li>Masa estructura 1.ª etapa: ~25,600 kg</li>
+      <li>Propelente 1.ª etapa: ~409,500 kg</li>
+      <li>\( I_{sp}\approx311 \) s → \( v_e\approx3.05 \) km/s</li>
+    </ul>
+    <p class="math-block">$$ R_1=\frac{549054}{549054-409500}=\frac{549054}{139554}\approx3.94 $$</p>
+    <p class="math-block">$$ \Delta v_1 = 3.05\times\ln(3.94) \approx 3.05\times1.37 \approx 4.18\;\text{km/s} $$</p>
+    <div class="info-box">
+      <p>La segunda etapa aporta ~5.2 km/s adicionales. Total ~9.4 km/s para LEO. Con reentrada de la primera etapa se dedica algo de \( \Delta v \) extra a la maniobra de regreso.</p>
+    </div>
+  </div>
 
-        <section class="section">
-            <h2>Razón de Masas</h2>
-            <p class="math-block">$$ R = \frac{m_0}{m_f} = e^{\Delta v/v_e} $$</p>
-            <p>La razón de masas cuantifica cuánto propelente se necesita para un \( \Delta v \) dado. Crece exponencialmente con \( \Delta v \).</p>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( \Delta v \) — cambio de velocidad total (km/s)</li>
+      <li>\( v_e \) — velocidad de expulsión efectiva (km/s)</li>
+      <li>\( I_{sp} \) — impulso específico (s)</li>
+      <li>\( g_0=9.80665 \) m/s² — aceleración gravitacional estándar</li>
+      <li>\( m_0,\,m_f \) — masa inicial y final (kg)</li>
+      <li>\( R=m_0/m_f \) — razón de masas (adimensional)</li>
+      <li>\( \zeta \) — fracción másica de propelente</li>
+      <li>\( n \) — número de etapas</li>
+    </ul>
+  </div>
 
-            <h3>Fracción de masa del propelente</h3>
-            <p class="math-block">$$ f_{\text{prop}} = \frac{m_{\text{prop}}}{m_0} = 1 - \frac{1}{R} = 1 - e^{-\Delta v/v_e} $$</p>
-
-            <h3>Implicaciones</h3>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Para \( \Delta v = v_e \): \( R = e \approx 2.718 \) (63% de la masa es propelente)</li>
-                    <li>Para \( \Delta v = 2v_e \): \( R \approx 7.39 \) (86% de la masa es propelente)</li>
-                    <li>Para \( \Delta v = 3v_e \): \( R \approx 20.09 \) (95% de la masa es propelente)</li>
-                    <li>Alcanzar órbita terrestre baja requiere típicamente \( R \approx 20-50 \)</li>
-                </ul>
-            </section>
-
-            <h3>Problema del cohete de una etapa a órbita (SSTO)</h3>
-            <p>Alcanzar órbita requiere \( \Delta v \approx 9.4 \) km/s. Con propulsión química (\( v_e \approx 4.4 \) km/s):</p>
-            <p class="math-block">$$ R = e^{9.4/4.4} \approx 8.67 $$</p>
-            <p>Esto significa que 88.5% de la masa inicial debe ser propelente, dejando solo 11.5% para estructura y carga útil. Esto es extremadamente difícil con tecnología actual debido a las limitaciones estructurales.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Cohete Falcon 9</h2>
-            <p>Analicemos la primera etapa del Falcon 9 (solo fase ascendente hasta separación):</p>
-
-            <h3>Datos:</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Masa inicial: \( m_0 \approx 549{,}000 \) kg (etapa + propelente)</li>
-                    <li>Masa propelente: \( m_{\text{prop}} \approx 411{,}000 \) kg</li>
-                    <li>Masa estructural: \( m_f \approx 138{,}000 \) kg (tanques, motores, sistemas)</li>
-                    <li>Motores: 9× Merlin 1D</li>
-                    <li>\( I_{sp} \) (nivel del mar): 282 s</li>
-                    <li>\( I_{sp} \) (vacío): 311 s</li>
-                </ul>
-            </section>
-
-            <h3>Velocidad efectiva promedio:</h3>
-            <p class="math-block">$$ v_e \approx 300 \times 9.81 \approx 2{,}943 \text{ m/s} \approx 2.94 \text{ km/s} $$</p>
-
-            <h3>Razón de masas:</h3>
-            <p class="math-block">$$ R = \frac{549{,}000}{138{,}000} \approx 3.98 $$</p>
-
-            <h3>Delta-v teórico:</h3>
-            <p class="math-block">$$ \Delta v = 2.94 \times \ln(3.98) \approx 2.94 \times 1.38 \approx 4.06 \text{ km/s} $$</p>
-
-            <p>En la práctica, el \( \Delta v \) real es menor (~3.5 km/s) debido a:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Pérdidas gravitacionales (~1.5 km/s)</li>
-                    <li>Resistencia atmosférica (~0.1-0.3 km/s)</li>
-                    <li>Pérdidas por guiado vectorial</li>
-                </ul>
-            </section>
-        </section>
-
-        <section class="section">
-            <h2>Cohetes Multietapa</h2>
-            <p>Para misiones que requieren gran \( \Delta v \), se usan cohetes multietapa que descartan masa estructural vacía durante el ascenso.</p>
-
-            <h3>Delta-v total</h3>
-            <p>El \( \Delta v \) total es la suma de los \( \Delta v \) de cada etapa:</p>
-            <p class="math-block">$$ \Delta v_{\text{total}} = \sum_{i=1}^{n} v_{e,i}\ln\left(\frac{m_{i,0}}{m_{i,f}}\right) $$</p>
-
-            <h3>Cohete de dos etapas</h3>
-            <p class="math-block">$$ \Delta v_{\text{total}} = v_{e,1}\ln\left(\frac{m_0}{m_0 - m_{p,1}}\right) + v_{e,2}\ln\left(\frac{m_0 - m_{s,1}}{m_f}\right) $$</p>
-            <p>Donde:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( m_{p,1} \): Masa de propelente de la etapa 1</li>
-                    <li>\( m_{s,1} \): Masa estructural de la etapa 1 (descartada)</li>
-                    <li>\( m_f \): Masa final (etapa 2 vacía + carga útil)</li>
-                </ul>
-            </section>
-
-            <h3>Optimización de etapas</h3>
-            <p>La distribución óptima de masa entre etapas generalmente no es intuitiva y depende de:</p>
-            <section class="aplicaciones" style="background-color: #494949;">
-                <ul>
-                    <li>Razón estructural de cada etapa (\( \epsilon = m_{\text{estructura}}/m_{\text{total}} \))</li>
-                    <li>Impulso específico de cada etapa</li>
-                    <li>Número de etapas</li>
-                    <li>Masa de carga útil objetivo</li>
-                </ul>
-            </section>
-
-            <h3>Teorema de separación óptima</h3>
-            <p>Para \( n \) etapas idénticas con igual \( v_e \) y razón estructural \( \epsilon \), la distribución óptima de \( \Delta v \) es equitativa:</p>
-            <p class="math-block">$$ \Delta v_i = \frac{\Delta v_{\text{total}}}{n} \quad \text{para todo } i $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Saturno V (Apollo)</h2>
-            <p>El cohete más poderoso jamás volado con éxito operacional.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Etapa</th>
-                        <th>Masa inicial (kg)</th>
-                        <th>Masa propelente (kg)</th>
-                        <th>\( I_{sp} \) (s)</th>
-                        <th>\( \Delta v \) (km/s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>S-IC (1ª)</td>
-                        <td>2,970,000</td>
-                        <td>2,146,000</td>
-                        <td>263</td>
-                        <td>~2.4</td>
-                    </tr>
-                    <tr>
-                        <td>S-II (2ª)</td>
-                        <td>824,000</td>
-                        <td>456,000</td>
-                        <td>421</td>
-                        <td>~3.5</td>
-                    </tr>
-                    <tr>
-                        <td>S-IVB (3ª)</td>
-                        <td>164,000</td>
-                        <td>107,000</td>
-                        <td>421</td>
-                        <td>~4.2</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Delta-v total:</h3>
-            <p class="math-block">$$ \Delta v_{\text{total}} \approx 2.4 + 3.5 + 4.2 = 10.1 \text{ km/s} $$</p>
-            <p>Suficiente para alcanzar órbita terrestre baja (~9.4 km/s) con margen para pérdidas gravitacionales y atmosféricas.</p>
-
-            <h3>Eficiencia de carga útil:</h3>
-            <p>El Saturno V podía colocar 140,000 kg en LEO desde una masa de despegue de 2,970,000 kg:</p>
-            <p class="math-block">$$ \text{Eficiencia} = \frac{140{,}000}{2{,}970{,}000} \approx 4.7\% $$</p>
-            <p>Esta baja eficiencia ilustra el desafío fundamental de los viajes espaciales.</p>
-        </section>
-
-        <section class="section">
-            <h2>Pérdidas de Delta-v</h2>
-            <p>El \( \Delta v \) teórico de Tsiolkovski asume ausencia de fuerzas externas. En la realidad:</p>
-
-            <h3>Pérdidas gravitacionales</h3>
-            <p class="math-block">$$ \Delta v_{\text{grav}} \approx g \cdot t_{\text{burn}} $$</p>
-            <p>Donde \( t_{\text{burn}} \) es el tiempo de quemado. Se minimiza con alta aceleración (alto empuje/masa).</p>
-            <p>Típicamente ~1.5 km/s para ascenso a órbita terrestre.</p>
-
-            <h3>Pérdidas por arrastre atmosférico</h3>
-            <p class="math-block">$$ \Delta v_{\text{drag}} = \int_0^{t} \frac{1}{2}\frac{\rho(h) v^2 C_D A}{m(t)}dt $$</p>
-            <p>Depende de:</p>
-            <section class="math-block">
-                <ul>
-                    <li>Densidad atmosférica \( \rho(h) \)</li>
-                    <li>Velocidad del cohete \( v \)</li>
-                    <li>Coeficiente de arrastre \( C_D \)</li>
-                    <li>Área frontal \( A \)</li>
-                    <li>Masa instantánea \( m(t) \)</li>
-                </ul>
-            </section>
-            <p>Típicamente 100-300 m/s para cohetes modernos con perfiles de ascenso optimizados.</p>
-
-            <h3>Pérdidas por guiado vectorial</h3>
-            <p>Al no apuntar siempre en dirección de la velocidad deseada, hay pérdidas adicionales del orden de 50-200 m/s.</p>
-
-            <h3>Balance total</h3>
-            <p>Para alcanzar LEO (velocidad orbital ~7.8 km/s):</p>
-            <section class="math-block">
-                <ul>
-                    <li>Velocidad orbital: 7.8 km/s</li>
-                    <li>Pérdidas gravitacionales: +1.5 km/s</li>
-                    <li>Pérdidas atmosféricas: +0.2 km/s</li>
-                    <li>Pérdidas de guiado: +0.1 km/s</li>
-                    <li><strong>Delta-v requerido: ~9.6 km/s</strong></li>
-                </ul>
-            </section>
-        </section>
-
-        <section class="section">
-            <h2>Propulsión Eléctrica y Bajo Empuje</h2>
-            <p>Los motores iónicos y de plasma tienen \( I_{sp} \) muy alto pero empuje muy bajo. La ecuación de Tsiolkovski sigue siendo válida, pero el tiempo de operación es mucho mayor.</p>
-
-            <h3>Ejemplo: Dawn (misión a Vesta y Ceres)</h3>
-            <section class="math-block">
-                <ul>
-                    <li>Propulsión: Motor iónico de xenón</li>
-                    <li>\( I_{sp} \): 3,100 s</li>
-                    <li>\( v_e \): 30.4 km/s</li>
-                    <li>Masa inicial: 1,240 kg</li>
-                    <li>Masa de xenón: 425 kg</li>
-                    <li>Masa final: 815 kg</li>
-                </ul>
-            </section>
-
-            <h3>Delta-v alcanzado:</h3>
-            <p class="math-block">$$ \Delta v = 30.4 \times \ln\left(\frac{1240}{815}\right) = 30.4 \times \ln(1.52) \approx 12.7 \text{ km/s} $$</p>
-            <p>Este enorme \( \Delta v \) permitió a Dawn visitar dos cuerpos diferentes del cinturón de asteroides, algo imposible con propulsión química.</p>
-
-            <h3>Tiempo de operación</h3>
-            <p>Los motores iónicos operaron durante ~5.9 años acumulados (aunque no continuos), ilustrando el compromiso entre eficiencia y tiempo de misión.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones de la ecuación de Tsiolkovski</h2>
-            <ul>
-                <li><strong>Diseño de cohetes:</strong> Determinar configuración óptima de etapas y propelentes</li>
-                <li><strong>Planificación de misiones:</strong> Calcular presupuesto de \( \Delta v \) para trayectorias</li>
-                <li><strong>Selección de propulsión:</strong> Evaluar diferentes tecnologías para misiones específicas</li>
-                <li><strong>Análisis de factibilidad:</strong> Determinar si una misión es posible con tecnología disponible</li>
-                <li><strong>Optimización de carga útil:</strong> Maximizar masa entregada para \( \Delta v \) dado</li>
-                <li><strong>Maniobras orbitales:</strong> Calcular consumo de propelente para cambios de órbita</li>
-                <li><strong>Misiles balísticos:</strong> Diseño de sistemas de defensa y ataque</li>
-                <li><strong>Comparación de arquitecturas:</strong> SSTO vs multietapa, químico vs eléctrico</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( \Delta v \): Delta-v, cambio total de velocidad (m/s o km/s)</li>
-                <li>\( v_e \): Velocidad efectiva de escape del propelente (m/s)</li>
-                <li>\( I_{sp} \): Impulso específico (s)</li>
-                <li>\( m_0 \): Masa inicial total (kg)</li>
-                <li>\( m_f \): Masa final (kg)</li>
-                <li>\( m_{\text{prop}} \): Masa de propelente (kg)</li>
-                <li>\( R \): Razón de masas (adimensional)</li>
-                <li>\( g_0 \): Aceleración gravitacional estándar = 9.80665 m/s²</li>
-                <li>\( \epsilon \): Razón estructural (adimensional)</li>
-                <li>\( F \): Empuje (N)</li>
-                <li>\( \dot{m} \): Flujo másico de propelente (kg/s)</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de delta-v requeridos</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Maniobra</th>
-                        <th>\( \Delta v \) (km/s)</th>
-                        <th>Observaciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Superficie Tierra → LEO</td>
-                        <td>9.3-10.0</td>
-                        <td>Incluye todas las pérdidas</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → GEO</td>
-                        <td>3.8-4.3</td>
-                        <td>Transferencia Hohmann</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → Escape terrestre</td>
-                        <td>3.2</td>
-                        <td>Desde 200 km de altitud</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → Órbita lunar</td>
-                        <td>3.9</td>
-                        <td>Transferencia Hohmann + captura</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → Superficie lunar (ida y vuelta)</td>
-                        <td>12.5</td>
-                        <td>Misión Apollo completa</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → Transferencia a Marte</td>
-                        <td>3.6</td>
-                        <td>Ventana óptima</td>
-                    </tr>
-                    <tr>
-                        <td>Superficie Marte → Órbita</td>
-                        <td>3.8</td>
-                        <td>Gravedad menor que Tierra</td>
-                    </tr>
-                    <tr>
-                        <td>LEO → Júpiter (flyby)</td>
-                        <td>6.3</td>
-                        <td>Transferencia Hohmann</td>
-                    </tr>
-                    <tr>
-                        <td>Superficie Luna → Órbita</td>
-                        <td>1.9</td>
-                        <td>Sin atmósfera</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Límites fundamentales</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Limitación</th>
-                        <th>Descripción</th>
-                        <th>Consecuencia</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Crecimiento exponencial de masa</td>
-                        <td>\( m_0 \) crece como \( e^{\Delta v/v_e} \)</td>
-                        <td>Misiones de alto \( \Delta v \) requieren cohetes masivos</td>
-                    </tr>
-                    <tr>
-                        <td>Límite de \( I_{sp} \) químico</td>
-                        <td>~450 s (H₂/O₂ en vacío)</td>
-                        <td>Dificulta SSTO y misiones lejanas</td>
-                    </tr>
-                    <tr>
-                        <td>Razón estructural</td>
-                        <td>\( \epsilon \approx 0.05-0.15 \) típico</td>
-                        <td>Masa de tanques y motores limita carga útil</td>
-                    </tr>
-                    <tr>
-                        <td>Densidad de empuje</td>
-                        <td>Motores eléctricos: muy baja</td>
-                        <td>Espirales lentas, no útil para despegue</td>
-                    </tr>
-                    <tr>
-                        <td>Velocidad de escape</td>
-                        <td>Limitada por temperatura de combustión</td>
-                        <td>Física fundamental limita propulsión química</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas científicas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>

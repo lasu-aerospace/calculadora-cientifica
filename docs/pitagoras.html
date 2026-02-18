@@ -1,71 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teorema de Pitágoras - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teorema de Pitágoras — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="math.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Teorema de <em>Pitágoras</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="math.html">← Volver</a></h3>
-        <h1>Teorema de Pitágoras</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ c^2 = a^2 + b^2 $$</p>
+    <p>En todo triángulo rectángulo, el cuadrado de la hipotenusa \( c \) (lado opuesto al ángulo recto) es igual a la suma de los cuadrados de los catetos \( a \) y \( b \). Formulado en la antigua Grecia, es uno de los resultados matemáticos más empleados en ciencia e ingeniería.</p>
+    <p>Se generaliza al espacio \( n \)-dimensional como la norma euclidiana:</p>
+    <p class="math-block">$$ \|\vec{v}\| = \sqrt{\sum_{i=1}^n v_i^2} $$</p>
+  </div>
 
-    <main>
-        <hr>
-        <section>
-            <h2>Definición</h2>
-            <h1 class="math-block">$$ c^2 = a^2 + b^2 $$</h1>
-            <p></p>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>Geometría y trigonometría:</strong> cálculo de distancias entre puntos.</li>
+      <li><strong>Arquitectura e ingeniería estructural:</strong> verificación de ángulos rectos, longitudes de vigas diagonales.</li>
+      <li><strong>Navegación y GPS:</strong> posicionamiento geográfico y cálculo de distancias en coordenadas.</li>
+      <li><strong>Física de vectores:</strong> módulo de vectores de velocidad, fuerza y campo eléctrico en 2D/3D.</li>
+      <li><strong>Informática gráfica:</strong> distancia entre píxeles y detección de colisiones.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>El teorema de pitágoras tiene numerosas aplicaciones en diversas áreas, tales como:</p>
-            <ul>
-                <li>Cálculo de distancias en geometría y trigonometría.</li>
-                <li>Determinación de longitudes en estructuras arquitectónicas.</li>
-                <li>Navegación y posicionamiento geográfico.</li>
-                <li>Resolución de problemas en física relacionados con vectores y fuerzas.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Módulo de velocidad de una aeronave</div>
+    <p>Una aeronave con vector de velocidad \( \vec{v}=(v_x,v_y,v_z)=(520,12,643) \) km/h.</p>
+    <p>Su módulo (rapidez total) se obtiene aplicando el teorema en tres dimensiones:</p>
+    <p class="math-block">$$ \|\vec{v}\|=\sqrt{v_x^2+v_y^2+v_z^2}=\sqrt{520^2+12^2+643^2}=\sqrt{685873}\approx\boxed{829.2\;\text{km/h}} $$</p>
+    <p>Este es el valor que indicaría el anemómetro de la cabina, independientemente de la dirección del vuelo.</p>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico</h2>
-            <p>Suponemos que una aeronave con velocidad \( \vec{v}=(v_x,v_y,v_z) \)</p>
-            <p>Su módulo (velocidad lineal) es:</p>
-            <p class="math-block">$$ ||\vec{v}||=\sqrt{v_x^2+v_y^2+v_z^2}. $$</p>
-            <p>Sea reescrito tal que</p>
-            <p class="math-block">$$ ||\vec{v}||=\sqrt{\sum_iv^2}, $$</p>
-            <p>considerando \( i\in\{x,y,z\} \). Asumamos un vector de velocidad en km/h: \( \vec{v}=(520,12,643) \).</p>
-            <p>Calculando, obtenemos:</p>
-            <p class="math-block">$$ \boxed{||\vec{v}||=\sqrt{520^2+12^2+643^2}\approx829.2\,\frac{\text{km}}{\text{h}}} $$</p>
-            <p>Sin considerar ninguna fuerza externa.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Ternas pitagóricas</div>
+    <p>Conjuntos de enteros positivos \( (a,b,c) \) con \( a^2+b^2=c^2 \):</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>\( a \)</th><th>\( b \)</th><th>\( c \)</th><th>Aplicación típica</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>4</td><td>5</td><td>Comprobación de ángulos rectos en construcción</td></tr>
+          <tr><td>5</td><td>12</td><td>13</td><td>Geometría de triángulos</td></tr>
+          <tr><td>8</td><td>15</td><td>17</td><td>Topografía</td></tr>
+          <tr><td>7</td><td>24</td><td>25</td><td>Diseño de estructuras</td></tr>
+          <tr><td>20</td><td>21</td><td>29</td><td>Física de vectores</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\(c\) : El lado opuesto al ángulo recto en un triángulo rectángulo (hipotenusa).</li>
-                <li>\(a\) : Cateto adyacente al ángulo recto.</li>
-                <li>\(b\) : El otro cateto asyacente al ángulo recto.</li>
-            </ul>
-        </section>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( c \) — hipotenusa (lado opuesto al ángulo recto)</li>
+      <li>\( a,\,b \) — catetos adyacentes al ángulo recto</li>
+      <li>\( \|\vec{v}\| \) — norma euclidiana del vector \( \vec{v} \)</li>
+      <li>\( \sum v_i^2 \) — suma de cuadrados de componentes</li>
+    </ul>
+  </div>
 
-    </main>
-
-    <footer>
-      <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>
