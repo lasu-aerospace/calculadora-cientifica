@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funciones Matemáticas — Introducción</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Canvas graphs ─────────────────────────────────── */
+    .graph-wrap {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    .graph-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .18em;
+      color: var(--txt3);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 6px;
+    }
+    /* ── Tab system for graph sections ─────────────────── */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--txt3);
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-btn:hover { color: var(--txt2); border-color: var(--border2); }
+    .tab-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(74,222,128,.07); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    /* ── Domain/range pill badges ───────────────────────── */
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--txt2);
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 12px;
+      white-space: nowrap;
+    }
+    .badge strong { color: var(--txt); }
+    /* ── Interactive input ──────────────────────────────── */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .input-row label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--txt3);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .input-row input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 140px;
+      height: 2px;
+      background: var(--border2);
+      border-radius: 2px;
+      outline: none;
+    }
+    .input-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .input-row .val-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      min-width: 36px;
+    }
+    /* ── Feature row ────────────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .feature-cell {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+    .feature-cell .fc-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: var(--txt3);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .feature-cell .fc-value {
+      font-size: 14px;
+      color: var(--txt);
+    }
+
+    /* ════════════════════════════════════════════════
+       CONSTRUCTOR DE FUNCIONES
+    ════════════════════════════════════════════════ */
+
+    /* Step counter header */
+    .builder-step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .step-bubble {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--s2);
+      border: 1px solid var(--border2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--txt2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all .3s;
+    }
+    .step-bubble.done   { background: rgba(74,222,128,.15); border-color: var(--accent); color: var(--accent); }
+    .step-bubble.active { background: var(--s2); border-color: var(--txt2); color: var(--txt); }
+    .step-line {
+      height: 1px; flex: 1; background: var(--border);
+      transition: background .3s;
+    }
+    .step-line.done { background: var(--accent); opacity: .4; }
+
+    /* Main input fields */
+    .eq-input {
+      width: 100%;
+      background: var(--s2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--txt);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      box-sizing: border-box;
+    }
+    .eq-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(74,222,128,.12); }
+    .eq-input.error { border-color: #f87171; box-shadow: 0 0 0 2px rgba(248,113,113,.1); }
+    .eq-input.ok    { border-color: var(--accent); }
+    .eq-input::placeholder { color: var(--txt3); }
+
+    /* Validation badge under input */
+    .eq-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      margin-top: 6px;
+      min-height: 16px;
+      transition: color .2s;
+    }
+    .eq-status.ok    { color: var(--accent); }
+    .eq-status.error { color: #f87171; }
+    .eq-status.warn  { color: #fbbf24; }
+    .eq-status.hint  { color: var(--txt3); }
+
+    /* Steps list */
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .step-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: start;
+    }
+    .step-input-wrap { position: relative; }
+    .step-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: var(--txt3);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .prop-select {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--txt2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 4px 8px;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color .2s;
+    }
+    .prop-select:focus, .prop-select:hover { border-color: var(--border2); color: var(--txt); }
+
+    /* Step validity indicator */
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border2);
+      flex-shrink: 0;
+      margin-top: 22px;
+      transition: background .3s;
+    }
+    .step-dot.ok    { background: var(--accent); }
+    .step-dot.error { background: #f87171; }
+    .step-dot.warn  { background: #fbbf24; }
+
+    .step-del-btn {
+      background: none; border: none;
+      color: var(--txt3); cursor: pointer;
+      font-size: 16px; line-height: 1;
+      padding: 0; margin-top: 18px;
+      transition: color .2s;
+    }
+    .step-del-btn:hover { color: #f87171; }
+
+    /* Add step / property buttons */
+    .prop-pill-row {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .prop-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--txt2);
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .prop-pill:hover { color: var(--accent); border-color: var(--accent); background: rgba(74,222,128,.07); }
+
+    /* Variable selector */
+    .var-row {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .var-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--txt2);
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .var-btn:hover, .var-btn.selected {
+      color: var(--accent); border-color: var(--accent);
+      background: rgba(74,222,128,.1);
+    }
+
+    /* Result block */
+    .result-block {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      margin-top: 14px;
+    }
+    .result-block .rl { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--txt3); margin-bottom: 10px; }
+    .result-fn-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: var(--accent);
+      margin: 8px 0 14px;
+      word-break: break-all;
+    }
+
+    /* Action button */
+    .builder-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: #0d0e12;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      cursor: pointer;
+      transition: all .2s;
+      font-weight: 600;
+    }
+    .builder-btn:hover { background: #86efac; }
+    .builder-btn:disabled { background: var(--border2); color: var(--txt3); cursor: not-allowed; }
+    .builder-btn.secondary {
+      background: var(--s2); color: var(--txt2); border: 1px solid var(--border);
+    }
+    .builder-btn.secondary:hover { border-color: var(--border2); color: var(--txt); }
+
+    /* Hint expandable */
+    .hint-toggle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: .1em;
+      color: var(--txt3); cursor: pointer;
+      background: none; border: none; padding: 0;
+      transition: color .2s;
+    }
+    .hint-toggle:hover { color: var(--txt2); }
+    .hint-box {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-left: 2px solid #fbbf24;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 8px 0;
+      font-size: 13px;
+      color: var(--txt2);
+      display: none;
+    }
+    .hint-box.visible { display: block; }
+
+    /* Error list */
+    .error-list {
+      background: rgba(248,113,113,.06);
+      border: 1px solid rgba(248,113,113,.25);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      display: none;
+    }
+    .error-list.visible { display: block; }
+    .error-list li {
+      color: #fca5a5;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 4px;
+    }
+
+    /* Equality chain display */
+    .chain-display {
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--txt2);
+      margin: 10px 0;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .chain-display .eq-link { color: var(--txt3); margin: 0 6px; }
+    .chain-display .eq-current { color: var(--txt); font-weight: 600; }
+    .chain-display .eq-ok { color: var(--accent); }
+    .chain-display .eq-err { color: #f87171; }
+
+    /* Graph control buttons */
+    .graph-ctrl-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      width: 26px; height: 26px;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--txt2);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+      padding: 0;
+    }
+    .graph-ctrl-btn:hover { border-color: var(--border2); color: var(--txt); background: var(--s1); }
+
+    /* Section divider inside card */
+    .builder-divider {
+      border: none; border-top: 1px solid var(--border); margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a href="index.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Funciones <em>Matemáticas</em></h1>
+  <p class="page-sub">Introducción formal · dominio, imagen, operaciones y familias fundamentales</p>
+
+  <!-- ────────────── 1. DEFINICIÓN ────────────── -->
+  <div class="card">
+    <div class="card-label">Definición formal</div>
+    <p>Una <strong>función</strong> \( f: A \to B \) es una regla que asigna a cada elemento \( x \) del conjunto <em>dominio</em> \( A \) exactamente un elemento \( f(x) \) del conjunto <em>codominio</em> \( B \). La condición clave es la <em>unicidad</em>: un mismo \( x \) no puede producir dos salidas distintas.</p>
+    <p class="math-block">$$ f: A \longrightarrow B \qquad x \longmapsto f(x) $$</p>
+    <div class="info-box">
+      <p><strong>Terminología esencial:</strong> · <strong>Dominio</strong> \(\text{Dom}(f)=A\): valores de entrada permitidos · <strong>Codominio</strong> \(B\): conjunto donde viven las salidas · <strong>Imagen</strong> \(\text{Im}(f)=\{f(x)\mid x\in A\}\subseteq B\): salidas que realmente se alcanzan · <strong>Variable independiente</strong>: \(x\) · <strong>Variable dependiente</strong>: \(y=f(x)\).</p>
+    </div>
+
+    <h3>Criterio de la línea vertical</h3>
+    <p>Una curva en el plano representa una función si y sólo si toda línea vertical la corta en <em>a lo sumo un punto</em>. Esto es la versión geométrica de la unicidad.</p>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Criterio de la línea vertical — función vs. no-función</div>
+      <canvas id="cvVertical" height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- ────────────── 2. DOMINIO E IMAGEN ────────────── -->
+  <div class="card">
+    <div class="card-label">Dominio e imagen</div>
+    <p>El dominio natural de una función real se obtiene excluyendo los valores que producen operaciones no definidas. Las restricciones más comunes:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Expresión</th><th>Restricción</th><th>Condición</th></tr></thead>
+        <tbody>
+          <tr><td>\(\dfrac{1}{g(x)}\)</td><td>División por cero</td><td>\(g(x)\neq 0\)</td></tr>
+          <tr><td>\(\sqrt{g(x)}\)</td><td>Radicando negativo</td><td>\(g(x)\geq 0\)</td></tr>
+          <tr><td>\(\ln g(x)\)</td><td>Logaritmo de no-positivo</td><td>\(g(x)>0\)</td></tr>
+          <tr><td>\(\arcsin g(x)\)</td><td>Argumento fuera de \([-1,1]\)</td><td>\(-1\leq g(x)\leq 1\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Ejemplo:</strong> \( f(x)=\dfrac{\sqrt{x+3}}{x-1} \). Necesitamos \( x+3\geq 0 \) y \( x\neq 1 \):</p>
+    <p class="math-block">$$ \text{Dom}(f) = [-3,\,1)\cup(1,+\infty) $$</p>
+
+    <h3>Imagen de una función</h3>
+    <p>Hallar la imagen requiere despejar \(x\) en función de \(y\) y determinar qué valores de \(y\) producen soluciones válidas.</p>
+    <p class="math-block">$$ f(x)=x^2 \;\Rightarrow\; y=x^2 \;\Rightarrow\; x=\pm\sqrt{y} \text{ existe sólo si } y\geq 0 \;\Rightarrow\; \text{Im}(f)=[0,+\infty) $$</p>
+  </div>
+
+  <!-- ────────────── 3. TIPOS DE FUNCIONES ────────────── -->
+  <div class="card">
+    <div class="card-label">Clasificación por comportamiento</div>
+    <p>Según la relación entre elementos del dominio y la imagen, una función puede ser:</p>
+
+    <div class="feature-grid">
+      <div class="feature-cell">
+        <div class="fc-label">Inyectiva (1-a-1)</div>
+        <div class="fc-value">Distintos \(x\) producen distintos \(f(x)\). Toda horizontal corta la gráfica a lo sumo una vez.</div>
+      </div>
+      <div class="feature-cell">
+        <div class="fc-label">Sobreyectiva (sobre)</div>
+        <div class="fc-value">Todo \(y\in B\) tiene al menos una preimagen. La imagen cubre todo el codominio.</div>
+      </div>
+      <div class="feature-cell">
+        <div class="fc-label">Biyectiva</div>
+        <div class="fc-value">Inyectiva y sobreyectiva a la vez. Existe función inversa \(f^{-1}\).</div>
+      </div>
+      <div class="feature-cell">
+        <div class="fc-label">Par / Impar</div>
+        <div class="fc-value"><strong>Par:</strong> \(f(-x)=f(x)\) — simetría respecto al eje \(y\).<br><strong>Impar:</strong> \(f(-x)=-f(x)\) — simetría respecto al origen.</div>
+      </div>
+    </div>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Criterio de la línea horizontal — inyectividad</div>
+      <canvas id="cvInyectiva" height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- ────────────── 4. OPERACIONES ────────────── -->
+  <div class="card">
+    <div class="card-label">Operaciones con funciones</div>
+
+    <p>Dadas \(f\) y \(g\) con dominios \(D_f\) y \(D_g\), se definen las siguientes operaciones en \( D_f \cap D_g \) (salvo indicación):</p>
+
+    <p class="math-block">$$ (f+g)(x)=f(x)+g(x) \qquad (f-g)(x)=f(x)-g(x) $$</p>
+    <p class="math-block">$$ (f\cdot g)(x)=f(x)\,g(x) \qquad \left(\frac{f}{g}\right)\!(x)=\frac{f(x)}{g(x)},\quad g(x)\neq 0 $$</p>
+
+    <h3>Composición</h3>
+    <p>La operación más importante en análisis. La función compuesta \((g\circ f)\) aplica primero \(f\), luego \(g\):</p>
+    <p class="math-block">$$ (g\circ f)(x) = g\!\left(f(x)\right) \qquad \text{Dom}(g\circ f)=\{x\in D_f \mid f(x)\in D_g\} $$</p>
+    <div class="info-box">
+      <p>La composición <strong>no es conmutativa</strong> en general: \( g\circ f \neq f\circ g \). Ejemplo: con \( f(x)=x^2 \) y \( g(x)=x+1 \), se tiene \( (g\circ f)(x)=x^2+1 \) pero \( (f\circ g)(x)=(x+1)^2 \).</p>
+    </div>
+
+    <h3>Función inversa</h3>
+    <p>Si \(f\) es biyectiva, existe \(f^{-1}: B \to A\) tal que \( f^{-1}(f(x))=x \). Geométricamente, la gráfica de \(f^{-1}\) es el reflejo de la de \(f\) sobre la recta \(y=x\).</p>
+    <p class="math-block">$$ f^{-1}(y)=x \;\Longleftrightarrow\; f(x)=y $$</p>
+    <p class="math-block">$$ f(f^{-1}(y))=y \qquad f^{-1}(f(x))=x $$</p>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Función e inversa — simetría sobre y = x</div>
+      <canvas id="cvInversa" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- ────────────── 5. FAMILIAS FUNDAMENTALES ────────────── -->
+  <div class="card">
+    <div class="card-label">Familias fundamentales</div>
+    <p>Las siguientes familias son el vocabulario básico del análisis. Usa las pestañas para explorar cada una con su gráfica interactiva.</p>
+
+    <div class="tab-bar" id="familyTabs">
+      <button class="tab-btn active" data-tab="lineal">Lineal</button>
+      <button class="tab-btn" data-tab="cuadratica">Cuadrática</button>
+      <button class="tab-btn" data-tab="potencia">Potencia</button>
+      <button class="tab-btn" data-tab="exponencial">Exponencial</button>
+      <button class="tab-btn" data-tab="logaritmo">Logarítmica</button>
+      <button class="tab-btn" data-tab="trigono">Trigonométricas</button>
+    </div>
+
+    <!-- LINEAL -->
+    <div class="tab-panel active" id="tab-lineal">
+      <p class="math-block">$$ f(x) = mx + b \qquad m,b\in\mathbb{R} $$</p>
+      <div class="badge-row">
+        <span class="badge"><strong>Dom:</strong> \(\mathbb{R}\)</span>
+        <span class="badge"><strong>Im:</strong> \(\mathbb{R}\) si \(m\neq0\); \(\{b\}\) si \(m=0\)</span>
+        <span class="badge"><strong>Pendiente:</strong> \(m\)</span>
+        <span class="badge"><strong>Ordenada al origen:</strong> \(b\)</span>
+      </div>
+      <p>La recta es la función más sencilla. La pendiente \(m\) indica el cambio en \(y\) por unidad de \(x\). Cuando \(m=0\) la función es constante; la recta es horizontal.</p>
+      <div class="input-row">
+        <label>m =</label>
+        <input type="range" id="slopeM" min="-4" max="4" step="0.25" value="1">
+        <span class="val-display" id="slopeVal">1</span>
+        <label>b =</label>
+        <input type="range" id="slopeB" min="-4" max="4" step="0.25" value="0">
+        <span class="val-display" id="slopeBVal">0</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">f(x) = mx + b</div>
+        <canvas id="cvLineal" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- CUADRÁTICA -->
+    <div class="tab-panel" id="tab-cuadratica">
+      <p class="math-block">$$ f(x) = ax^2 + bx + c \qquad a\neq 0 $$</p>
+      <div class="badge-row">
+        <span class="badge"><strong>Dom:</strong> \(\mathbb{R}\)</span>
+        <span class="badge"><strong>Im:</strong> \([v_y,+\infty)\) si \(a>0\); \((-\infty,v_y]\) si \(a<0\)</span>
+        <span class="badge"><strong>Vértice:</strong> \(\left(-\tfrac{b}{2a},\,f\!\left(-\tfrac{b}{2a}\right)\right)\)</span>
+      </div>
+      <p>La parábola abre hacia arriba si \(a>0\) (mínimo global) y hacia abajo si \(a<0\) (máximo global). El vértice es el punto de simetría del eje \(x=-b/(2a)\).</p>
+      <p class="math-block">$$ f(x) = a\!\left(x - \frac{b}{2a}\right)^{\!2} - \frac{b^2-4ac}{4a} $$</p>
+      <div class="input-row">
+        <label>a =</label>
+        <input type="range" id="quadA" min="-3" max="3" step="0.5" value="1">
+        <span class="val-display" id="quadAVal">1</span>
+        <label>b =</label>
+        <input type="range" id="quadB" min="-4" max="4" step="0.5" value="0">
+        <span class="val-display" id="quadBVal">0</span>
+        <label>c =</label>
+        <input type="range" id="quadC" min="-4" max="4" step="0.5" value="0">
+        <span class="val-display" id="quadCVal">0</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">f(x) = ax² + bx + c</div>
+        <canvas id="cvCuad" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- POTENCIA -->
+    <div class="tab-panel" id="tab-potencia">
+      <p class="math-block">$$ f(x) = x^n \qquad n\in\mathbb{R} $$</p>
+      <div class="badge-row">
+        <span class="badge"><strong>n par:</strong> simétrica, \(\text{Im}=[0,+\infty)\)</span>
+        <span class="badge"><strong>n impar:</strong> antisimétrica, \(\text{Im}=\mathbb{R}\)</span>
+        <span class="badge"><strong>n&lt;0:</strong> asíntota en \(x=0\)</span>
+      </div>
+      <p>Las funciones potencia con exponente entero positivo definen las familias <em>par</em> e <em>impar</em> que se alternan. Para exponentes fraccionarios como \(x^{1/2}=\sqrt{x}\) el dominio se restringe a \([0,+\infty)\).</p>
+      <div class="input-row">
+        <label>n =</label>
+        <input type="range" id="powN" min="-3" max="5" step="1" value="2">
+        <span class="val-display" id="powNVal">2</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">f(x) = xⁿ</div>
+        <canvas id="cvPot" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- EXPONENCIAL -->
+    <div class="tab-panel" id="tab-exponencial">
+      <p class="math-block">$$ f(x) = a^x \qquad a>0,\; a\neq 1 $$</p>
+      <div class="badge-row">
+        <span class="badge"><strong>Dom:</strong> \(\mathbb{R}\)</span>
+        <span class="badge"><strong>Im:</strong> \((0,+\infty)\)</span>
+        <span class="badge"><strong>Asíntota:</strong> \(y=0\)</span>
+        <span class="badge"><strong>f(0)=1</strong> siempre</span>
+      </div>
+      <p>Si \(a>1\) la función es creciente (crecimiento exponencial); si \(0&lt;a&lt;1\) es decreciente (decaimiento). La base natural \(e\approx2.718\) es fundamental en cálculo porque \((e^x)'=e^x\).</p>
+      <p class="math-block">$$ \frac{d}{dx}\,a^x = a^x\ln a \qquad \int a^x\,dx = \frac{a^x}{\ln a}+C $$</p>
+      <div class="input-row">
+        <label>a =</label>
+        <input type="range" id="expA" min="0.2" max="4" step="0.1" value="2.718">
+        <span class="val-display" id="expAVal">e</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">f(x) = aˣ</div>
+        <canvas id="cvExp" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- LOGARÍTMICA -->
+    <div class="tab-panel" id="tab-logaritmo">
+      <p class="math-block">$$ f(x) = \log_a x \qquad a>0,\; a\neq 1 $$</p>
+      <div class="badge-row">
+        <span class="badge"><strong>Dom:</strong> \((0,+\infty)\)</span>
+        <span class="badge"><strong>Im:</strong> \(\mathbb{R}\)</span>
+        <span class="badge"><strong>Asíntota:</strong> \(x=0\)</span>
+        <span class="badge"><strong>f(1)=0</strong> siempre</span>
+      </div>
+      <p>El logaritmo es la inversa de la exponencial: \( \log_a(a^x)=x \). Los logaritmos convierten productos en sumas, y potencias en productos, lo que los hace indispensables en ingeniería, física y estadística.</p>
+      <p class="math-block">$$ \log_a(xy)=\log_a x+\log_a y \qquad \log_a(x^n)=n\log_a x $$</p>
+      <p class="math-block">$$ \log_a x = \frac{\ln x}{\ln a} \qquad \frac{d}{dx}\ln x = \frac{1}{x} $$</p>
+      <div class="input-row">
+        <label>a =</label>
+        <input type="range" id="logA" min="0.2" max="5" step="0.1" value="2.718">
+        <span class="val-display" id="logAVal">e</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">f(x) = logₐ x</div>
+        <canvas id="cvLog" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- TRIGONOMÉTRICAS -->
+    <div class="tab-panel" id="tab-trigono">
+      <p class="math-block">$$ \sin x,\;\cos x,\;\tan x,\;\csc x,\;\sec x,\;\cot x $$</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Función</th><th>Dominio</th><th>Imagen</th><th>Período</th></tr></thead>
+          <tbody>
+            <tr><td>\(\sin x\)</td><td>\(\mathbb{R}\)</td><td>\([-1,1]\)</td><td>\(2\pi\)</td></tr>
+            <tr><td>\(\cos x\)</td><td>\(\mathbb{R}\)</td><td>\([-1,1]\)</td><td>\(2\pi\)</td></tr>
+            <tr><td>\(\tan x\)</td><td>\(\mathbb{R}\setminus\{(2k+1)\pi/2\}\)</td><td>\(\mathbb{R}\)</td><td>\(\pi\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="input-row">
+        <label>A =</label>
+        <input type="range" id="trigA" min="0.5" max="3" step="0.25" value="1">
+        <span class="val-display" id="trigAVal">1</span>
+        <label>ω =</label>
+        <input type="range" id="trigW" min="0.5" max="4" step="0.25" value="1">
+        <span class="val-display" id="trigWVal">1</span>
+      </div>
+      <div class="graph-wrap">
+        <div class="graph-title">A·sen(ωx), A·cos(ωx), tan(ωx)</div>
+        <canvas id="cvTrig" height="220"></canvas>
+      </div>
+      <div class="info-box">
+        <p><strong>Identidades fundamentales:</strong> \(\sin^2 x+\cos^2 x=1\) · \(\tan x=\sin x/\cos x\) · \(\sin(2x)=2\sin x\cos x\) · \(\cos(2x)=\cos^2 x-\sin^2 x\).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────── 6. TRANSFORMACIONES ────────────── -->
+  <div class="card">
+    <div class="card-label">Transformaciones de la gráfica</div>
+    <p>Partiendo de una función base \(f(x)\), se pueden obtener nuevas funciones mediante transformaciones geométricas elementales:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Transformación</th><th>Expresión</th><th>Efecto sobre la gráfica</th></tr></thead>
+        <tbody>
+          <tr><td>Traslación vertical</td><td>\(f(x)+k\)</td><td>Desplaza \(k\) unidades hacia arriba (\(k>0\)) o abajo (\(k<0\))</td></tr>
+          <tr><td>Traslación horizontal</td><td>\(f(x-h)\)</td><td>Desplaza \(h\) unidades a la derecha (\(h>0\)) o izquierda (\(h<0\))</td></tr>
+          <tr><td>Escalado vertical</td><td>\(c\,f(x)\)</td><td>Estira (\(|c|>1\)) o comprime (\(|c|<1\)) verticalmente; refleja si \(c<0\)</td></tr>
+          <tr><td>Escalado horizontal</td><td>\(f(cx)\)</td><td>Comprime (\(|c|>1\)) o estira (\(|c|<1\)) horizontalmente; refleja si \(c<0\)</td></tr>
+          <tr><td>Reflexión respecto a \(y\)</td><td>\(f(-x)\)</td><td>Imagen especular respecto al eje \(y\)</td></tr>
+          <tr><td>Reflexión respecto a \(x\)</td><td>\(-f(x)\)</td><td>Imagen especular respecto al eje \(x\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>La forma <em>estándar</em> que concentra todas las transformaciones es:</p>
+    <p class="math-block">$$ g(x) = c\,f\!\left(\frac{x-h}{b}\right)+k $$</p>
+    <p>donde \(h\) traslada horizontalmente, \(k\) verticalmente, \(c\) escala verticalmente y \(b\) escala horizontalmente (período si \(f\) es periódica).</p>
+
+    <div class="graph-wrap">
+      <div class="graph-title">Transformaciones sobre f(x) = x² — arrastra los parámetros</div>
+      <div class="input-row">
+        <label>h =</label>
+        <input type="range" id="th" min="-3" max="3" step="0.5" value="0">
+        <span class="val-display" id="thVal">0</span>
+        <label>k =</label>
+        <input type="range" id="tk" min="-3" max="3" step="0.5" value="0">
+        <span class="val-display" id="tkVal">0</span>
+        <label>c =</label>
+        <input type="range" id="tc" min="-3" max="3" step="0.25" value="1">
+        <span class="val-display" id="tcVal">1</span>
+      </div>
+      <canvas id="cvTransform" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- ────────────── 7. NOTACIÓN ────────────── -->
+  <div class="card">
+    <div class="card-label">Notación y símbolos</div>
+    <ul>
+      <li>\( f, g, h \) — nombres de funciones; \( x \) — variable independiente; \( y = f(x) \) — variable dependiente</li>
+      <li>\( \text{Dom}(f) \) — dominio de \(f\); \( \text{Im}(f) \) o \( f(A) \) — imagen de \(f\)</li>
+      <li>\( f^{-1} \) — función inversa (no \(1/f\)); \( g\circ f \) — composición (\(g\) después de \(f\))</li>
+      <li>\( \mathbb{R}, \mathbb{Q}, \mathbb{Z}, \mathbb{N} \) — reales, racionales, enteros, naturales</li>
+      <li>\( [a,b], (a,b), [a,b), (a,b] \) — intervalos cerrado, abierto y semiabiertos</li>
+      <li>\( f: \mathbb{R}\to\mathbb{R} \) — se lee "f de los reales en los reales"</li>
+    </ul>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       CONSTRUCTOR DE FUNCIONES
+  ════════════════════════════════════════════════════════ -->
+  <div class="card" id="builder-card">
+    <div class="card-label">Constructor de funciones</div>
+    <p>Escribe una igualdad, aplícale transformaciones matemáticas paso a paso y define la incógnita. La web verifica que la igualdad se mantenga en cada paso y genera la función final con su gráfica.</p>
+
+    <!-- ── Step progress ───────────────────────────────── -->
+    <div class="builder-step-header">
+      <div class="step-bubble active" id="bub1">1</div>
+      <div class="step-line" id="sl12"></div>
+      <div class="step-bubble" id="bub2">2</div>
+      <div class="step-line" id="sl23"></div>
+      <div class="step-bubble" id="bub3">3</div>
+      <div class="step-line" id="sl34"></div>
+      <div class="step-bubble" id="bub4">4</div>
+    </div>
+    <hr class="builder-divider">
+
+    <!-- PASO 1 -->
+    <div id="builderStep1">
+      <div class="step-label">Paso 1 — Escribe la igualdad inicial</div>
+      <p style="font-size:13px;margin-bottom:10px;">Ingresa una ecuación en la forma <code style="color:var(--txt);background:var(--s2);padding:2px 6px;border-radius:4px;">lado_izquierdo = lado_derecho</code>. Usa * para multiplicar, ^ para potencias. Ejemplos: <code style="color:var(--accent)">2*x + 3 = 7</code> · <code style="color:var(--accent)">x^2 - 4 = (x-2)*(x+2)</code></p>
+      <input class="eq-input" id="initialEq" type="text" placeholder="Ej: 2*x + 1 = x^2 - 3" autocomplete="off" spellcheck="false">
+      <div class="eq-status hint" id="s1Status">Escribe una igualdad con el signo =</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="builder-btn" id="s1Next" disabled>Continuar →</button>
+        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Sintaxis aceptada</button>
+      </div>
+      <div class="hint-box" id="h1">
+        <strong style="color:var(--txt)">Operadores:</strong> + − * / ^ (potencia)<br>
+        <strong style="color:var(--txt)">Funciones:</strong> sqrt(x) · abs(x) · sin(x) · cos(x) · exp(x) · log(x) · ln(x)<br>
+        <strong style="color:var(--txt)">Constantes:</strong> e · pi<br>
+        <strong style="color:var(--txt)">Variables:</strong> cualquier letra (x, y, a, b, t…)<br>
+        <strong style="color:var(--txt)">Importante:</strong> <code style="color:var(--accent)">2*x</code> no <code style="color:#f87171">2x</code> · debe tener exactamente un signo =
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="builderStep2" style="display:none;">
+      <div class="step-label">Paso 2 — Aplica transformaciones</div>
+      <p style="font-size:13px;margin-bottom:10px;">Modifica la ecuación aplicando propiedades matemáticas. La web verificará que la igualdad se mantenga tras cada paso comparando ambos lados numéricamente.</p>
+      <div class="chain-display" id="chainDisplay"></div>
+      <div class="steps-container" id="stepsContainer"></div>
+      <div class="step-label" style="margin-top:12px;">Atajos de propiedades</div>
+      <div class="prop-pill-row" id="propPills">
+        <button class="prop-pill" data-action="add_both">Sumar igual a ambos lados</button>
+        <button class="prop-pill" data-action="sub_both">Restar igual a ambos lados</button>
+        <button class="prop-pill" data-action="mul_both">Multiplicar ambos lados</button>
+        <button class="prop-pill" data-action="div_both">Dividir ambos lados</button>
+        <button class="prop-pill" data-action="square_both">Elevar al cuadrado ambos lados</button>
+        <button class="prop-pill" data-action="sqrt_both">Raíz cuadrada ambos lados</button>
+        <button class="prop-pill" data-action="simplify">Simplificar automáticamente</button>
+      </div>
+      <div id="propModal" style="display:none;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin:8px 0;">
+        <div class="step-label" id="propModalLabel">Valor a aplicar</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input class="eq-input" id="propValue" type="text" placeholder="Ej: 5" style="max-width:240px;" autocomplete="off">
+          <button class="builder-btn" id="propApply">Aplicar</button>
+          <button class="builder-btn secondary" onclick="document.getElementById('propModal').style.display='none'">✕</button>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="builder-btn" id="s2Next" disabled>Usar esta ecuación →</button>
+        <button class="builder-btn secondary" id="s2Back">← Paso 1</button>
+      </div>
+      <div class="error-list" id="s2Errors"><ul id="s2ErrorList"></ul></div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="builderStep3" style="display:none;">
+      <div class="step-label">Paso 3 — Define la incógnita</div>
+      <p style="font-size:13px;margin-bottom:10px;">Elige cuál será la variable independiente. La web intentará despejarla y reescribir la expresión como <strong style="color:var(--txt)">f(x) = …</strong> igualada a cero.</p>
+      <div class="step-label" style="margin-top:8px;">Variables detectadas:</div>
+      <div class="var-row" id="varBtns"></div>
+      <div class="eq-status hint" id="s3Status">Selecciona la variable independiente</div>
+      <hr class="builder-divider">
+      <div class="step-label">Expresión manual (opcional)</div>
+      <p style="font-size:13px;margin-bottom:8px;">Si el despeje automático falla, escribe tú mismo la expresión final en términos de la variable elegida (lo que irá a la derecha de f(x) =):</p>
+      <input class="eq-input" id="manualExpr" type="text" placeholder="Ej: x^2 - 4*x + 3" autocomplete="off" spellcheck="false">
+      <div class="eq-status hint" id="s3ManualStatus">Opcional</div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="builder-btn" id="s3Next" disabled>Generar función →</button>
+        <button class="builder-btn secondary" id="s3Back">← Paso 2</button>
+      </div>
+      <div class="error-list" id="s3Errors"><ul id="s3ErrorList"></ul></div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div id="builderStep4" style="display:none;">
+      <div class="step-label">Paso 4 — Función generada</div>
+      <div class="result-block">
+        <div class="rl">Función resultante</div>
+        <div class="result-fn-display" id="resultFnText"></div>
+        <div id="resultMath" style="margin-top:6px;color:var(--txt);font-size:1rem;"></div>
+        <div class="eq-status ok" id="resultNote" style="margin-top:8px;"></div>
+      </div>
+      <div class="graph-wrap" style="margin-top:14px;padding:0;overflow:hidden;position:relative;" id="resultGraphWrap">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;">
+          <div class="graph-title" style="margin:0;">Gráfica interactiva — arrastra · rueda para zoom</div>
+          <div style="display:flex;gap:6px;">
+            <button class="graph-ctrl-btn" id="gcZoomIn" title="Acercar">+</button>
+            <button class="graph-ctrl-btn" id="gcZoomOut" title="Alejar">−</button>
+            <button class="graph-ctrl-btn" id="gcReset" title="Restablecer vista">⌂</button>
+          </div>
+        </div>
+        <div style="position:relative;margin:0 12px 12px;">
+          <canvas id="cvResult" style="display:block;width:100%;border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
+          <div id="cvTooltip" style="
+            position:absolute;pointer-events:none;display:none;
+            background:var(--s2);border:1px solid var(--border2);border-radius:6px;
+            font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2);
+            padding:5px 10px;white-space:nowrap;z-index:10;
+          "></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+        <button class="builder-btn secondary" id="s4Reset">✦ Crear otra función</button>
+        <button class="builder-btn secondary" id="s4Back">← Paso 3</button>
+      </div>
+    </div>
+
+  </div><!-- /builder-card -->
+
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
+
+<script>
+// ── Utilidades de dibujo ────────────────────────────────────
+const C = {
+  bg:      '#13141a',
+  grid:    '#2a2d3a',
+  axis:    '#363a4a',
+  txt:     '#52566a',
+  accent:  '#4ade80',
+  blue:    '#60a5fa',
+  orange:  '#fb923c',
+  pink:    '#f472b6',
+  purple:  '#a78bfa',
+};
+
+function setupCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = canvas.clientWidth || canvas.parentElement.clientWidth || 700;
+  const h = canvas.height;
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w, h };
+}
+
+function drawGrid(ctx, w, h, xMin, xMax, yMin, yMax, opts = {}) {
+  const { gridStep = 1, labelStep = 1, showLabels = true } = opts;
+  const toX = x => (x - xMin) / (xMax - xMin) * w;
+  const toY = y => h - (y - yMin) / (yMax - yMin) * h;
+
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0, 0, w, h);
+
+  // Grid lines
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 0.5;
+  for (let x = Math.ceil(xMin / gridStep) * gridStep; x <= xMax; x += gridStep) {
+    ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+  }
+  for (let y = Math.ceil(yMin / gridStep) * gridStep; y <= yMax; y += gridStep) {
+    ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = C.axis;
+  ctx.lineWidth = 1.5;
+  if (yMin <= 0 && yMax >= 0) {
+    ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+  }
+  if (xMin <= 0 && xMax >= 0) {
+    ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+  }
+
+  // Labels
+  if (showLabels) {
+    ctx.fillStyle = C.txt;
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    for (let x = Math.ceil(xMin / labelStep) * labelStep; x <= xMax; x += labelStep) {
+      if (Math.abs(x) < 1e-9) continue;
+      const px = toX(x); const py = toY(0);
+      const labelY = (py > h - 20) ? py - 8 : (py < 14 ? py + 14 : py + 12);
+      ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, labelY);
+    }
+    ctx.textAlign = 'right';
+    for (let y = Math.ceil(yMin / labelStep) * labelStep; y <= yMax; y += labelStep) {
+      if (Math.abs(y) < 1e-9) continue;
+      const px = toX(0); const py = toY(y);
+      const labelX = (px < 20) ? px + 24 : px - 4;
+      ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), labelX, py + 3);
+    }
+  }
+
+  return { toX, toY };
+}
+
+function plotFn(ctx, w, h, fn, color, lineWidth, toX, toY, xMin, xMax, steps = 800) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth || 2;
+  ctx.lineJoin = 'round';
+  const dx = (xMax - xMin) / steps;
+  let started = false;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const x = xMin + i * dx;
+    const y = fn(x);
+    if (!isFinite(y) || isNaN(y) || y > 1e6 || y < -1e6) { started = false; continue; }
+    const px = toX(x), py = toY(y);
+    if (!started) { ctx.moveTo(px, py); started = true; }
+    else { ctx.lineTo(px, py); }
+  }
+  ctx.stroke();
+}
+
+// ── Canvas 1: Línea vertical ────────────────────────────────
+{
+  const { ctx, w, h } = setupCanvas('cvVertical') || {};
+  if (ctx) {
+    const { toX, toY } = drawGrid(ctx, w, h, -5, 5, -4, 4, { gridStep: 1, labelStep: 1 });
+
+    // Parabola (is a function)
+    plotFn(ctx, w, h, x => x*x/4 - 2, C.accent, 2.5, toX, toY, -5, 5);
+
+    // Circle (NOT a function — draw manually)
+    ctx.strokeStyle = C.orange;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(toX(2), toY(0), Math.abs(toX(2+2) - toX(2)), 0, 2*Math.PI);
+    ctx.stroke();
+
+    // Vertical test line
+    ctx.strokeStyle = '#f472b6';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(toX(3), 0); ctx.lineTo(toX(3), h); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dots on circle (two intersections)
+    [[3, Math.sqrt(3)], [3, -Math.sqrt(3)]].forEach(([x,y]) => {
+      ctx.beginPath(); ctx.arc(toX(x+2-2), toY(y), 5, 0, 2*Math.PI);
+      ctx.fillStyle = C.pink; ctx.fill();
+    });
+
+    // Dot on parabola (one intersection)
+    ctx.beginPath(); ctx.arc(toX(3), toY(3*3/4-2), 5, 0, 2*Math.PI);
+    ctx.fillStyle = C.accent; ctx.fill();
+
+    // Legend
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    [
+      [C.accent, 'Función (parábola)'],
+      [C.orange, 'No-función (círculo)'],
+      [C.pink,   'Línea vertical'],
+    ].forEach(([color, text], i) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(12, 10 + i*18, 12, 3);
+      ctx.fillStyle = C.txt;
+      ctx.fillText(text, 28, 17 + i*18);
+    });
+  }
+}
+
+// ── Canvas 2: Inyectividad ──────────────────────────────────
+{
+  const { ctx, w, h } = setupCanvas('cvInyectiva') || {};
+  if (ctx) {
+    const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -2, 6, { gridStep: 1, labelStep: 1 });
+
+    // Cubic (injective)
+    plotFn(ctx, w, h, x => x*x*x/6, C.accent, 2.5, toX, toY, -4, 4);
+
+    // Quadratic (not injective)
+    plotFn(ctx, w, h, x => x*x/4, C.orange, 2.5, toX, toY, -4, 4);
+
+    // Horizontal test line y=1
+    ctx.strokeStyle = '#f472b6';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(0, toY(1.5)); ctx.lineTo(w, toY(1.5)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Two dots on parabola at y=1.5 (x=±√6)
+    const xq = Math.sqrt(6);
+    [[xq, 1.5], [-xq, 1.5]].forEach(([x,y]) => {
+      ctx.beginPath(); ctx.arc(toX(x), toY(y), 5, 0, 2*Math.PI);
+      ctx.fillStyle = C.orange; ctx.fill();
+    });
+    // One dot on cubic
+    const xc = Math.cbrt(6*1.5);
+    ctx.beginPath(); ctx.arc(toX(xc), toY(1.5), 5, 0, 2*Math.PI);
+    ctx.fillStyle = C.accent; ctx.fill();
+
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    [[C.accent, 'Inyectiva: 1 intersección'], [C.orange, 'No inyectiva: 2 intersecciones'], [C.pink, 'Línea horizontal']].forEach(([col, txt], i) => {
+      ctx.fillStyle = col; ctx.fillRect(12, 10+i*18, 12, 3);
+      ctx.fillStyle = C.txt; ctx.fillText(txt, 28, 17+i*18);
+    });
+  }
+}
+
+// ── Canvas 3: Inversa ───────────────────────────────────────
+{
+  const { ctx, w, h } = setupCanvas('cvInversa') || {};
+  if (ctx) {
+    const { toX, toY } = drawGrid(ctx, w, h, -3, 5, -3, 5, { gridStep: 1, labelStep: 1 });
+    // y=x line
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(toX(-3), toY(-3)); ctx.lineTo(toX(5), toY(5)); ctx.stroke();
+    ctx.setLineDash([]);
+    // f(x)=e^x
+    plotFn(ctx, w, h, x => Math.exp(x), C.accent, 2.5, toX, toY, -3, 5);
+    // f-1(x)=ln(x)
+    plotFn(ctx, w, h, x => Math.log(x), C.blue, 2.5, toX, toY, 0.01, 5);
+
+    ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+    [[C.accent,'f(x) = eˣ'],[C.blue,'f⁻¹(x) = ln x'],[C.axis,'y = x']].forEach(([col,txt],i)=>{
+      ctx.fillStyle=col; ctx.fillRect(12, 10+i*18, 12, 3);
+      ctx.fillStyle=C.txt; ctx.fillText(txt, 28, 17+i*18);
+    });
+  }
+}
+
+// ── Lineal ──────────────────────────────────────────────────
+function drawLineal() {
+  const m = parseFloat(document.getElementById('slopeM').value);
+  const b = parseFloat(document.getElementById('slopeB').value);
+  document.getElementById('slopeVal').textContent = m;
+  document.getElementById('slopeBVal').textContent = b;
+  const c = setupCanvas('cvLineal');
+  if (!c) return;
+  const { ctx, w, h } = c;
+  const { toX, toY } = drawGrid(ctx, w, h, -6, 6, -5, 5, { gridStep: 1, labelStep: 2 });
+  plotFn(ctx, w, h, x => m*x+b, C.accent, 2.5, toX, toY, -6, 6);
+}
+
+// ── Cuadrática ──────────────────────────────────────────────
+function drawCuad() {
+  const a = parseFloat(document.getElementById('quadA').value) || 0.01;
+  const b = parseFloat(document.getElementById('quadB').value);
+  const c_ = parseFloat(document.getElementById('quadC').value);
+  document.getElementById('quadAVal').textContent = a;
+  document.getElementById('quadBVal').textContent = b;
+  document.getElementById('quadCVal').textContent = c_;
+  const cv = setupCanvas('cvCuad');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -6, 6, -5, 8, { gridStep: 1, labelStep: 2 });
+  plotFn(ctx, w, h, x => a*x*x+b*x+c_, C.accent, 2.5, toX, toY, -6, 6);
+  // Vertex dot
+  const vx = -b/(2*a);
+  const vy = a*vx*vx+b*vx+c_;
+  ctx.beginPath(); ctx.arc(toX(vx), toY(vy), 6, 0, 2*Math.PI);
+  ctx.fillStyle = C.orange; ctx.fill();
+}
+
+// ── Potencia ────────────────────────────────────────────────
+function drawPot() {
+  const n = parseInt(document.getElementById('powN').value);
+  document.getElementById('powNVal').textContent = n;
+  const cv = setupCanvas('cvPot');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -4, 4, { gridStep: 1, labelStep: 2 });
+  if (n < 0) {
+    // Plot separately left and right of 0
+    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, -4, -0.05);
+    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, 0.05, 4);
+  } else {
+    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, n%2===0 ? -4 : -4, 4);
+  }
+}
+
+// ── Exponencial ─────────────────────────────────────────────
+function drawExp() {
+  let a = parseFloat(document.getElementById('expA').value);
+  document.getElementById('expAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
+  const cv = setupCanvas('cvExp');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -0.5, 8, { gridStep: 1, labelStep: 2 });
+  if (a <= 0 || a === 1) return;
+  plotFn(ctx, w, h, x => Math.pow(a, x), C.accent, 2.5, toX, toY, -4, 4);
+  // Dot at (0,1)
+  ctx.beginPath(); ctx.arc(toX(0), toY(1), 5, 0, 2*Math.PI);
+  ctx.fillStyle = C.orange; ctx.fill();
+}
+
+// ── Logarítmica ─────────────────────────────────────────────
+function drawLog() {
+  let a = parseFloat(document.getElementById('logA').value);
+  document.getElementById('logAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
+  const cv = setupCanvas('cvLog');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -0.5, 8, -5, 5, { gridStep: 1, labelStep: 2 });
+  if (a <= 0 || a === 1) return;
+  plotFn(ctx, w, h, x => Math.log(x)/Math.log(a), C.accent, 2.5, toX, toY, 0.01, 8);
+  // Asymptote
+  ctx.strokeStyle = C.pink; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ── Trigonométricas ─────────────────────────────────────────
+function drawTrig() {
+  const A = parseFloat(document.getElementById('trigA').value);
+  const W = parseFloat(document.getElementById('trigW').value);
+  document.getElementById('trigAVal').textContent = A;
+  document.getElementById('trigWVal').textContent = W;
+  const cv = setupCanvas('cvTrig');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -4*Math.PI/W, 4*Math.PI/W, -3, 3, { gridStep: Math.PI/W, labelStep: Math.PI/W, showLabels: false });
+  // Label π values
+  ctx.fillStyle = C.txt; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+  for (let k = -2; k <= 2; k++) {
+    if (k===0) continue;
+    const xv = k*Math.PI/W;
+    const label = k===1?'π/ω': k===-1?'-π/ω': `${k}π/ω`;
+    ctx.fillText(label, toX(xv), toY(0)+14);
+  }
+  // sin
+  plotFn(ctx, w, h, x => A*Math.sin(W*x), C.accent, 2.5, toX, toY, -4*Math.PI/W, 4*Math.PI/W);
+  // cos
+  plotFn(ctx, w, h, x => A*Math.cos(W*x), C.blue, 2.5, toX, toY, -4*Math.PI/W, 4*Math.PI/W);
+  // tan (with gap handling)
+  ctx.strokeStyle = C.orange; ctx.lineWidth = 1.5;
+  const xMin = -4*Math.PI/W, xMax = 4*Math.PI/W, steps = 1200;
+  const dx = (xMax-xMin)/steps;
+  let started = false; ctx.beginPath();
+  for (let i=0; i<=steps; i++) {
+    const x = xMin + i*dx;
+    const y = Math.tan(W*x);
+    const yClamp = A > 0 ? A*2.5 : 2.5;
+    if (!isFinite(y) || Math.abs(y) > yClamp*2) { started=false; continue; }
+    const py = toY(y);
+    if (!started) { ctx.moveTo(toX(x), py); started=true; } else { ctx.lineTo(toX(x), py); }
+  }
+  ctx.stroke();
+
+  ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign='left';
+  [[C.accent,'A·sen(ωx)'],[C.blue,'A·cos(ωx)'],[C.orange,'tan(ωx)']].forEach(([col,txt],i)=>{
+    ctx.fillStyle=col; ctx.fillRect(12,10+i*18,12,3);
+    ctx.fillStyle=C.txt; ctx.fillText(txt,28,17+i*18);
+  });
+}
+
+// ── Transformaciones ────────────────────────────────────────
+function drawTransform() {
+  const h_ = parseFloat(document.getElementById('th').value);
+  const k  = parseFloat(document.getElementById('tk').value);
+  const c_ = parseFloat(document.getElementById('tc').value);
+  document.getElementById('thVal').textContent = h_;
+  document.getElementById('tkVal').textContent = k;
+  document.getElementById('tcVal').textContent = c_;
+  const cv = setupCanvas('cvTransform');
+  if (!cv) return;
+  const { ctx, w, h } = cv;
+  const { toX, toY } = drawGrid(ctx, w, h, -5, 5, -2, 8, { gridStep: 1, labelStep: 2 });
+  plotFn(ctx, w, h, x => x*x, C.grid, 1.5, toX, toY, -5, 5);
+  plotFn(ctx, w, h, x => c_*(x-h_)*(x-h_)+k, C.accent, 2.5, toX, toY, -5, 5);
+  // Vertex dot
+  ctx.beginPath(); ctx.arc(toX(h_), toY(k), 6, 0, 2*Math.PI);
+  ctx.fillStyle = C.orange; ctx.fill();
+  ctx.font='11px JetBrains Mono, monospace'; ctx.textAlign='left';
+  [[C.txt,'x² (base)'],[C.accent,'c(x−h)²+k']].forEach(([col,txt],i)=>{
+    ctx.fillStyle=col; ctx.fillRect(12,10+i*18,12,3);
+    ctx.fillStyle=C.txt; ctx.fillText(txt,28,17+i*18);
+  });
+}
+
+// ── Tabs ────────────────────────────────────────────────────
+document.getElementById('familyTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const tab = btn.dataset.tab;
+  document.getElementById('tab-'+tab).classList.add('active');
+  setTimeout(()=>{
+    const draws = {lineal:drawLineal, cuadratica:drawCuad, potencia:drawPot, exponencial:drawExp, logaritmo:drawLog, trigono:drawTrig};
+    if (draws[tab]) draws[tab]();
+  }, 50);
+});
+
+// ── Sliders ─────────────────────────────────────────────────
+['slopeM','slopeB'].forEach(id => document.getElementById(id).addEventListener('input', drawLineal));
+['quadA','quadB','quadC'].forEach(id => document.getElementById(id).addEventListener('input', drawCuad));
+document.getElementById('powN').addEventListener('input', drawPot);
+document.getElementById('expA').addEventListener('input', drawExp);
+document.getElementById('logA').addEventListener('input', drawLog);
+['trigA','trigW'].forEach(id => document.getElementById(id).addEventListener('input', drawTrig));
+['th','tk','tc'].forEach(id => document.getElementById(id).addEventListener('input', drawTransform));
+
+// ── Initial draw ────────────────────────────────────────────
+window.addEventListener('load', () => {
+  drawLineal();
+  drawTransform();
+  builderInit();
+});
+
+// ════════════════════════════════════════════════════════════
+//  CONSTRUCTOR DE FUNCIONES
+// ════════════════════════════════════════════════════════════
+function builderInit() {
+
+  // ── State ──────────────────────────────────────────────────
+  const state = {
+    step: 1,
+    initialLHS: '',
+    initialRHS: '',
+    currentLHS: '',
+    currentRHS: '',
+    steps: [],         // [{lhs,rhs,prop,valid,error}]
+    variable: '',
+    fnExpr: '',
+  };
+
+  // ── Helpers ────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+
+  function toggleHintGlobal(id) {
+    const el = $(id);
+    if (el) el.classList.toggle('visible');
+  }
+  window.toggleHint = toggleHintGlobal;
+
+  // Parse LHS = RHS safely
+  function parseEq(str) {
+    const parts = str.split('=');
+    if (parts.length !== 2) return null;
+    return { lhs: parts[0].trim(), rhs: parts[1].trim() };
+  }
+
+  // Evaluate expression at a scope using mathjs
+  function evalExpr(expr, scope) {
+    try {
+      return math.evaluate(expr, { ...scope });
+    } catch(e) {
+      return NaN;
+    }
+  }
+
+  // Check if lhs == rhs is an IDENTITY (holds for all x) — used only for Paso 1
+  function checkIdentity(lhs, rhs, vars) {
+    if (!lhs || !rhs) return { ok: false, msg: 'Expresión vacía' };
+    if (vars.length === 0) {
+      // Constant equation — just evaluate
+      const l = evalExpr(lhs, {}), r = evalExpr(rhs, {});
+      if (!isFinite(l) || !isFinite(r)) return { ok: true, msg: '✓ Sintaxis válida' };
+      return Math.abs(l - r) < 1e-9
+        ? { ok: true,  msg: '✓ Igualdad numérica verificada' }
+        : { ok: false, msg: `Los lados no son iguales (${l.toFixed(4)} ≠ ${r.toFixed(4)})` };
+    }
+    const trials = 10;
+    let valid = 0;
+    for (let t = 0; t < trials; t++) {
+      const scope = {};
+      vars.forEach(v => { scope[v] = (Math.random() * 8 - 4) + 0.07; });
+      const l = evalExpr(lhs, scope);
+      const r = evalExpr(rhs, scope);
+      if (!isFinite(l) || !isFinite(r)) { valid++; continue; } // skip undefined points
+      if (Math.abs(l - r) > 1e-6 * (Math.abs(l) + Math.abs(r) + 1)) {
+        return { ok: false, msg: `No es una identidad — los lados difieren para algunos valores de ${vars.join(',')} (LHS≈${l.toFixed(4)}, RHS≈${r.toFixed(4)})` };
+      }
+      valid++;
+    }
+    return { ok: true, msg: '✓ Identidad verificada' };
+  }
+
+  // Check that a TRANSFORMATION is valid: (newLHS - newRHS) is proportional/equivalent
+  // to (prevLHS - prevRHS), meaning the equation's solution set is preserved.
+  // Strategy: verify that (newLHS - newRHS) = 0 whenever (prevLHS - prevRHS) = 0,
+  // tested by checking that the difference (newLHS - newRHS) - k*(prevLHS - prevRHS) ≈ 0
+  // for the same k across multiple points. More robustly: just verify syntax is valid
+  // and that the user's new equation is internally consistent (parseable).
+  // The key invariant we CAN check: (newLHS - newRHS) evaluated at random points
+  // should have the SAME SIGN PATTERN as (prevLHS - prevRHS) — or differ by a
+  // positive constant factor (allowed operations: +c, -c, *c, /c, ^2 with care).
+  // Simplest correct check: verify newLHS - newRHS ≡ prevLHS - prevRHS (same expression up to simplification).
+  function checkTransformation(prevLHS, prevRHS, newLHS, newRHS, vars) {
+    if (!newLHS || !newRHS) return { ok: false, msg: 'Expresión vacía' };
+    try { math.parse(newLHS); } catch(e) { return { ok: false, msg: `Error en lado izquierdo: ${e.message}` }; }
+    try { math.parse(newRHS); } catch(e) { return { ok: false, msg: `Error en lado derecho: ${e.message}` }; }
+
+    if (vars.length === 0) return { ok: true, msg: '✓ Transformación válida' };
+
+    // Compute prev residual and new residual at many points.
+    // A valid transformation means: whenever prev_res = 0, new_res = 0 (and vice versa ideally).
+    // We verify: new_res / prev_res is approximately constant (or new_res = prev_res + constant, etc.)
+    // Actually the most reliable check: verify that (newLHS - newRHS) - (prevLHS - prevRHS) simplifies
+    // to something independent of variables, OR that (newLHS-newRHS) = f(prevLHS-prevRHS) for a monotone f.
+    // 
+    // Practical approach that covers all common cases:
+    // Collect ratio = (newLHS-newRHS) / (prevLHS-prevRHS) at non-zero points.
+    // If ratio is constant → valid (multiply/divide).
+    // If diff = (newLHS-newRHS) - (prevLHS-prevRHS) is constant → valid (add/subtract same to both).
+    // If newLHS-newRHS ≈ 0 whenever prevLHS-prevRHS ≈ 0 → valid (same solution set).
+
+    const trials = 20;
+    const diffs = [], ratios = [];
+    let zeroMatches = 0, zeroTotal = 0;
+
+    for (let t = 0; t < trials; t++) {
+      const scope = {};
+      vars.forEach(v => { scope[v] = (Math.random() * 10 - 5) + 0.13; });
+      const pL = evalExpr(prevLHS, scope), pR = evalExpr(prevRHS, scope);
+      const nL = evalExpr(newLHS,  scope), nR = evalExpr(newRHS,  scope);
+      if (!isFinite(pL)||!isFinite(pR)||!isFinite(nL)||!isFinite(nR)) continue;
+      const prevRes = pL - pR;
+      const newRes  = nL - nR;
+      diffs.push(newRes - prevRes);
+      if (Math.abs(prevRes) > 1e-8) ratios.push(newRes / prevRes);
+    }
+
+    if (diffs.length < 3) return { ok: true, msg: '✓ No se pudieron probar suficientes puntos, se acepta' };
+
+    // Check 1: diff is constant (add/subtract same to both sides)
+    const diffMean = diffs.reduce((a,b)=>a+b,0)/diffs.length;
+    const diffVar  = diffs.reduce((a,b)=>a+(b-diffMean)**2,0)/diffs.length;
+    if (diffVar < 1e-6) return { ok: true, msg: '✓ Transformación válida (se sumó/restó la misma cantidad a ambos lados)' };
+
+    // Check 2: ratio is constant and positive (multiply/divide both sides by same nonzero)
+    if (ratios.length >= 3) {
+      const ratioMean = ratios.reduce((a,b)=>a+b,0)/ratios.length;
+      const ratioVar  = ratios.reduce((a,b)=>a+(b-ratioMean)**2,0)/ratios.length;
+      if (ratioVar < 1e-4 && isFinite(ratioMean)) {
+        return { ok: true, msg: `✓ Transformación válida (ambos lados multiplicados por factor ≈${ratioMean.toFixed(3)})` };
+      }
+      // Check 2b: ratio is constant and negative (multiply both sides by negative — flips but preserves solutions)
+      if (ratioVar < 1e-4 && ratioMean < 0) {
+        return { ok: true, msg: `✓ Transformación válida (multiplicación por factor negativo)` };
+      }
+    }
+
+    // Check 3: newRes^2 proportional to prevRes^2 (squaring both sides — solutions preserved, may add extraneous)
+    const sqRatios = diffs.map((_,i)=>{
+      // recompute — not easy without re-evaluating, skip deep check
+    }).filter(r=>r!==undefined);
+
+    // Check 4: Lenient — new expression is algebraically equivalent (simplify diff to zero)
+    try {
+      const diffExpr = `(${newLHS}) - (${newRHS}) - ((${prevLHS}) - (${prevRHS}))`;
+      const simplified = math.simplify(diffExpr).toString();
+      // If it simplifies to a number (constant), it's valid
+      const val = math.evaluate(simplified);
+      if (isFinite(val)) return { ok: true, msg: `✓ Transformación válida (diferencia constante = ${val.toFixed(4)})` };
+    } catch(e) { /* proceed */ }
+
+    // Check 5: try symbolic ratio
+    try {
+      const ratioExpr = `((${newLHS}) - (${newRHS})) / ((${prevLHS}) - (${prevRHS}))`;
+      const simplified = math.simplify(ratioExpr).toString();
+      const val = math.evaluate(simplified);
+      if (isFinite(val)) return { ok: true, msg: `✓ Transformación válida (factor = ${val.toFixed(4)})` };
+    } catch(e) { /* proceed */ }
+
+    // Nothing matched — the transformation changes the solution set
+    return {
+      ok: false,
+      msg: `La transformación no preserva la ecuación. El nuevo LHS−RHS no es proporcional ni diferencia constante del anterior. Revisa que hayas aplicado la misma operación a ambos lados.`
+    };
+  }
+
+  // Kept for backward compat — wraps checkIdentity
+  function checkEquality(lhs, rhs, vars) {
+    return checkIdentity(lhs, rhs, vars);
+  }
+
+  // Extract variable names from expression
+  function getVars(expr) {
+    try {
+      const node = math.parse(expr);
+      const vars = new Set();
+      node.traverse(n => { if (n.isSymbolNode && !math.hasOwnProperty(n.name) && !['e','pi','i','Infinity'].includes(n.name)) vars.add(n.name); });
+      // filter out known functions
+      const knownFns = new Set(['sin','cos','tan','sqrt','abs','exp','log','ln','asin','acos','atan']);
+      return [...vars].filter(v => !knownFns.has(v));
+    } catch(e) { return []; }
+  }
+
+  function allVars(lhs, rhs) {
+    return [...new Set([...getVars(lhs), ...getVars(rhs)])];
+  }
+
+  // Update step bubbles
+  function setStep(n) {
+    state.step = n;
+    for (let i=1; i<=4; i++) {
+      const b = $(`bub${i}`);
+      if (!b) continue;
+      b.classList.remove('active','done');
+      if (i < n) b.classList.add('done');
+      else if (i === n) b.classList.add('active');
+    }
+    for (let i=1; i<=3; i++) {
+      const l = $(`sl${i}${i+1}`);
+      if (l) l.classList.toggle('done', i < n);
+    }
+    ['builderStep1','builderStep2','builderStep3','builderStep4'].forEach((id,idx) => {
+      const el = $(id);
+      if (el) el.style.display = (idx+1 === n) ? '' : 'none';
+    });
+    // scroll into view
+    $('builder-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── STEP 1 ─────────────────────────────────────────────────
+  const s1Input = $('initialEq');
+  const s1Status = $('s1Status');
+  const s1Next = $('s1Next');
+
+  s1Input.addEventListener('input', () => {
+    const val = s1Input.value.trim();
+    if (!val) { setStatus(s1Status,'hint','Escribe una igualdad con el signo ='); s1Next.disabled=true; s1Input.className='eq-input'; return; }
+    const parsed = parseEq(val);
+    if (!parsed) { setStatus(s1Status,'error','Debe tener exactamente un signo ='); s1Next.disabled=true; s1Input.className='eq-input error'; return; }
+    // try parsing both sides
+    try { math.parse(parsed.lhs); } catch(e) { setStatus(s1Status,'error',`Error en lado izquierdo: ${e.message}`); s1Next.disabled=true; s1Input.className='eq-input error'; return; }
+    try { math.parse(parsed.rhs); } catch(e) { setStatus(s1Status,'error',`Error en lado derecho: ${e.message}`); s1Next.disabled=true; s1Input.className='eq-input error'; return; }
+    const vars = allVars(parsed.lhs, parsed.rhs);
+    const check = checkIdentity(parsed.lhs, parsed.rhs, vars);
+    if (!check.ok) {
+      // It's a conditional equation (not an identity) — that's totally fine, just inform
+      setStatus(s1Status,'ok','✓ Ecuación condicional aceptada (no es identidad — se cumple solo para ciertos valores)');
+      s1Input.className='eq-input ok'; s1Next.disabled=false;
+    } else {
+      setStatus(s1Status,'ok', check.msg);
+      s1Input.className='eq-input ok'; s1Next.disabled=false;
+    }
+  });
+
+  s1Next.addEventListener('click', () => {
+    const parsed = parseEq(s1Input.value.trim());
+    state.initialLHS = parsed.lhs;
+    state.initialRHS = parsed.rhs;
+    state.currentLHS = parsed.lhs;
+    state.currentRHS = parsed.rhs;
+    state.steps = [];
+    renderStep2();
+    setStep(2);
+  });
+
+  // ── STEP 2 ─────────────────────────────────────────────────
+  function renderStep2() {
+    updateChain();
+    renderSteps();
+    $('s2Next').disabled = false;
+    $('s2Errors').classList.remove('visible');
+  }
+
+  function updateChain() {
+    const chain = $('chainDisplay');
+    const vars = allVars(state.currentLHS, state.currentRHS);
+
+    // The current equation is valid if it's a valid transformation of the initial one
+    let check;
+    if (state.steps.length === 0) {
+      // No steps yet — current IS the initial, always valid
+      check = { ok: true, msg: '✓ Ecuación inicial' };
+    } else {
+      const prev = state.steps.length >= 2 ? state.steps[state.steps.length - 2] : null;
+      const prevLHS = prev ? prev.lhs : state.initialLHS;
+      const prevRHS = prev ? prev.rhs : state.initialRHS;
+      check = checkTransformation(prevLHS, prevRHS, state.currentLHS, state.currentRHS, vars);
+    }
+
+    const cls = check.ok ? 'eq-ok' : 'eq-err';
+    chain.innerHTML = `<span class="${cls} eq-current">${esc(state.currentLHS)}</span><span class="eq-link">=</span><span class="${cls} eq-current">${esc(state.currentRHS)}</span>`;
+    $('s2Next').disabled = !check.ok;
+    if (!check.ok) showS2Error([check.msg]);
+    else $('s2Errors').classList.remove('visible');
+  }
+
+  function renderSteps() {
+    const cont = $('stepsContainer');
+    cont.innerHTML = '';
+    state.steps.forEach((step, idx) => {
+      const row = document.createElement('div');
+      row.className = 'step-row';
+
+      const wrapLeft = document.createElement('div');
+      wrapLeft.className = 'step-input-wrap';
+      wrapLeft.innerHTML = `
+        <div class="step-label">Paso ${idx+1} — ${esc(step.prop)}</div>
+        <input class="eq-input ${step.valid?'ok':'error'}" value="${esc(step.lhs)} = ${esc(step.rhs)}" readonly>
+        ${step.error ? `<div class="eq-status error">${esc(step.error)}</div>` : `<div class="eq-status ok">✓ Igualdad verificada</div>`}
+      `;
+
+      const dot = document.createElement('div');
+      dot.className = `step-dot ${step.valid?'ok':'error'}`;
+
+      const del = document.createElement('button');
+      del.className = 'step-del-btn';
+      del.innerHTML = '✕';
+      del.title = 'Eliminar paso';
+      del.addEventListener('click', () => {
+        // revert to state before this step
+        if (idx === 0) {
+          state.currentLHS = state.initialLHS;
+          state.currentRHS = state.initialRHS;
+        } else {
+          state.currentLHS = state.steps[idx-1].lhs;
+          state.currentRHS = state.steps[idx-1].rhs;
+        }
+        state.steps.splice(idx);
+        renderSteps();
+        updateChain();
+      });
+
+      row.append(wrapLeft, dot, del);
+      cont.appendChild(row);
+    });
+
+    // Add manual step row at the bottom
+    const addRow = document.createElement('div');
+    addRow.style.cssText = 'margin-top:8px;';
+    addRow.innerHTML = `
+      <div class="step-label">Agregar paso manual</div>
+      <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:0;">
+          <input class="eq-input" id="newStepLHS" type="text" placeholder="Lado izquierdo nuevo" autocomplete="off" spellcheck="false" style="margin-bottom:6px;">
+          <input class="eq-input" id="newStepRHS" type="text" placeholder="Lado derecho nuevo" autocomplete="off" spellcheck="false">
+          <div class="eq-status hint" id="newStepStatus">Escribe la ecuación transformada</div>
+        </div>
+        <div style="flex:0 0 auto;">
+          <select class="prop-select" id="newStepProp" style="margin-bottom:6px;">
+            <option value="">— Propiedad aplicada —</option>
+            <option value="Suma de igual cantidad a ambos lados">Suma de igual cantidad</option>
+            <option value="Resta de igual cantidad a ambos lados">Resta de igual cantidad</option>
+            <option value="Multiplicación de igual cantidad a ambos lados">Multiplicación de igual cantidad</option>
+            <option value="División de igual cantidad a ambos lados">División de igual cantidad</option>
+            <option value="Potenciación de ambos lados">Potenciación</option>
+            <option value="Radicación de ambos lados">Radicación</option>
+            <option value="Propiedad distributiva">Propiedad distributiva</option>
+            <option value="Factorización">Factorización</option>
+            <option value="Simplificación">Simplificación</option>
+            <option value="Propiedad conmutativa">Propiedad conmutativa</option>
+            <option value="Propiedad asociativa">Propiedad asociativa</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <button class="builder-btn" id="addStepBtn" style="width:100%;">+ Agregar</button>
+        </div>
+      </div>
+    `;
+    cont.appendChild(addRow);
+
+    // live‑check new step
+    const liveCheck = () => {
+      const lhs = $('newStepLHS') && $('newStepLHS').value.trim();
+      const rhs = $('newStepRHS') && $('newStepRHS').value.trim();
+      const status = $('newStepStatus');
+      if (!status) return;
+      if (!lhs || !rhs) { setStatus(status,'hint','Escribe la ecuación transformada'); return; }
+      try { math.parse(lhs); } catch(e) { setStatus(status,'error',`LHS: ${e.message}`); return; }
+      try { math.parse(rhs); } catch(e) { setStatus(status,'error',`RHS: ${e.message}`); return; }
+      const vars = allVars(lhs, rhs);
+      const prevLHS = state.currentLHS, prevRHS = state.currentRHS;
+      const check = checkTransformation(prevLHS, prevRHS, lhs, rhs, vars);
+      setStatus(status, check.ok ? 'ok' : 'error', check.ok ? check.msg : check.msg);
+      if ($('newStepLHS')) $('newStepLHS').className = `eq-input ${check.ok?'ok':'error'}`;
+      if ($('newStepRHS')) $('newStepRHS').className = `eq-input ${check.ok?'ok':'error'}`;
+    };
+    setTimeout(()=>{
+      const l=$('newStepLHS'), r=$('newStepRHS'), b=$('addStepBtn');
+      if (l) l.addEventListener('input', liveCheck);
+      if (r) r.addEventListener('input', liveCheck);
+      if (b) b.addEventListener('click', addManualStep);
+    }, 0);
+  }
+
+  function addManualStep() {
+    const lhs = $('newStepLHS').value.trim();
+    const rhs = $('newStepRHS').value.trim();
+    const prop = $('newStepProp').value || 'Transformación manual';
+    if (!lhs || !rhs) { showS2Error(['Debes completar ambos lados del paso']); return; }
+    try { math.parse(lhs); } catch(e) { showS2Error([`Error en LHS: ${e.message}`]); return; }
+    try { math.parse(rhs); } catch(e) { showS2Error([`Error en RHS: ${e.message}`]); return; }
+    const vars = allVars(lhs, rhs);
+    const check = checkTransformation(state.currentLHS, state.currentRHS, lhs, rhs, vars);
+    if (!check.ok) {
+      showS2Error([check.msg]);
+      return;
+    }
+    state.steps.push({ lhs, rhs, prop, valid: true, error: null });
+    state.currentLHS = lhs;
+    state.currentRHS = rhs;
+    $('s2Errors').classList.remove('visible');
+    renderSteps();
+    updateChain();
+  }
+
+  function showS2Error(msgs) {
+    $('s2Errors').classList.add('visible');
+    $('s2ErrorList').innerHTML = msgs.map(m=>`<li>${esc(m)}</li>`).join('');
+  }
+
+  // Property shortcuts
+  let pendingAction = null;
+  $('propPills').addEventListener('click', e => {
+    const btn = e.target.closest('.prop-pill');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    if (action === 'simplify') {
+      applySimplify(); return;
+    }
+    pendingAction = action;
+    const labels = {
+      add_both: 'Valor a sumar a ambos lados',
+      sub_both: 'Valor a restar a ambos lados',
+      mul_both: 'Factor por el que multiplicar ambos lados',
+      div_both: 'Divisor',
+      square_both: null,
+      sqrt_both: null,
+    };
+    if (action === 'square_both') { applyBothSides('square'); return; }
+    if (action === 'sqrt_both')   { applyBothSides('sqrt');   return; }
+    $('propModalLabel').textContent = labels[action] || 'Valor';
+    $('propValue').value = '';
+    $('propModal').style.display = '';
+  });
+
+  $('propApply').addEventListener('click', () => {
+    const val = $('propValue').value.trim();
+    if (!val) return;
+    applyBothSides(pendingAction, val);
+    $('propModal').style.display = 'none';
+  });
+
+  function applyBothSides(action, val) {
+    let newLHS, newRHS, propName;
+    const lhs = state.currentLHS, rhs = state.currentRHS;
+    try {
+      switch(action) {
+        case 'add_both':
+          newLHS = `(${lhs}) + (${val})`; newRHS = `(${rhs}) + (${val})`;
+          propName = `Suma ${val} a ambos lados`; break;
+        case 'sub_both':
+          newLHS = `(${lhs}) - (${val})`; newRHS = `(${rhs}) - (${val})`;
+          propName = `Resta ${val} a ambos lados`; break;
+        case 'mul_both':
+          newLHS = `(${lhs}) * (${val})`; newRHS = `(${rhs}) * (${val})`;
+          propName = `Multiplica por ${val}`; break;
+        case 'div_both':
+          newLHS = `(${lhs}) / (${val})`; newRHS = `(${rhs}) / (${val})`;
+          propName = `Divide por ${val}`; break;
+        case 'square':
+          newLHS = `(${lhs})^2`; newRHS = `(${rhs})^2`;
+          propName = 'Eleva al cuadrado ambos lados'; break;
+        case 'sqrt':
+          newLHS = `sqrt(${lhs})`; newRHS = `sqrt(${rhs})`;
+          propName = 'Raíz cuadrada de ambos lados'; break;
+        default: return;
+      }
+    } catch(e) { showS2Error([e.message]); return; }
+    // Verify parse
+    try { math.parse(newLHS); } catch(e) { showS2Error([`LHS inválido: ${e.message}`]); return; }
+    try { math.parse(newRHS); } catch(e) { showS2Error([`RHS inválido: ${e.message}`]); return; }
+    const vars = allVars(newLHS, newRHS);
+    const check = checkTransformation(lhs, rhs, newLHS, newRHS, vars);
+    state.steps.push({ lhs: newLHS, rhs: newRHS, prop: propName, valid: check.ok, error: check.ok ? null : check.msg });
+    state.currentLHS = newLHS;
+    state.currentRHS = newRHS;
+    renderSteps();
+    updateChain();
+  }
+
+  function applySimplify() {
+    try {
+      const simplLHS = math.simplify(state.currentLHS).toString();
+      const simplRHS = math.simplify(state.currentRHS).toString();
+      const vars = allVars(simplLHS, simplRHS);
+      const check = checkTransformation(state.currentLHS, state.currentRHS, simplLHS, simplRHS, vars);
+      state.steps.push({ lhs: simplLHS, rhs: simplRHS, prop: 'Simplificación automática', valid: check.ok, error: check.ok ? null : check.msg });
+      state.currentLHS = simplLHS;
+      state.currentRHS = simplRHS;
+      renderSteps();
+      updateChain();
+    } catch(e) {
+      showS2Error([`No se pudo simplificar: ${e.message}`]);
+    }
+  }
+
+  $('s2Next').addEventListener('click', () => {
+    // Check for invalid steps
+    const badSteps = state.steps.filter(s => !s.valid);
+    if (badSteps.length > 0) {
+      showS2Error(['Hay pasos con transformaciones inválidas. Elimínalos antes de continuar.']);
+      return;
+    }
+    renderStep3();
+    setStep(3);
+  });
+  $('s2Back').addEventListener('click', () => setStep(1));
+
+  // ── STEP 3 ─────────────────────────────────────────────────
+  function renderStep3() {
+    const vars = allVars(state.currentLHS, state.currentRHS);
+    const cont = $('varBtns');
+    cont.innerHTML = '';
+    state.variable = '';
+    $('s3Next').disabled = true;
+    $('s3Status').textContent = 'Selecciona la variable independiente';
+    $('s3Status').className = 'eq-status hint';
+    $('manualExpr').value = '';
+    $('s3ManualStatus').textContent = 'Opcional';
+    $('s3ManualStatus').className = 'eq-status hint';
+
+    if (vars.length === 0) {
+      cont.innerHTML = '<span style="color:var(--txt3);font-size:13px;">No se detectaron variables.</span>';
+      return;
+    }
+    vars.forEach(v => {
+      const btn = document.createElement('button');
+      btn.className = 'var-btn';
+      btn.textContent = v;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.variable = v;
+        autoDesp();
+      });
+      cont.appendChild(btn);
+    });
+  }
+
+  function autoDesp() {
+    const v = state.variable;
+    const lhs = state.currentLHS;
+    const rhs = state.currentRHS;
+    const errors = [];
+    // Attempt: move everything to one side: lhs - rhs = 0
+    let expr = '';
+    try {
+      const combined = `(${lhs}) - (${rhs})`;
+      const simp = math.simplify(combined).toString();
+      expr = simp;
+      setStatus($('s3Status'), 'ok', `✓ Expresión derivada en términos de ${v}`);
+      $('s3Next').disabled = false;
+      state.fnExpr = expr;
+      // Show preview in manual box as suggestion
+      $('manualExpr').placeholder = `Sugerencia automática: ${expr}`;
+    } catch(e) {
+      setStatus($('s3Status'), 'warn', `Despeje automático fallido. Ingresa la expresión manualmente.`);
+      $('s3Next').disabled = true;
+    }
+  }
+
+  $('manualExpr').addEventListener('input', () => {
+    const val = $('manualExpr').value.trim();
+    if (!val) {
+      $('s3ManualStatus').textContent = 'Opcional — se usará el despeje automático';
+      $('s3ManualStatus').className = 'eq-status hint';
+      // re-enable if auto works
+      if (state.variable && state.fnExpr) $('s3Next').disabled = false;
+      return;
+    }
+    try {
+      math.parse(val);
+      setStatus($('s3ManualStatus'), 'ok', '✓ Expresión válida');
+      state.fnExpr = val;
+      $('s3Next').disabled = !state.variable;
+    } catch(e) {
+      setStatus($('s3ManualStatus'), 'error', `Error: ${e.message}`);
+      $('s3Next').disabled = true;
+    }
+  });
+
+  $('s3Next').addEventListener('click', () => {
+    const manualVal = $('manualExpr').value.trim();
+    if (manualVal) state.fnExpr = manualVal;
+    if (!state.fnExpr) { showS3Error(['No se pudo determinar la expresión de la función. Ingrésala manualmente.']); return; }
+    buildResult();
+    setStep(4);
+  });
+  $('s3Back').addEventListener('click', () => setStep(2));
+
+  function showS3Error(msgs) {
+    $('s3Errors').classList.add('visible');
+    $('s3ErrorList').innerHTML = msgs.map(m=>`<li>${esc(m)}</li>`).join('');
+  }
+
+  // ── STEP 4 ─────────────────────────────────────────────────
+  function buildResult() {
+    const v = state.variable;
+    const expr = state.fnExpr;
+    $('resultFnText').textContent = `f(${v}) = ${expr}`;
+    $('resultNote').textContent = `Dominio: determinado por la expresión · Variable: ${v}`;
+
+    // Trigger MathJax render if available
+    if (window.MathJax) {
+      $('resultMath').innerHTML = `\\( f(${v}) = ${exprToLatex(expr)} \\)`;
+      MathJax.typesetPromise([$('resultMath')]).catch(()=>{});
+    }
+
+    // Draw graph
+    setTimeout(() => drawResultGraph(v, expr), 120);
+  }
+
+  function exprToLatex(expr) {
+    try {
+      return math.parse(expr).toTex();
+    } catch(e) { return expr; }
+  }
+
+  // ── Interactive graph state ─────────────────────────────────
+  let igraph = null; // holds the interactive graph instance
+
+  function drawResultGraph(v, expr) {
+    const compiled = (() => { try { return math.compile(expr); } catch(e) { return null; } })();
+    if (!compiled) { $('resultFnText').style.color = '#f87171'; return; }
+
+    const ev = (xv) => {
+      try {
+        const y = compiled.evaluate({ [v]: xv, e: Math.E, pi: Math.PI });
+        return (isFinite(y) && !isNaN(y)) ? y : null;
+      } catch(e) { return null; }
+    };
+
+    // ── Smart initial range ─────────────────────────────────────
+    const PROBE = 600, BROAD = 20;
+    const xs = Array.from({length: PROBE+1}, (_, i) => -BROAD + i * (2*BROAD/PROBE));
+    const validPts = xs.map(x => ({ x, y: ev(x) })).filter(p => p.y !== null);
+    if (validPts.length < 4) { $('resultNote').textContent = 'No se pudo graficar (dominio vacío)'; return; }
+
+    const yvs = validPts.map(p => p.y).sort((a,b) => a-b);
+    const q1 = yvs[Math.floor(yvs.length * 0.10)];
+    const q3 = yvs[Math.floor(yvs.length * 0.90)];
+    const iqr = q3 - q1;
+    const goodPts = validPts.filter(p => p.y >= q1 - 2*iqr && p.y <= q3 + 2*iqr);
+
+    let rxMin = Math.min(...goodPts.map(p=>p.x));
+    let rxMax = Math.max(...goodPts.map(p=>p.x));
+    let ryMin = Math.min(...goodPts.map(p=>p.y));
+    let ryMax = Math.max(...goodPts.map(p=>p.y));
+
+    const xSpan = rxMax - rxMin || 2, ySpan = ryMax - ryMin || 2;
+    if (Math.abs(ryMin) < ySpan*3) ryMin = Math.min(ryMin, 0);
+    if (Math.abs(ryMax) < ySpan*3) ryMax = Math.max(ryMax, 0);
+    if (Math.abs(rxMin) < xSpan*3) rxMin = Math.min(rxMin, 0);
+    if (Math.abs(rxMax) < xSpan*3) rxMax = Math.max(rxMax, 0);
+
+    const padX = (rxMax-rxMin)*0.14 || 1.5;
+    const padY = (ryMax-ryMin)*0.18 || 1.5;
+    const initView = {
+      xMin: rxMin - padX, xMax: rxMax + padX,
+      yMin: ryMin - padY, yMax: ryMax + padY,
+    };
+
+    // ── Canvas setup ────────────────────────────────────────────
+    const canvas = $('cvResult');
+    const wrap   = canvas.parentElement;
+    const tooltip = $('cvTooltip');
+
+    // Destroy previous interactive instance
+    if (igraph && igraph.destroy) igraph.destroy();
+
+    // ── Interactive graph object ────────────────────────────────
+    igraph = (() => {
+      const DPR = window.devicePixelRatio || 1;
+      let view = { ...initView };
+      let W = 0, H = 0;
+      let ctx;
+      let isDragging = false, dragStart = null, viewAtDrag = null;
+      let lastPinchDist = null;
+      let rafId = null;
+      let dirty = true;
+
+      function resize() {
+        W = wrap.clientWidth;
+        H = Math.round(W * 0.55);
+        H = Math.max(H, 260);
+        canvas.width  = W * DPR;
+        canvas.height = H * DPR;
+        canvas.style.width  = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx = canvas.getContext('2d');
+        ctx.scale(DPR, DPR);
+        // equalise scale on first setup
+        equaliseScale();
+        dirty = true;
+      }
+
+      function equaliseScale() {
+        const xSpan = view.xMax - view.xMin;
+        const ySpan = view.yMax - view.yMin;
+        const pxX = W / xSpan;
+        const pxY = H / ySpan;
+        const s = Math.min(pxX, pxY);
+        const cx = (view.xMin + view.xMax) / 2;
+        const cy = (view.yMin + view.yMax) / 2;
+        view.xMin = cx - W/(2*s);
+        view.xMax = cx + W/(2*s);
+        view.yMin = cy - H/(2*s);
+        view.yMax = cy + H/(2*s);
+      }
+
+      // Math ↔ pixel
+      const toX  = xv => (xv - view.xMin) / (view.xMax - view.xMin) * W;
+      const toY  = yv => H - (yv - view.yMin) / (view.yMax - view.yMin) * H;
+      const toMX = px => view.xMin + px / W * (view.xMax - view.xMin);
+      const toMY = py => view.yMin + (H - py) / H * (view.yMax - view.yMin);
+
+      function draw() {
+        rafId = null;
+        dirty = false;
+        if (!ctx) return;
+
+        const xMin = view.xMin, xMax = view.xMax;
+        const yMin = view.yMin, yMax = view.yMax;
+
+        // Background
+        ctx.fillStyle = C.bg;
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid
+        const rawStep = niceStep((xMax - xMin) / 8);
+        const gridStep = rawStep;
+
+        ctx.strokeStyle = C.grid;
+        ctx.lineWidth = 0.5;
+        for (let x = Math.ceil(xMin/gridStep)*gridStep; x <= xMax; x += gridStep) {
+          ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), H); ctx.stroke();
+        }
+        for (let y = Math.ceil(yMin/gridStep)*gridStep; y <= yMax; y += gridStep) {
+          ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(W, toY(y)); ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = C.axis; ctx.lineWidth = 1.5;
+        if (yMin <= 0 && yMax >= 0) {
+          ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H); ctx.stroke();
+        }
+
+        // Axis labels
+        ctx.fillStyle = C.txt;
+        ctx.font = `${Math.max(9, Math.round(10/DPR*DPR))}px JetBrains Mono, monospace`;
+        ctx.textAlign = 'center';
+        const labelStep = gridStep * (W / (xMax-xMin) < 60 ? 2 : 1);
+        for (let x = Math.ceil(xMin/labelStep)*labelStep; x <= xMax; x += labelStep) {
+          if (Math.abs(x) < gridStep*0.1) continue;
+          const px = toX(x);
+          const axY = toY(0);
+          const ly = (axY > H-18) ? axY-6 : (axY < 14 ? axY+12 : axY+12);
+          ctx.fillText(fmtN(x), px, ly);
+        }
+        ctx.textAlign = 'right';
+        for (let y = Math.ceil(yMin/labelStep)*labelStep; y <= yMax; y += labelStep) {
+          if (Math.abs(y) < gridStep*0.1) continue;
+          const py = toY(y);
+          const axX = toX(0);
+          const lx = (axX < 28) ? axX+32 : axX-4;
+          ctx.fillText(fmtN(y), lx, py+3);
+        }
+
+        // ── Plot function ──────────────────────────────────────
+        ctx.strokeStyle = C.accent;
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        const STEPS = Math.round(W * 1.5);
+        let started = false, prevYv = null;
+        for (let i = 0; i <= STEPS; i++) {
+          const xv = xMin + i*(xMax-xMin)/STEPS;
+          const yv = ev(xv);
+          if (yv === null) { started=false; prevYv=null; continue; }
+          // discontinuity
+          if (prevYv !== null && Math.abs(yv-prevYv) > (yMax-yMin)*0.5) { started=false; }
+          prevYv = yv;
+          const px = toX(xv), py = toY(yv);
+          if (!started) { ctx.moveTo(px, py); started=true; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Zero dots
+        ctx.fillStyle = C.orange;
+        for (let i = 0; i < STEPS; i++) {
+          const x0 = xMin + i*(xMax-xMin)/STEPS;
+          const x1 = xMin + (i+1)*(xMax-xMin)/STEPS;
+          const y0 = ev(x0), y1 = ev(x1);
+          if (y0!==null && y1!==null && y0*y1<0) {
+            const xz = x0 - y0*(x1-x0)/(y1-y0);
+            ctx.beginPath(); ctx.arc(toX(xz), toY(0), 5, 0, 2*Math.PI); ctx.fill();
+          }
+        }
+
+        // Legend
+        ctx.font = '11px JetBrains Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = C.accent; ctx.fillRect(12, 10, 12, 3);
+        ctx.fillStyle = C.txt;
+        const lbl = `f(${v}) = ${expr.length>34 ? expr.slice(0,34)+'…' : expr}`;
+        ctx.fillText(lbl, 28, 17);
+        ctx.fillStyle = C.orange; ctx.fillRect(12, 28, 12, 3);
+        ctx.fillStyle = C.txt; ctx.fillText('Ceros de f', 28, 35);
+      }
+
+      function schedDraw() { if (!rafId) rafId = requestAnimationFrame(draw); }
+
+      // ── Zoom around a point ─────────────────────────────────
+      function zoomAt(mx, my, factor) {
+        const cx = toMX(mx), cy = toMY(my);
+        view.xMin = cx + (view.xMin-cx)*factor;
+        view.xMax = cx + (view.xMax-cx)*factor;
+        view.yMin = cy + (view.yMin-cy)*factor;
+        view.yMax = cy + (view.yMax-cy)*factor;
+        schedDraw();
+      }
+
+      // ── Mouse events ────────────────────────────────────────
+      function onMouseDown(e) {
+        isDragging = true;
+        const r = canvas.getBoundingClientRect();
+        dragStart = { x: e.clientX - r.left, y: e.clientY - r.top };
+        viewAtDrag = { ...view };
+        canvas.style.cursor = 'grabbing';
+      }
+      function onMouseMove(e) {
+        const r = canvas.getBoundingClientRect();
+        const mx = e.clientX - r.left, my = e.clientY - r.top;
+
+        // Tooltip
+        const mathX = toMX(mx), mathY = ev(mathX);
+        if (mathY !== null) {
+          tooltip.style.display = '';
+          tooltip.textContent = `x = ${fmtN(mathX)}   f(x) = ${fmtN(mathY)}`;
+          const ttW = 180, ttH = 28;
+          let ttX = mx + 14, ttY = my - 34;
+          if (ttX + ttW > W) ttX = mx - ttW - 10;
+          if (ttY < 0) ttY = my + 10;
+          tooltip.style.left = ttX + 'px';
+          tooltip.style.top  = ttY + 'px';
+          // crosshair dot
+          schedDraw();
+          // draw crosshair on top (after main draw)
+          requestAnimationFrame(() => {
+            if (!ctx) return;
+            const py = toY(mathY);
+            ctx.fillStyle = C.accent;
+            ctx.strokeStyle = C.bg;
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(toX(mathX), py, 5, 0, 2*Math.PI);
+            ctx.fill(); ctx.stroke();
+            // dashed drop lines
+            ctx.setLineDash([3,3]);
+            ctx.strokeStyle = C.txt; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(toX(mathX), py); ctx.lineTo(toX(mathX), toY(0)); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(toX(mathX), py); ctx.lineTo(toX(0) < 0 ? 0 : toX(0) > W ? W : toX(0), py); ctx.stroke();
+            ctx.setLineDash([]);
+          });
+        } else {
+          tooltip.style.display = 'none';
+        }
+
+        if (!isDragging) return;
+        const dx = (mx - dragStart.x) / W * (viewAtDrag.xMax - viewAtDrag.xMin);
+        const dy = (my - dragStart.y) / H * (viewAtDrag.yMax - viewAtDrag.yMin);
+        view.xMin = viewAtDrag.xMin - dx;
+        view.xMax = viewAtDrag.xMax - dx;
+        view.yMin = viewAtDrag.yMin + dy;
+        view.yMax = viewAtDrag.yMax + dy;
+        schedDraw();
+      }
+      function onMouseUp() { isDragging=false; canvas.style.cursor='crosshair'; }
+      function onMouseLeave() { isDragging=false; tooltip.style.display='none'; canvas.style.cursor='crosshair'; }
+      function onWheel(e) {
+        e.preventDefault();
+        const r = canvas.getBoundingClientRect();
+        const mx = e.clientX - r.left, my = e.clientY - r.top;
+        const factor = e.deltaY > 0 ? 1.12 : 1/1.12;
+        zoomAt(mx, my, factor);
+      }
+
+      // ── Touch events ────────────────────────────────────────
+      function getTouchMid(touches) {
+        return {
+          x: (touches[0].clientX + touches[1].clientX)/2,
+          y: (touches[0].clientY + touches[1].clientY)/2,
+        };
+      }
+      function getTouchDist(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx*dx+dy*dy);
+      }
+      function onTouchStart(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+          const r = canvas.getBoundingClientRect();
+          isDragging = true;
+          dragStart = { x: e.touches[0].clientX-r.left, y: e.touches[0].clientY-r.top };
+          viewAtDrag = { ...view };
+          lastPinchDist = null;
+        } else if (e.touches.length === 2) {
+          isDragging = false;
+          lastPinchDist = getTouchDist(e.touches);
+        }
+      }
+      function onTouchMove(e) {
+        e.preventDefault();
+        const r = canvas.getBoundingClientRect();
+        if (e.touches.length === 1 && isDragging) {
+          const mx = e.touches[0].clientX-r.left, my = e.touches[0].clientY-r.top;
+          const dx = (mx-dragStart.x)/W*(viewAtDrag.xMax-viewAtDrag.xMin);
+          const dy = (my-dragStart.y)/H*(viewAtDrag.yMax-viewAtDrag.yMin);
+          view.xMin = viewAtDrag.xMin-dx; view.xMax = viewAtDrag.xMax-dx;
+          view.yMin = viewAtDrag.yMin+dy; view.yMax = viewAtDrag.yMax+dy;
+          schedDraw();
+        } else if (e.touches.length === 2) {
+          const dist = getTouchDist(e.touches);
+          if (lastPinchDist) {
+            const mid = getTouchMid(e.touches);
+            const mx = mid.x - r.left, my = mid.y - r.top;
+            zoomAt(mx, my, lastPinchDist/dist);
+          }
+          lastPinchDist = dist;
+        }
+      }
+      function onTouchEnd(e) { if (e.touches.length === 0) isDragging=false; lastPinchDist=null; }
+
+      // Bind events
+      canvas.addEventListener('mousedown',  onMouseDown);
+      canvas.addEventListener('mousemove',  onMouseMove);
+      canvas.addEventListener('mouseup',    onMouseUp);
+      canvas.addEventListener('mouseleave', onMouseLeave);
+      canvas.addEventListener('wheel',      onWheel, { passive: false });
+      canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+      canvas.addEventListener('touchmove',  onTouchMove,  { passive: false });
+      canvas.addEventListener('touchend',   onTouchEnd);
+
+      // Control buttons
+      $('gcZoomIn').onclick  = () => zoomAt(W/2, H/2, 1/1.35);
+      $('gcZoomOut').onclick = () => zoomAt(W/2, H/2, 1.35);
+      $('gcReset').onclick   = () => { view = { ...initView }; equaliseScale(); schedDraw(); };
+
+      // ResizeObserver
+      const ro = new ResizeObserver(() => { resize(); schedDraw(); });
+      ro.observe(wrap);
+
+      resize();
+      schedDraw();
+
+      return {
+        destroy() {
+          canvas.removeEventListener('mousedown',  onMouseDown);
+          canvas.removeEventListener('mousemove',  onMouseMove);
+          canvas.removeEventListener('mouseup',    onMouseUp);
+          canvas.removeEventListener('mouseleave', onMouseLeave);
+          canvas.removeEventListener('wheel',      onWheel);
+          canvas.removeEventListener('touchstart', onTouchStart);
+          canvas.removeEventListener('touchmove',  onTouchMove);
+          canvas.removeEventListener('touchend',   onTouchEnd);
+          ro.disconnect();
+          if (rafId) cancelAnimationFrame(rafId);
+        }
+      };
+    })();
+  }
+
+  function fmtN(n) {
+    if (Math.abs(n) >= 1e4 || (Math.abs(n) < 0.01 && n !== 0)) return n.toExponential(2);
+    return parseFloat(n.toFixed(4)).toString();
+  }
+
+  function niceStep(raw) {
+    const exp = Math.floor(Math.log10(raw));
+    const frac = raw / Math.pow(10, exp);
+    let nice = 1;
+    if (frac < 1.5) nice = 1;
+    else if (frac < 3.5) nice = 2;
+    else if (frac < 7.5) nice = 5;
+    else nice = 10;
+    return nice * Math.pow(10, exp);
+  }
+
+  $('s4Reset').addEventListener('click', () => {
+    s1Input.value = ''; s1Input.className = 'eq-input';
+    setStatus($('s1Status'),'hint','Escribe una igualdad con el signo =');
+    s1Next.disabled = true;
+    state.steps = []; state.variable = ''; state.fnExpr = '';
+    setStep(1);
+  });
+  $('s4Back').addEventListener('click', () => setStep(3));
+
+  // ── Utils ──────────────────────────────────────────────────
+  function setStatus(el, type, msg) {
+    el.textContent = msg;
+    el.className = `eq-status ${type}`;
+  }
+  function esc(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+}
+
+</script>
+</body>
+</html>

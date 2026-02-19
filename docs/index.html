@@ -7,6 +7,77 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ── Side Navbar ── -->
+<nav class="sidenav" id="sidenav">
+  <div class="sidenav-inner">
+
+    <div class="sidenav-logo">
+      <span class="sidenav-logo-icon">⬡</span>
+      <span class="sidenav-logo-text">C·C</span>
+    </div>
+
+    <div class="sidenav-section-label">Áreas de estudio</div>
+
+    <a href="math.html"    class="sidenav-link" data-label="01">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Matemática</span>
+    </a>
+    <a href="advmath.html" class="sidenav-link" data-label="02">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Cálculo</span>
+    </a>
+    <a href="ph.html"      class="sidenav-link" data-label="03">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Física</span>
+    </a>
+    <a href="modph.html"   class="sidenav-link" data-label="04">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Física avanzada</span>
+    </a>
+    <a href="ch.html"      class="sidenav-link" data-label="05">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Química</span>
+    </a>
+    <a href="ss.html"      class="sidenav-link" data-label="06">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Ciencias del espacio</span>
+    </a>
+    <a     class="sidenav-link" data-label="07">
+      <span class="sidenav-link-dot"></span>
+      <span class="sidenav-link-name">Biología</span>
+    </a>
+
+    <div class="sidenav-divider"></div>
+    <div class="sidenav-section-label">Extras</div>
+
+    <a href="https://lasu-aerospace.github.io/calculadora-cientifica/functions.html" class="sidenav-link" data-label="↗">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Funciones (matemática)</span>
+    </a>
+    <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html" class="sidenav-link" data-label="↗">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Graficadora</span>
+    </a>
+    <a href="https://lasu-aerospace.github.io/calculadora-cientifica/ia.html" class="sidenav-link" data-label="↗">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">Red neuronal local</span>
+    </a>
+    <a href="https://github.com/lasu-aerospace/calculadora-cientifica" class="sidenav-link" data-label="gh">
+      <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <span class="sidenav-link-name">GitHub</span>
+    </a>
+
+    <button class="sidenav-toggle" id="sidenavToggle" aria-label="Colapsar menú">&#10094;</button>
+  </div>
+</nav>
+
+<button class="sidenav-open-btn" id="sidenavOpenBtn" aria-label="Abrir menú">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="sidenav-overlay" id="sidenavOverlay"></div>
+
 <div class="page">
 
   <div class="index-hero">
@@ -15,79 +86,17 @@
     <p>Accede al repositorio y mejora tu comprensión de conceptos clave en matemática, física, química, biología y más.</p>
   </div>
 
-  <div class="card-label">Áreas de estudio</div>
-
-  <div class="carousel-wrap">
-    <div class="carousel-container">
-      <div class="carousel-track">
-
-        <a href="math.html" class="card-snap">
-          <h3 style="bottom:14%;right:10%;">Matemática</h3>
-        </a>
-
-        <a href="advmath.html" class="card-snap">
-          <h3 style="top:14%;left:10%;">Cálculo</h3>
-        </a>
-
-        <a href="ph.html" class="card-snap">
-          <h3 style="top:14%;right:10%;">Física</h3>
-        </a>
-
-        <a href="modph.html" class="card-snap">
-          <h3 style="bottom:14%;right:10%;">Física avanzada</h3>
-        </a>
-
-        <a href="ch.html" class="card-snap">
-          <h3 style="bottom:14%;left:10%;">Química</h3>
-        </a>
-
-        <span class="card-snap locked">
-          <h3 style="top:14%;right:10%;">Biología</h3>
-        </span>
-
-        <span class="card-snap locked">
-          <h3 style="top:14%;left:10%;">Bioquímica</h3>
-        </span>
-
-        <span class="card-snap locked">
-          <h3 style="bottom:14%;left:10%;">Biotecnología</h3>
-        </span>
-
-        <span class="card-snap locked">
-          <h3 style="top:14%;left:10%;">Ciencias del espacio</h3>
-        </span>
-
-      </div>
-    </div>
-
-    <div class="carousel-nav">
-      <button class="carousel-btn" id="btnLeft">&#10094;</button>
-      <div class="carousel-dots" id="dots"></div>
-      <button class="carousel-btn" id="btnRight">&#10095;</button>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-    <p>
-      Prueba la actualización:
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html">El laboratorio</a>
-      &nbsp;·&nbsp;
-      <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a>
-    </p>
-  </footer>
-
 </div>
 
 <script>
+  /* ── Carousel ── */
   const container = document.querySelector('.carousel-container');
   const cards     = document.querySelectorAll('.card-snap');
   const btnLeft   = document.getElementById('btnLeft');
   const btnRight  = document.getElementById('btnRight');
   const dotsEl    = document.getElementById('dots');
-
   let idx = 0;
 
-  // Build dots
   cards.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'dot' + (i === 0 ? ' active' : '');
@@ -106,12 +115,41 @@
   btnRight.addEventListener('click', () => go(idx + 1));
   btnLeft.addEventListener('click',  () => go(idx - 1));
 
-  // Sync dots on manual swipe
   container.addEventListener('scrollend', () => {
     const w = cards[0].getBoundingClientRect().width;
     idx = Math.round(container.scrollLeft / w);
     document.querySelectorAll('.dot').forEach((d, i) =>
       d.classList.toggle('active', i === idx));
+  });
+
+  /* ── Sidenav ── */
+  const sidenav        = document.getElementById('sidenav');
+  const sidenavToggle  = document.getElementById('sidenavToggle');
+  const sidenavOpenBtn = document.getElementById('sidenavOpenBtn');
+  const overlay        = document.getElementById('sidenavOverlay');
+
+  function collapse() {
+    sidenav.classList.add('collapsed');
+    sidenavToggle.innerHTML = '&#10095;';
+  }
+  function expand() {
+    sidenav.classList.remove('collapsed');
+    sidenav.classList.remove('open');
+    sidenavToggle.innerHTML = '&#10094;';
+  }
+
+  sidenavToggle.addEventListener('click', () => {
+    sidenav.classList.contains('collapsed') ? expand() : collapse();
+  });
+
+  sidenavOpenBtn.addEventListener('click', () => {
+    sidenav.classList.add('open');
+    overlay.classList.add('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidenav.classList.remove('open');
+    overlay.classList.remove('active');
   });
 </script>
 </body>

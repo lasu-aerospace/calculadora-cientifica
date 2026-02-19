@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Neuronal — Autoentrenable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Familjen+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── Variables ── */
+:root {
+  --bg:       #0d0e12;
+  --s0:       #13141a;
+  --s1:       #1a1c24;
+  --s2:       #22252f;
+  --border:   #2a2d3a;
+  --border2:  #363a4a;
+  --txt:      #e4e6f0;
+  --txt2:     #8b90a8;
+  --txt3:     #52566a;
+  --accent:   #4ade80;
+  --accent2:  #22c55e;
+  --danger:   #f87171;
+  --warn:     #fbbf24;
+  --radius:   16px;
+  --radius-sm:10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ── */
+.kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #e4e6f0 30%, #52566a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.page-title em { font-style: italic; }
+
+.page-sub {
+  font-size: 14px;
+  color: var(--txt2);
+  margin-bottom: 32px;
+}
+
+hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* ── Card ── */
+.card {
+  background: var(--s0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+}
+
+.card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Layout grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+@media (max-width: 720px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ── Forms ── */
+label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .15em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+input[type="text"], input[type="number"], textarea, select {
+  width: 100%;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--txt);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 10px 14px;
+  transition: border-color .2s;
+  outline: none;
+  resize: vertical;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--border2); }
+input::placeholder, textarea::placeholder { color: var(--txt3); }
+
+select { cursor: pointer; }
+select option { background: var(--s2); }
+
+.form-group { margin-bottom: 16px; }
+.form-hint { font-size: 11px; color: var(--txt3); margin-top: 5px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--s1);
+  color: var(--txt2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+.btn:hover { border-color: var(--border2); color: var(--txt); background: var(--s2); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-accent {
+  background: rgba(74,222,128,.1);
+  border-color: rgba(74,222,128,.35);
+  color: var(--accent);
+}
+.btn-accent:hover {
+  background: rgba(74,222,128,.18);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(74,222,128,.12);
+}
+
+.btn-danger {
+  background: rgba(248,113,113,.1);
+  border-color: rgba(248,113,113,.3);
+  color: var(--danger);
+}
+.btn-danger:hover { background: rgba(248,113,113,.18); border-color: var(--danger); }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── Status badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--txt3);
+  background: var(--s2);
+  text-transform: uppercase;
+}
+.badge.running { border-color: rgba(74,222,128,.4); color: var(--accent); background: rgba(74,222,128,.07); }
+.badge.done    { border-color: rgba(34,197,94,.4);  color: #86efac; background: rgba(34,197,94,.06); }
+.badge.error   { border-color: rgba(248,113,113,.4);color: var(--danger);  background: rgba(248,113,113,.06); }
+
+.pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+
+/* ── Metrics row ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) { .metrics { grid-template-columns: repeat(2,1fr); } }
+
+.metric-box {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.metric-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--txt);
+  line-height: 1;
+}
+.metric-value.accent { color: var(--accent); }
+.metric-value.warn   { color: var(--warn); }
+
+/* ── Network canvas ── */
+#netCanvas {
+  width: 100%;
+  height: 280px;
+  display: block;
+  border-radius: var(--radius-sm);
+  background: var(--s1);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+/* ── Loss chart ── */
+#lossCanvas {
+  width: 100%;
+  height: 160px;
+  display: block;
+  border-radius: var(--radius-sm);
+  background: var(--s1);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+/* ── Data table ── */
+.data-table-wrap { overflow-x: auto; max-height: 200px; overflow-y: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { position: sticky; top: 0; background: var(--s2); padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .15em; color: var(--txt3); text-transform: uppercase; border-bottom: 1px solid var(--border); text-align: left; }
+td { padding: 8px 14px; color: var(--txt2); border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+
+/* ── Prediction result ── */
+.pred-result {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-top: 12px;
+  display: none;
+}
+.pred-result.visible { display: block; }
+
+.pred-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.pred-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.pred-bar-row { display: flex; align-items: center; gap: 10px; }
+.pred-bar-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt2);
+  min-width: 90px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.pred-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--s2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pred-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: var(--accent);
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+.pred-bar-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+  min-width: 38px;
+  text-align: right;
+}
+
+/* ── Log ── */
+#trainingLog {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+  height: 100px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+#trainingLog .log-line { line-height: 1.8; }
+#trainingLog .log-ok  { color: var(--accent); }
+#trainingLog .log-warn{ color: var(--warn); }
+#trainingLog .log-err { color: var(--danger); }
+
+/* ── Arch config pills ── */
+.arch-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.arch-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.arch-pill.highlight { border-color: rgba(74,222,128,.35); color: var(--accent); background: rgba(74,222,128,.07); }
+
+/* ── Section header inline ── */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.section-head h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--txt);
+}
+
+/* ── Step indicator ── */
+.steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  background: var(--s0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.step {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-right: 1px solid var(--border);
+  transition: all .25s;
+}
+.step:last-child { border-right: none; }
+.step.active { color: var(--accent); background: rgba(74,222,128,.05); }
+.step.done   { color: var(--txt2); }
+.step-num {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+.step.active .step-num { background: rgba(74,222,128,.15); border-color: rgba(74,222,128,.5); color: var(--accent); }
+.step.done   .step-num { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.3); color: var(--accent2); }
+
+/* ── Range slider ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--border2);
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  padding: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { box-shadow: 0 0 10px rgba(74,222,128,.4); }
+
+/* ── Tooltip ── */
+.tooltip {
+  position: fixed;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt2);
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.tooltip.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Header -->
+  <div class="kicker">Herramienta experimental · IA desde cero</div>
+  <h1 class="page-title"><em>Red Neuronal</em> Autoentrenable</h1>
+  <p class="page-sub">Define tu contexto, añade datos de entrenamiento y observa la red aprender en tiempo real.</p>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step active" id="step1"><div class="step-num">1</div>Contexto</div>
+    <div class="step" id="step2"><div class="step-num">2</div>Datos</div>
+    <div class="step" id="step3"><div class="step-num">3</div>Arquitectura</div>
+    <div class="step" id="step4"><div class="step-num">4</div>Entrenamiento</div>
+    <div class="step" id="step5"><div class="step-num">5</div>Predicción</div>
+  </div>
+
+  <!-- ── STEP 1: Context ── -->
+  <div class="card" id="panelContext">
+    <div class="card-label">Paso 1 — Contexto del problema</div>
+    <div class="grid-2">
+      <div>
+        <div class="form-group">
+          <label>Descripción del problema</label>
+          <textarea id="contextDesc" rows="3" placeholder="Ej: Clasificar si un mensaje de correo es spam o no basándome en palabras clave…"></textarea>
+          <div class="form-hint">// Describe qué quieres que aprenda tu red</div>
+        </div>
+        <div class="form-group">
+          <label>Tipo de tarea</label>
+          <select id="taskType">
+            <option value="classification">Clasificación (clases discretas)</option>
+            <option value="regression">Regresión (valor numérico)</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <label>Nombre de las clases / salidas (separadas por coma)</label>
+          <input type="text" id="classNames" placeholder="spam, no-spam  —  ó  —  positivo, negativo, neutro" />
+          <div class="form-hint">// Para regresión deja solo una etiqueta: "precio"</div>
+        </div>
+        <div class="form-group">
+          <label>Nombres de las características de entrada (separadas por coma)</label>
+          <input type="text" id="featureNames" placeholder="longitud_texto, n_links, n_mayusculas, tiene_asunto" />
+          <div class="form-hint">// Una columna por característica numérica</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-accent" onclick="initContext()">Definir contexto →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Data ── -->
+  <div class="card" id="panelData" style="display:none">
+    <div class="section-head">
+      <div class="card-label" style="margin-bottom:0">Paso 2 — Datos de entrenamiento</div>
+      <div id="dataCount" class="badge">0 muestras</div>
+    </div>
+
+    <div id="dataInputArea">
+      <div class="form-group">
+        <label>Añadir muestra — valores de entrada (separados por coma)</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="sampleInputs" placeholder="0.8, 3, 12, 1" style="flex:1"/>
+          <select id="sampleLabel" style="min-width:120px; flex-shrink:0"></select>
+          <button class="btn btn-accent" onclick="addSample()" style="flex-shrink:0">+ Añadir</button>
+        </div>
+        <div class="form-hint" id="inputHint">// Introduce un valor por cada característica</div>
+      </div>
+
+      <div class="form-group">
+        <label>O pega un CSV (primera columna = clase/valor, resto = características)</label>
+        <textarea id="csvInput" rows="3" placeholder="spam,0.8,3,12,1&#10;no-spam,0.2,0,2,0&#10;spam,0.9,5,20,1"></textarea>
+        <button class="btn" style="margin-top:8px" onclick="loadCSV()">↑ Importar CSV</button>
+      </div>
+    </div>
+
+    <div class="data-table-wrap" id="dataTableWrap" style="display:none">
+      <table>
+        <thead id="dataTableHead"></thead>
+        <tbody id="dataTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-accent" onclick="goToArch()">Configurar arquitectura →</button>
+      <button class="btn btn-danger" onclick="clearData()">Limpiar datos</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Architecture ── -->
+  <div class="card" id="panelArch" style="display:none">
+    <div class="card-label">Paso 3 — Arquitectura de la red</div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label>Capas ocultas</label>
+        <input type="number" id="hiddenLayers" value="2" min="1" max="6" />
+      </div>
+      <div class="form-group">
+        <label>Neuronas por capa</label>
+        <input type="number" id="hiddenNeurons" value="8" min="2" max="64" />
+      </div>
+      <div class="form-group">
+        <label>Función de activación</label>
+        <select id="activation">
+          <option value="relu">ReLU</option>
+          <option value="sigmoid">Sigmoid</option>
+          <option value="tanh">Tanh</option>
+          <option value="leaky">Leaky ReLU</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group">
+        <label>Tasa de aprendizaje</label>
+        <input type="number" id="lr" value="0.05" min="0.0001" max="1" step="0.001" />
+      </div>
+      <div class="form-group">
+        <label>Épocas</label>
+        <input type="number" id="epochs" value="500" min="50" max="10000" />
+      </div>
+      <div class="form-group">
+        <label>Regularización L2 (λ)</label>
+        <input type="number" id="l2lambda" value="0.0001" min="0" max="0.1" step="0.0001" />
+      </div>
+    </div>
+
+    <div id="archPreview" class="arch-pills" style="margin-bottom:16px"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="buildNetwork()">Construir red →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Training ── -->
+  <div class="card" id="panelTrain" style="display:none">
+    <div class="section-head">
+      <div class="card-label" style="margin-bottom:0">Paso 4 — Entrenamiento</div>
+      <div id="statusBadge" class="badge"><span class="pulse" style="display:none"></span><span id="statusText">Listo</span></div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-box">
+        <div class="metric-label">Época</div>
+        <div class="metric-value" id="metEpoch">—</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Loss</div>
+        <div class="metric-value warn" id="metLoss">—</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Precisión</div>
+        <div class="metric-value accent" id="metAcc">—</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Tiempo</div>
+        <div class="metric-value" id="metTime">—</div>
+      </div>
+    </div>
+
+    <!-- Network visualization -->
+    <div class="card-label">Visualización de la red</div>
+    <canvas id="netCanvas"></canvas>
+
+    <!-- Loss chart -->
+    <div class="card-label" style="margin-top:12px">Curva de pérdida</div>
+    <canvas id="lossCanvas"></canvas>
+
+    <!-- Log -->
+    <div class="card-label" style="margin-top:12px">Log de entrenamiento</div>
+    <div id="trainingLog"></div>
+
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-accent" id="btnTrain" onclick="startTraining()">▶ Entrenar</button>
+      <button class="btn" id="btnPause" onclick="pauseTraining()" disabled>⏸ Pausar</button>
+      <button class="btn btn-danger" onclick="resetTraining()">↺ Reiniciar pesos</button>
+      <button class="btn btn-accent" onclick="goToPredict()">Hacer predicciones →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Predict ── -->
+  <div class="card" id="panelPredict" style="display:none">
+    <div class="card-label">Paso 5 — Predicción</div>
+
+    <div class="form-group">
+      <label id="predictLabel">Valores de entrada (separados por coma)</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="predictInput" placeholder="0.7, 2, 8, 1" style="flex:1" onkeydown="if(event.key==='Enter')predict()"/>
+        <button class="btn btn-accent" onclick="predict()">→ Predecir</button>
+      </div>
+      <div class="form-hint" id="predictHint"></div>
+    </div>
+
+    <div class="pred-result" id="predResult">
+      <div class="pred-label">Resultado</div>
+      <div id="predTopResult" style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;color:var(--txt);margin-bottom:12px;"></div>
+      <div class="pred-bars" id="predBars"></div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let ctx = {
+  desc: '', taskType: 'classification',
+  classes: [], features: [],
+  data: []
+};
+
+let net = null;
+let lossHistory = [];
+let trainInterval = null;
+let trainPaused = false;
+let trainStart = 0;
+let currentEpoch = 0;
+let targetEpochs = 500;
+
+/* ═══════════════════════════════════════════════
+   STEP 1 — CONTEXT
+═══════════════════════════════════════════════ */
+function initContext() {
+  const desc    = document.getElementById('contextDesc').value.trim();
+  const taskType= document.getElementById('taskType').value;
+  const classTxt= document.getElementById('classNames').value.trim();
+  const featTxt = document.getElementById('featureNames').value.trim();
+
+  if (!classTxt || !featTxt) { alert('Define las clases y características primero.'); return; }
+
+  ctx.desc     = desc;
+  ctx.taskType = taskType;
+  ctx.classes  = classTxt.split(',').map(s => s.trim()).filter(Boolean);
+  ctx.features = featTxt.split(',').map(s => s.trim()).filter(Boolean);
+
+  // Populate label select
+  const sel = document.getElementById('sampleLabel');
+  sel.innerHTML = '';
+  ctx.classes.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+
+  document.getElementById('inputHint').textContent = `// ${ctx.features.length} característica(s): ${ctx.features.join(', ')}`;
+
+  setStep(1);
+  show('panelData');
+  setStepDone(0);
+  activateStep(1);
+}
+
+/* ═══════════════════════════════════════════════
+   STEP 2 — DATA
+═══════════════════════════════════════════════ */
+function addSample() {
+  const rawInputs = document.getElementById('sampleInputs').value.trim();
+  const label     = document.getElementById('sampleLabel').value;
+
+  const inputs = rawInputs.split(',').map(s => parseFloat(s.trim()));
+  if (inputs.length !== ctx.features.length || inputs.some(isNaN)) {
+    alert(`Necesito exactamente ${ctx.features.length} valor(es) numérico(s).`); return;
+  }
+  ctx.data.push({ inputs, label });
+  document.getElementById('sampleInputs').value = '';
+  renderDataTable();
+  updateDataCount();
+}
+
+function loadCSV() {
+  const csv = document.getElementById('csvInput').value.trim();
+  if (!csv) return;
+  let added = 0;
+  csv.split('\n').forEach(line => {
+    line = line.trim();
+    if (!line) return;
+    const parts = line.split(',').map(s => s.trim());
+    if (parts.length < 2) return;
+    const label  = parts[0];
+    const inputs = parts.slice(1).map(Number);
+    if (inputs.some(isNaN)) return;
+    if (!ctx.classes.includes(label)) return;
+    ctx.data.push({ inputs, label });
+    added++;
+  });
+  document.getElementById('csvInput').value = '';
+  renderDataTable();
+  updateDataCount();
+  log(`↑ ${added} muestras importadas desde CSV`, 'ok');
+}
+
+function clearData() {
+  if (!confirm('¿Borrar todos los datos?')) return;
+  ctx.data = [];
+  renderDataTable();
+  updateDataCount();
+}
+
+function renderDataTable() {
+  const head = document.getElementById('dataTableHead');
+  const body = document.getElementById('dataTableBody');
+  const wrap = document.getElementById('dataTableWrap');
+
+  if (ctx.data.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  head.innerHTML = '<tr><th>#</th><th>Clase</th>' +
+    ctx.features.map(f => `<th>${f}</th>`).join('') +
+    '<th></th></tr>';
+
+  body.innerHTML = ctx.data.map((d,i) =>
+    `<tr>
+      <td>${i+1}</td>
+      <td style="color:var(--accent)">${d.label}</td>
+      ${d.inputs.map(v => `<td>${v}</td>`).join('')}
+      <td><span onclick="removeSample(${i})" style="cursor:pointer;color:var(--txt3);font-size:14px">×</span></td>
+    </tr>`
+  ).join('');
+}
+
+function removeSample(i) {
+  ctx.data.splice(i, 1);
+  renderDataTable();
+  updateDataCount();
+}
+
+function updateDataCount() {
+  const el = document.getElementById('dataCount');
+  el.textContent = `${ctx.data.length} muestra${ctx.data.length !== 1 ? 's' : ''}`;
+  el.className = ctx.data.length > 0 ? 'badge done' : 'badge';
+}
+
+function goToArch() {
+  if (ctx.data.length < 4) { alert('Añade al menos 4 muestras para entrenar.'); return; }
+  updateArchPreview();
+  show('panelArch');
+  setStepDone(1);
+  activateStep(2);
+}
+
+/* ═══════════════════════════════════════════════
+   STEP 3 — ARCHITECTURE
+═══════════════════════════════════════════════ */
+function updateArchPreview() {
+  const hidL = parseInt(document.getElementById('hiddenLayers').value);
+  const hidN = parseInt(document.getElementById('hiddenNeurons').value);
+  const act  = document.getElementById('activation').value;
+
+  const layers = [ctx.features.length, ...Array(hidL).fill(hidN), ctx.classes.length];
+
+  document.getElementById('archPreview').innerHTML =
+    layers.map((n,i) => {
+      const isIn  = i === 0;
+      const isOut = i === layers.length - 1;
+      return `<div class="arch-pill ${isIn||isOut ? 'highlight' : ''}">
+        ${isIn ? '🔵 Entrada' : isOut ? '🟢 Salida' : `⚫ Capa ${i}`}
+        <strong>${n}</strong>
+      </div>`;
+    }).join('<div style="color:var(--txt3);font-size:18px;align-self:center">→</div>') +
+    `<div class="arch-pill">${act.toUpperCase()}</div>`;
+}
+
+['hiddenLayers','hiddenNeurons','activation'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', updateArchPreview);
+});
+
+function buildNetwork() {
+  const hidL = parseInt(document.getElementById('hiddenLayers').value);
+  const hidN = parseInt(document.getElementById('hiddenNeurons').value);
+  const act  = document.getElementById('activation').value;
+  const lr   = parseFloat(document.getElementById('lr').value);
+  const ep   = parseInt(document.getElementById('epochs').value);
+  const l2   = parseFloat(document.getElementById('l2lambda').value);
+
+  targetEpochs = ep;
+
+  const layerSizes = [ctx.features.length, ...Array(hidL).fill(hidN), ctx.classes.length];
+  net = createNetwork(layerSizes, act, lr, l2);
+
+  lossHistory = [];
+  currentEpoch = 0;
+
+  show('panelTrain');
+  setStepDone(2);
+  activateStep(3);
+
+  drawNetwork();
+  log('Red construida: ' + layerSizes.join(' → '), 'ok');
+}
+
+/* ═══════════════════════════════════════════════
+   NEURAL NETWORK CORE
+═══════════════════════════════════════════════ */
+function createNetwork(sizes, actFn, lr, l2) {
+  const weights = [];
+  const biases  = [];
+
+  for (let l = 0; l < sizes.length - 1; l++) {
+    const rows = sizes[l+1], cols = sizes[l];
+    // He init for relu, Xavier for others
+    const scale = (actFn === 'relu' || actFn === 'leaky')
+      ? Math.sqrt(2 / cols)
+      : Math.sqrt(1 / cols);
+
+    weights.push(Array.from({length: rows}, () =>
+      Array.from({length: cols}, () => randn() * scale)
+    ));
+    biases.push(Array(rows).fill(0));
+  }
+
+  return { sizes, weights, biases, actFn, lr, l2,
+           activations: sizes.map(s => Array(s).fill(0)),
+           zs: sizes.map(s => Array(s).fill(0)) };
+}
+
+function randn() {
+  // Box-Muller
+  const u1 = Math.random() || 1e-10, u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+const actFns = {
+  relu:    x => Math.max(0, x),
+  sigmoid: x => 1 / (1 + Math.exp(-x)),
+  tanh:    x => Math.tanh(x),
+  leaky:   x => x >= 0 ? x : 0.01 * x
+};
+const actDerivs = {
+  relu:    x => x > 0 ? 1 : 0,
+  sigmoid: x => { const s = 1/(1+Math.exp(-x)); return s*(1-s); },
+  tanh:    x => 1 - Math.tanh(x)**2,
+  leaky:   x => x >= 0 ? 1 : 0.01
+};
+
+function softmax(arr) {
+  const mx = Math.max(...arr);
+  const exps = arr.map(v => Math.exp(v - mx));
+  const sum = exps.reduce((a,b) => a+b, 0);
+  return exps.map(v => v / sum);
+}
+
+function forward(net, input) {
+  net.activations[0] = [...input];
+  let a = [...input];
+
+  for (let l = 0; l < net.weights.length; l++) {
+    const z = [];
+    for (let j = 0; j < net.weights[l].length; j++) {
+      let sum = net.biases[l][j];
+      for (let k = 0; k < a.length; k++) sum += net.weights[l][k === a.length ? k : k] * a[k] +
+        (net.weights[l][j] ? net.weights[l][j][k] * a[k] - net.weights[l][j][k] * a[k] : 0);
+      // redo properly
+      sum = net.biases[l][j];
+      for (let k = 0; k < a.length; k++) sum += net.weights[l][j][k] * a[k];
+      z.push(sum);
+    }
+    net.zs[l+1] = z;
+
+    let nextA;
+    if (l === net.weights.length - 1 && ctx.taskType === 'classification') {
+      nextA = softmax(z);
+    } else {
+      nextA = z.map(v => actFns[net.actFn](v));
+    }
+    net.activations[l+1] = nextA;
+    a = nextA;
+  }
+  return a;
+}
+
+function backward(net, target) {
+  const L = net.weights.length;
+  const deltas = Array(L).fill(null).map(() => []);
+
+  // Output delta
+  const outA = net.activations[L];
+  if (ctx.taskType === 'classification') {
+    // Cross-entropy + softmax: delta = output - target
+    deltas[L-1] = outA.map((a,i) => a - target[i]);
+  } else {
+    deltas[L-1] = outA.map((a,i) => (a - target[i]) * actDerivs[net.actFn](net.zs[L][i]));
+  }
+
+  // Hidden deltas
+  for (let l = L-2; l >= 0; l--) {
+    deltas[l] = net.weights[l+1][0].map((_,k) => {
+      let err = 0;
+      for (let j = 0; j < net.weights[l+1].length; j++) {
+        err += net.weights[l+1][j][k] * deltas[l+1][j];
+      }
+      return err * actDerivs[net.actFn](net.zs[l+1][k]);
+    });
+  }
+
+  // Update weights
+  for (let l = 0; l < L; l++) {
+    for (let j = 0; j < net.weights[l].length; j++) {
+      for (let k = 0; k < net.weights[l][j].length; k++) {
+        net.weights[l][j][k] -= net.lr * (
+          deltas[l][j] * net.activations[l][k] +
+          net.l2 * net.weights[l][j][k]
+        );
+      }
+      net.biases[l][j] -= net.lr * deltas[l][j];
+    }
+  }
+}
+
+function oneHot(label) {
+  return ctx.classes.map(c => c === label ? 1 : 0);
+}
+
+// Normalize data
+function normalizeData(data) {
+  const n = ctx.features.length;
+  const min = Array(n).fill(Infinity);
+  const max = Array(n).fill(-Infinity);
+  data.forEach(d => d.inputs.forEach((v,i) => {
+    min[i] = Math.min(min[i], v);
+    max[i] = Math.max(max[i], v);
+  }));
+  return { min, max, range: min.map((mn,i) => max[i] - mn || 1) };
+}
+
+function normalize(inputs, stats) {
+  return inputs.map((v,i) => (v - stats.min[i]) / stats.range[i]);
+}
+
+let normStats = null;
+
+/* ═══════════════════════════════════════════════
+   STEP 4 — TRAINING
+═══════════════════════════════════════════════ */
+function startTraining() {
+  if (!net) return;
+  if (trainInterval) return;
+
+  trainPaused = false;
+  trainStart  = performance.now();
+  normStats   = normalizeData(ctx.data);
+
+  document.getElementById('btnTrain').disabled  = true;
+  document.getElementById('btnPause').disabled  = false;
+  setStatus('running', 'Entrenando…');
+
+  const BATCH = 8;
+  const epPerTick = Math.max(1, Math.round(targetEpochs / 500));
+
+  trainInterval = setInterval(() => {
+    if (trainPaused) return;
+    if (currentEpoch >= targetEpochs) {
+      stopTraining(true);
+      return;
+    }
+
+    let totalLoss = 0;
+    for (let ep = 0; ep < epPerTick && currentEpoch < targetEpochs; ep++) {
+      // Shuffle
+      const shuffled = [...ctx.data].sort(() => Math.random() - .5);
+      let epochLoss = 0;
+
+      for (let b = 0; b < shuffled.length; b += BATCH) {
+        const batch = shuffled.slice(b, b+BATCH);
+        batch.forEach(sample => {
+          const inp    = normalize(sample.inputs, normStats);
+          const target = oneHot(sample.label);
+          const out    = forward(net, inp);
+          // Cross-entropy loss
+          const loss   = -target.reduce((s,t,i) => s + (t ? Math.log(Math.max(out[i], 1e-9)) : 0), 0);
+          epochLoss += loss;
+          backward(net, target);
+        });
+      }
+      totalLoss = epochLoss / ctx.data.length;
+      currentEpoch++;
+    }
+
+    lossHistory.push(totalLoss);
+
+    // Accuracy
+    let correct = 0;
+    ctx.data.forEach(sample => {
+      const inp = normalize(sample.inputs, normStats);
+      const out = forward(net, inp);
+      const pred = ctx.classes[out.indexOf(Math.max(...out))];
+      if (pred === sample.label) correct++;
+    });
+    const acc = (correct / ctx.data.length * 100).toFixed(1);
+    const elapsed = ((performance.now() - trainStart) / 1000).toFixed(1);
+
+    document.getElementById('metEpoch').textContent = currentEpoch;
+    document.getElementById('metLoss').textContent  = totalLoss.toFixed(4);
+    document.getElementById('metAcc').textContent   = acc + '%';
+    document.getElementById('metTime').textContent  = elapsed + 's';
+
+    if (currentEpoch % Math.max(1, Math.round(targetEpochs/20)) === 0) {
+      log(`Época ${currentEpoch}/${targetEpochs} — loss: ${totalLoss.toFixed(4)} — acc: ${acc}%`, 'ok');
+    }
+
+    drawNetwork();
+    drawLoss();
+
+  }, 30);
+}
+
+function pauseTraining() {
+  trainPaused = !trainPaused;
+  const btn = document.getElementById('btnPause');
+  btn.textContent = trainPaused ? '▶ Reanudar' : '⏸ Pausar';
+  setStatus(trainPaused ? '' : 'running', trainPaused ? 'Pausado' : 'Entrenando…');
+}
+
+function stopTraining(done) {
+  clearInterval(trainInterval);
+  trainInterval = null;
+  document.getElementById('btnTrain').disabled  = false;
+  document.getElementById('btnPause').disabled  = true;
+  document.getElementById('btnPause').textContent = '⏸ Pausar';
+  if (done) {
+    setStatus('done', 'Completado');
+    log('✓ Entrenamiento completado', 'ok');
+  }
+}
+
+function resetTraining() {
+  stopTraining(false);
+  buildNetwork();
+  lossHistory = [];
+  currentEpoch = 0;
+  ['metEpoch','metLoss','metAcc','metTime'].forEach(id => document.getElementById(id).textContent = '—');
+  setStatus('', 'Listo');
+  drawNetwork();
+  drawLoss();
+  log('↺ Pesos reiniciados', 'warn');
+}
+
+/* ═══════════════════════════════════════════════
+   STEP 5 — PREDICT
+═══════════════════════════════════════════════ */
+function goToPredict() {
+  if (!net) { alert('Entrena la red primero.'); return; }
+  document.getElementById('predictHint').textContent =
+    `// ${ctx.features.length} valor(es): ${ctx.features.join(', ')}`;
+  show('panelPredict');
+  setStepDone(3);
+  activateStep(4);
+}
+
+function predict() {
+  if (!net || !normStats) { alert('Entrena la red primero.'); return; }
+  const raw = document.getElementById('predictInput').value.trim();
+  const inputs = raw.split(',').map(s => parseFloat(s.trim()));
+
+  if (inputs.length !== ctx.features.length || inputs.some(isNaN)) {
+    alert(`Necesito ${ctx.features.length} valor(es) numérico(s).`); return;
+  }
+
+  const inp = normalize(inputs, normStats);
+  const out = forward(net, inp);
+
+  const result = document.getElementById('predResult');
+  const topIdx = out.indexOf(Math.max(...out));
+  result.classList.add('visible');
+
+  document.getElementById('predTopResult').innerHTML =
+    `<span style="color:var(--accent)">${ctx.classes[topIdx]}</span>` +
+    `<span style="font-size:1rem;color:var(--txt3);margin-left:12px">${(out[topIdx]*100).toFixed(1)}% confianza</span>`;
+
+  document.getElementById('predBars').innerHTML = ctx.classes.map((c,i) =>
+    `<div class="pred-bar-row">
+      <div class="pred-bar-name">${c}</div>
+      <div class="pred-bar-track"><div class="pred-bar-fill" style="width:${(out[i]*100).toFixed(1)}%;background:${i===topIdx?'var(--accent)':'var(--border2)'}"></div></div>
+      <div class="pred-bar-pct">${(out[i]*100).toFixed(1)}%</div>
+    </div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   VISUALIZATIONS
+═══════════════════════════════════════════════ */
+function drawNetwork() {
+  if (!net) return;
+  const canvas = document.getElementById('netCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 48;
+  const H = 280;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const c = canvas.getContext('2d');
+  c.scale(dpr, dpr);
+  c.clearRect(0, 0, W, H);
+
+  const sizes = net.sizes;
+  const L = sizes.length;
+  const padX = 40, padY = 20;
+  const usableW = W - padX*2;
+  const usableH = H - padY*2;
+
+  // Pre-compute positions
+  const pos = sizes.map((n, li) => {
+    const x = padX + (li / (L-1)) * usableW;
+    const displayN = Math.min(n, 12);
+    const step = displayN > 1 ? usableH / (displayN - 1) : 0;
+    const startY = displayN > 1 ? padY : H/2;
+    return Array.from({length: displayN}, (_,ni) => ({
+      x, y: startY + ni * step,
+      real: ni,
+      a: net.activations[li][ni] || 0
+    }));
+  });
+
+  // Draw connections
+  for (let li = 0; li < L-1; li++) {
+    const fromNodes = pos[li];
+    const toNodes   = pos[li+1];
+
+    fromNodes.forEach(from => {
+      toNodes.forEach((to, tj) => {
+        const w = net.weights[li] && net.weights[li][tj] && net.weights[li][tj][from.real] || 0;
+        const norm = Math.min(1, Math.abs(w));
+        const alpha = 0.06 + norm * 0.35;
+        const r = w > 0 ? 74 : 248;
+        const g = w > 0 ? 222 : 113;
+        const b = w > 0 ? 128 : 113;
+        c.beginPath();
+        c.moveTo(from.x, from.y);
+        c.lineTo(to.x, to.y);
+        c.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+        c.lineWidth = 0.5 + norm * 1.5;
+        c.stroke();
+      });
+    });
+  }
+
+  // Draw nodes
+  sizes.forEach((n, li) => {
+    const nodes = pos[li];
+    const isMore = n > 12;
+    nodes.forEach((node, ni) => {
+      const a = Math.max(0, Math.min(1, node.a));
+      const r = Math.round(13 + a * 61);
+      const g = Math.round(20 + a * 202);
+      const b = Math.round(26 + a * 102);
+
+      c.beginPath();
+      c.arc(node.x, node.y, 7, 0, Math.PI*2);
+      c.fillStyle   = `rgb(${r},${g},${b})`;
+      c.strokeStyle = a > 0.3 ? 'rgba(74,222,128,0.6)' : 'rgba(42,45,58,0.8)';
+      c.lineWidth = 1.5;
+      c.fill();
+      c.stroke();
+
+      // Glow for active
+      if (a > 0.5) {
+        c.beginPath();
+        c.arc(node.x, node.y, 11, 0, Math.PI*2);
+        c.strokeStyle = `rgba(74,222,128,${a * 0.3})`;
+        c.lineWidth = 2;
+        c.stroke();
+      }
+    });
+
+    // Label
+    const label = li === 0 ? 'Entrada' : li === L-1 ? 'Salida' : `Capa ${li}`;
+    c.fillStyle = 'rgba(82,86,106,0.8)';
+    c.font = `9px 'JetBrains Mono'`;
+    c.textAlign = 'center';
+    c.fillText(label, pos[li][0].x, padY - 8);
+    c.fillText(sizes[li], pos[li][0].x, H - 4);
+
+    if (isMore) {
+      c.fillStyle = 'rgba(82,86,106,0.6)';
+      c.fillText('…', pos[li][0].x, pos[li][pos[li].length-1].y + 14);
+    }
+  });
+}
+
+function drawLoss() {
+  const canvas = document.getElementById('lossCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 48;
+  const H = 160;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const c = canvas.getContext('2d');
+  c.scale(dpr, dpr);
+  c.clearRect(0, 0, W, H);
+
+  if (lossHistory.length < 2) return;
+
+  const padX = 48, padY = 16;
+  const usableW = W - padX - 16;
+  const usableH = H - padY - 24;
+
+  const maxL = Math.max(...lossHistory, 0.01);
+  const minL = Math.min(...lossHistory);
+  const range = maxL - minL || 0.001;
+
+  // Grid lines
+  c.strokeStyle = 'rgba(42,45,58,0.6)';
+  c.lineWidth = 1;
+  [0, .25, .5, .75, 1].forEach(t => {
+    const y = padY + (1-t) * usableH;
+    c.beginPath(); c.moveTo(padX, y); c.lineTo(W-16, y); c.stroke();
+    const val = minL + t * range;
+    c.fillStyle = 'rgba(82,86,106,0.7)';
+    c.font = "9px 'JetBrains Mono'";
+    c.textAlign = 'right';
+    c.fillText(val.toFixed(3), padX-4, y+3);
+  });
+
+  // Loss curve
+  const grad = c.createLinearGradient(0, padY, 0, padY+usableH);
+  grad.addColorStop(0, 'rgba(74,222,128,0.4)');
+  grad.addColorStop(1, 'rgba(74,222,128,0)');
+
+  // Fill
+  c.beginPath();
+  lossHistory.forEach((v, i) => {
+    const x = padX + (i / (lossHistory.length-1)) * usableW;
+    const y = padY + (1 - (v - minL) / range) * usableH;
+    if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+  });
+  c.lineTo(padX + usableW, padY + usableH);
+  c.lineTo(padX, padY + usableH);
+  c.closePath();
+  c.fillStyle = grad;
+  c.fill();
+
+  // Line
+  c.beginPath();
+  lossHistory.forEach((v, i) => {
+    const x = padX + (i / (lossHistory.length-1)) * usableW;
+    const y = padY + (1 - (v - minL) / range) * usableH;
+    if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+  });
+  c.strokeStyle = 'rgba(74,222,128,0.85)';
+  c.lineWidth = 1.5;
+  c.stroke();
+
+  // X axis label
+  c.fillStyle = 'rgba(82,86,106,0.7)';
+  c.font = "9px 'JetBrains Mono'";
+  c.textAlign = 'center';
+  c.fillText('época 0', padX, H-4);
+  c.fillText(`época ${currentEpoch}`, W-16, H-4);
+}
+
+/* ═══════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════ */
+function show(id) {
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setStatus(type, text) {
+  const badge = document.getElementById('statusBadge');
+  const pulse = badge.querySelector('.pulse');
+  badge.className = 'badge' + (type ? ' ' + type : '');
+  badge.querySelector('#statusText').textContent = text;
+  pulse.style.display = type === 'running' ? 'block' : 'none';
+}
+
+function log(msg, type) {
+  const logEl = document.getElementById('trainingLog');
+  const line = document.createElement('div');
+  line.className = 'log-line' + (type ? ' log-' + type : '');
+  const ts = new Date().toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  line.textContent = `[${ts}] ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function setStep(n) {}
+
+function activateStep(n) {
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('active');
+    if (i === n) s.classList.add('active');
+  });
+}
+function setStepDone(n) {
+  const steps = document.querySelectorAll('.step');
+  steps[n].classList.add('done');
+  steps[n].classList.remove('active');
+}
+
+// Redraw on resize
+window.addEventListener('resize', () => { drawNetwork(); drawLoss(); });
+</script>
+</body>
+</html>

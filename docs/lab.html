@@ -23,7 +23,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .hdr-title{font-family:'Instrument Serif',serif;font-size:3.4rem;line-height:1;
   background:linear-gradient(135deg,#e4e6f0 30%,#52566a 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.02em;}
-.hdr-title em{font-style:italic;opacity:.6;}
+.hdr-title em{font-style:italic;}
 .hdr-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .pill{display:flex;align-items:center;gap:7px;background:var(--s1);border:1px solid var(--border);
   border-radius:100px;padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2);}
@@ -222,6 +222,7 @@ canvas#chart{display:block;width:100%;height:300px;border-radius:10px;}
 <div class="app">
 
   <header class="hdr">
+    
     <div>
       <div class="hdr-kicker">// multi-channel voice logger</div>
       <div class="hdr-title">Voice<em>Chart</em></div>
@@ -807,12 +808,11 @@ function redraw(){
   ctx.textAlign='right';
   for(let i=0;i<=4;i++)ctx.fillText(fmt(vLo+vR*(1-i/4)),P.l-9,P.t+(ch/4)*i+4);
   ctx.textAlign='center';
-  for(let i=0;i<=5;i++)ctx.fillText((tMn+(tR/5)*i).toFixed(1)+'s',P.l+(cw/5)*i,P.t+ch+18);
+  for(let i=0;i<=5;i++)ctx.fillText((tMn+(tR/5)*i).toFixed(1),P.l+(cw/5)*i,P.t+ch+18);
   ctx.save();ctx.translate(16,P.t+ch/2);ctx.rotate(-Math.PI/2);
   ctx.fillStyle='#3a3e52';ctx.font=`10px 'JetBrains Mono',monospace`;ctx.textAlign='center';
   ctx.fillText('VALOR',0,0);ctx.restore();
-  ctx.fillStyle='#3a3e52';ctx.textAlign='center';
-  ctx.fillText('TIEMPO (s)',P.l+cw/2,H-8);
+  
 
   // series
   const ten=S.tension;
@@ -871,7 +871,7 @@ function askClear(sid){
 function exportCSV(sid){
   const pts=sid?S.data.filter(d=>d.sid===sid):S.data;
   if(!pts.length){showToast('Sin datos para exportar','warn');return;}
-  const rows=['tiempo_s,serie,valor,hora'];
+  const rows=['dato,serie,valor,hora'];
   pts.forEach(d=>{
     const s=S.series.find(s=>s.id===d.sid);
     rows.push(`${d.time},${s?.name||d.sid},${d.value},${d.ts}`);
@@ -892,10 +892,10 @@ function importCSV(file){
     const header=lines[0].toLowerCase();
     // Detect column indices
     const cols=header.split(',');
-    const iTime=cols.findIndex(c=>c.includes('tiempo'));
+    const iTime=cols.findIndex(c=>c.includes('dato'));
     const iSerie=cols.findIndex(c=>c.includes('serie'));
     const iVal=cols.findIndex(c=>c.includes('valor'));
-    if(iTime<0||iVal<0){showToast('CSV sin columnas tiempo/valor','err');return;}
+    if(iTime<0||iVal<0){showToast('CSV sin columnas dato/valor','err');return;}
 
     let added=0;
     const seriesMap={};  // name → id (find existing or create)

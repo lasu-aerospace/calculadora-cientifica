@@ -1,385 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Series de Taylor - Calculadora Científica</title>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.0.0/math.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.18/katex.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Series de Taylor — Calculadora Científica</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="page">
+  <a href="advmath.html" class="back-link">← Volver</a>
+  <h1 class="page-title">Series de <em>Taylor</em></h1>
 
-    <header>
-        <h3 style="text-align: left;"><a href="advmath.html">← Volver</a></h3>
-        <h1>Series de Taylor</h1>
-    </header>
+  <div class="card">
+    <div class="card-label">Definición</div>
+    <p class="math-block">$$ f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n = f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2+\cdots $$</p>
+    <p>Representación de una función como suma infinita de términos polinomiales, donde cada término se construye a partir de las derivadas sucesivas evaluadas en un punto \( a \). Permite aproximar funciones complejas mediante polinomios, facilitando el cálculo numérico, el análisis funcional y la resolución de ecuaciones diferenciales.</p>
+    <p>Cuando \( a=0 \), la serie se llama <strong>Serie de Maclaurin</strong>:</p>
+    <p class="math-block">$$ f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n = f(0)+f'(0)x+\frac{f''(0)}{2!}x^2+\frac{f'''(0)}{3!}x^3+\cdots $$</p>
+  </div>
 
-    <main>
-        <hr>
-        
-        <section class="section">
-            <h2>Definición</h2>
-            <p class="math-block">$$ f(x) = \sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \cdots $$</p>
-            <p>La serie de Taylor es una representación de una función como una suma infinita de términos polinomiales, donde cada término se construye a partir de las derivadas sucesivas de la función evaluadas en un punto específico \( a \). Esta expansión permite aproximar funciones complejas mediante polinomios, facilitando el cálculo numérico, el análisis de funciones y la resolución de ecuaciones diferenciales.</p>
-            <p>Cuando el punto de expansión es \( a = 0 \), la serie se conoce como <strong>Serie de Maclaurin</strong>, un caso particular de la serie de Taylor:</p>
-            <p class="math-block">$$ f(x) = \sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \frac{f'''(0)}{3!}x^3 + \cdots $$</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Condiciones de convergencia</div>
+    <p>No todas las funciones pueden representarse mediante series de Taylor en todo su dominio.</p>
+    <div class="info-box">
+      <ul>
+        <li><strong>Analiticidad:</strong> la función debe ser infinitamente derivable en un entorno de \( a \).</li>
+        <li><strong>Radio de convergencia \( R \):</strong> la serie converge para \( |x-a|<R \) y diverge para \( |x-a|>R \).</li>
+        <li><strong>Resto de Taylor:</strong> el error de truncamiento debe tender a cero cuando \( n\to\infty \).</li>
+      </ul>
+    </div>
+    <p>El resto (forma de Lagrange) que mide el error al truncar tras \( n \) términos:</p>
+    <p class="math-block">$$ R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-a)^{n+1} $$</p>
+    <p>donde \( \xi \) es algún punto entre \( a \) y \( x \).</p>
+  </div>
 
-        <section class="aplicaciones" style="background-color: #494949;">
-            <h2>Condiciones de convergencia</h2>
-            <p>No todas las funciones pueden representarse mediante series de Taylor en todo su dominio. Para que la serie converja a la función original, deben cumplirse estas condiciones:</p>
-            <ul>
-                <li><strong>Analiticidad:</strong> La función debe ser infinitamente derivable en un entorno del punto \( a \).</li>
-                <li><strong>Radio de convergencia:</strong> Existe un radio \( R \) tal que la serie converge para \( |x-a| < R \).</li>
-                <li><strong>Resto de Taylor:</strong> El término de error \( R_n(x) \) debe tender a cero cuando \( n \to \infty \).</li>
-            </ul>
-            <p>El resto de Taylor, que mide el error de truncamiento, se expresa como:</p>
-            <p class="math-block">$$ R_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}(x-a)^{n+1} $$</p>
-            <p>donde \( \xi \) es algún punto entre \( a \) y \( x \) (forma de Lagrange del resto).</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Series de Maclaurin fundamentales</div>
+    <p><strong>Función exponencial</strong> — \( R=\infty \):</p>
+    <p class="math-block">$$ e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots $$</p>
+    <p><strong>Seno</strong> — \( R=\infty \):</p>
+    <p class="math-block">$$ \sin(x)=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!}=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\frac{x^7}{7!}+\cdots $$</p>
+    <p><strong>Coseno</strong> — \( R=\infty \):</p>
+    <p class="math-block">$$ \cos(x)=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!}=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\frac{x^6}{6!}+\cdots $$</p>
+    <p><strong>Logaritmo natural</strong> — \( R=1 \), converge en \( (-1,1] \):</p>
+    <p class="math-block">$$ \ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n}=x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}+\cdots $$</p>
+    <p><strong>Serie geométrica</strong> — \( R=1 \), converge en \( |x|<1 \):</p>
+    <p class="math-block">$$ \frac{1}{1-x}=\sum_{n=0}^{\infty}x^n=1+x+x^2+x^3+\cdots $$</p>
+    <p><strong>Binomial generalizada</strong> — \( R=1 \) para \( \alpha\notin\mathbb{N} \):</p>
+    <p class="math-block">$$ (1+x)^{\alpha}=\sum_{n=0}^{\infty}\binom{\alpha}{n}x^n=1+\alpha x+\frac{\alpha(\alpha-1)}{2!}x^2+\cdots $$</p>
+    <p><strong>Funciones hiperbólicas</strong> — \( R=\infty \):</p>
+    <p class="math-block">$$ \sinh(x)=\sum_{n=0}^{\infty}\frac{x^{2n+1}}{(2n+1)!} \qquad \cosh(x)=\sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!} $$</p>
+  </div>
 
-        <section class="section">
-            <h2>Series de Maclaurin fundamentales</h2>
-            <p>Las siguientes series son casos especiales expandidos alrededor de \( a = 0 \) y constituyen los fundamentos del análisis matemático:</p>
+  <div class="card">
+    <div class="card-label">Tabla de series comunes</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Función \( f(x) \)</th><th>Serie de Maclaurin</th><th>\( R \)</th></tr></thead>
+        <tbody>
+          <tr><td>\( e^x \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{x^n}{n!} \)</td><td>\( \infty \)</td></tr>
+          <tr><td>\( \sin(x) \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!} \)</td><td>\( \infty \)</td></tr>
+          <tr><td>\( \cos(x) \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!} \)</td><td>\( \infty \)</td></tr>
+          <tr><td>\( \sinh(x) \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{x^{2n+1}}{(2n+1)!} \)</td><td>\( \infty \)</td></tr>
+          <tr><td>\( \cosh(x) \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!} \)</td><td>\( \infty \)</td></tr>
+          <tr><td>\( \ln(1+x) \)</td><td>\( \displaystyle\sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n} \)</td><td>1</td></tr>
+          <tr><td>\( \frac{1}{1-x} \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}x^n \)</td><td>1</td></tr>
+          <tr><td>\( \frac{1}{1+x} \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}(-1)^n x^n \)</td><td>1</td></tr>
+          <tr><td>\( \arctan(x) \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{2n+1} \)</td><td>1</td></tr>
+          <tr><td>\( (1+x)^{\alpha} \)</td><td>\( \displaystyle\sum_{n=0}^{\infty}\binom{\alpha}{n}x^n \)</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-            <h3>Función exponencial</h3>
-            <p class="math-block">$$ e^x = \sum_{n=0}^{\infty}\frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = \infty \) (converge para todo \( x \in \mathbb{R} \))</p>
+  <div class="card">
+    <div class="card-label">Construcción paso a paso — \( e^x \) y \( \sin(x) \)</div>
+    <p>Para \( e^x \) alrededor de \( a=0 \): todas las derivadas valen 1 en el origen, por lo que:</p>
+    <p class="math-block">$$ e^x=\frac{1}{0!}+\frac{1}{1!}x+\frac{1}{2!}x^2+\frac{1}{3!}x^3+\cdots=\sum_{n=0}^{\infty}\frac{x^n}{n!} $$</p>
+    <p>Para \( \sin(x) \), las derivadas siguen el ciclo \( \sin,\cos,-\sin,-\cos,\ldots \) evaluadas en 0: \( 0,1,0,-1,0,1,\ldots \) Solo sobreviven los términos impares:</p>
+    <p class="math-block">$$ \sin(x)=\frac{x}{1!}-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!} $$</p>
+  </div>
 
-            <h3>Función seno</h3>
-            <p class="math-block">$$ \sin(x) = \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!} = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = \infty \)</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — Aproximación de \( e \)</div>
+    <p>Calculamos \( e=e^1 \) con la serie de Maclaurin de \( e^x \) en \( x=1 \):</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>\( n \)</th><th>Término \( 1/n! \)</th><th>Suma parcial \( S_n \)</th><th>Error \( |e-S_n| \)</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>1.000000</td><td>1.000000</td><td>1.718282</td></tr>
+          <tr><td>1</td><td>1.000000</td><td>2.000000</td><td>0.718282</td></tr>
+          <tr><td>2</td><td>0.500000</td><td>2.500000</td><td>0.218282</td></tr>
+          <tr><td>3</td><td>0.166667</td><td>2.666667</td><td>0.051615</td></tr>
+          <tr><td>4</td><td>0.041667</td><td>2.708333</td><td>0.009948</td></tr>
+          <tr><td>5</td><td>0.008333</td><td>2.716667</td><td>0.001615</td></tr>
+          <tr><td>10</td><td>\( \approx2.75\times10^{-7} \)</td><td>2.718282</td><td>\( \approx2.07\times10^{-6} \)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Con 10 términos se obtiene \( e\approx2.718282 \), error menor al 0.0002%. Cada término adicional contribuye menos, demostrando convergencia rápida.</p>
+  </div>
 
-            <h3>Función coseno</h3>
-            <p class="math-block">$$ \cos(x) = \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!} = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = \infty \)</p>
+  <div class="card">
+    <div class="card-label">Ejemplo — Aproximación de \( \sin(0.5) \)</div>
+    <p class="math-block">$$ \sin(0.5)\approx0.5-\frac{(0.5)^3}{6}+\frac{(0.5)^5}{120}-\frac{(0.5)^7}{5040} $$</p>
+    <p class="math-block">$$ \approx0.5-0.020833+0.000260-0.000002\approx\boxed{0.479425} $$</p>
+    <p>El valor real es \( 0.479426 \): error menor a \( 10^{-6} \) con solo 4 términos. Para ángulos pequeños, la serie converge extremadamente rápido.</p>
+  </div>
 
-            <h3>Logaritmo natural</h3>
-            <p class="math-block">$$ \ln(1+x) = \sum_{n=1}^{\infty}\frac{(-1)^{n+1} x^n}{n} = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = 1 \) (converge para \( -1 < x \leq 1 \))</p>
+  <div class="card">
+    <div class="card-label">Fórmula de Euler e identidad de Euler</div>
+    <p>Comparando las series de \( e^x \), \( \cos x \) y \( \sin x \) con argumento imaginario \( ix \):</p>
+    <p class="math-block">$$ e^{ix}=\left(1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots\right)+i\!\left(x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots\right) $$</p>
+    <p class="math-block">$$ \boxed{e^{ix}=\cos(x)+i\sin(x)} $$</p>
+    <p>Para \( x=\pi \), esto da la <strong>identidad de Euler</strong>:</p>
+    <p class="math-block">$$ e^{i\pi}+1=0 $$</p>
+    <p>Relaciona cinco constantes fundamentales: \( e \), \( i \), \( \pi \), 1 y 0. Esta fórmula es también la base de las <a href="transformadas.html">Transformadas de Fourier</a>:</p>
+    <p class="math-block">$$ F(\omega)=\int_{-\infty}^{\infty}f(t)e^{-i\omega t}\,dt=\int_{-\infty}^{\infty}f(t)[\cos(\omega t)-i\sin(\omega t)]\,dt $$</p>
+  </div>
 
-            <h3>Serie geométrica</h3>
-            <p class="math-block">$$ \frac{1}{1-x} = \sum_{n=0}^{\infty}x^n = 1 + x + x^2 + x^3 + x^4 + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = 1 \) (converge para \( |x| < 1 \))</p>
+  <div class="card">
+    <div class="card-label">Aproximaciones de orden bajo</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Función</th><th>Lineal \( O(x) \)</th><th>Cuadrática \( O(x^2) \)</th></tr></thead>
+        <tbody>
+          <tr><td>\( e^x \)</td><td>\( 1+x \)</td><td>\( 1+x+\frac{x^2}{2} \)</td></tr>
+          <tr><td>\( \sin(x) \)</td><td>\( x \)</td><td>\( x \)</td></tr>
+          <tr><td>\( \cos(x) \)</td><td>\( 1 \)</td><td>\( 1-\frac{x^2}{2} \)</td></tr>
+          <tr><td>\( \ln(1+x) \)</td><td>\( x \)</td><td>\( x-\frac{x^2}{2} \)</td></tr>
+          <tr><td>\( \frac{1}{1-x} \)</td><td>\( 1+x \)</td><td>\( 1+x+x^2 \)</td></tr>
+          <tr><td>\( \sqrt{1+x} \)</td><td>\( 1+\frac{x}{2} \)</td><td>\( 1+\frac{x}{2}-\frac{x^2}{8} \)</td></tr>
+          <tr><td>\( (1+x)^{-1} \)</td><td>\( 1-x \)</td><td>\( 1-x+x^2 \)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Especialmente útiles en física e ingeniería para linealizar ecuaciones cerca de un punto de equilibrio.</p>
+  </div>
 
-            <h3>Función binomial</h3>
-            <p class="math-block">$$ (1+x)^{\alpha} = \sum_{n=0}^{\infty}\binom{\alpha}{n}x^n = 1 + \alpha x + \frac{\alpha(\alpha-1)}{2!}x^2 + \frac{\alpha(\alpha-1)(\alpha-2)}{3!}x^3 + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = 1 \) para \( \alpha \notin \mathbb{N} \)</p>
-            <p>Casos particulares importantes:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( \alpha = -1 \): \( \frac{1}{1+x} = 1 - x + x^2 - x^3 + \cdots \)</li>
-                    <li>\( \alpha = \frac{1}{2} \): \( \sqrt{1+x} = 1 + \frac{x}{2} - \frac{x^2}{8} + \frac{x^3}{16} - \cdots \)</li>
-                    <li>\( \alpha = -\frac{1}{2} \): \( \frac{1}{\sqrt{1+x}} = 1 - \frac{x}{2} + \frac{3x^2}{8} - \frac{5x^3}{16} + \cdots \)</li>
-                </ul>
-            </section>
+  <div class="card">
+    <div class="card-label">Ejemplo — Péndulo simple</div>
+    <p>La ecuación de movimiento no lineal del péndulo simple es:</p>
+    <p class="math-block">$$ \frac{d^2\theta}{dt^2}+\frac{g}{L}\sin\theta=0 $$</p>
+    <p>Para ángulos pequeños (\( |\theta|<15° \)) se aplica \( \sin\theta\approx\theta \) (primer término de Taylor), simplificando a la ecuación del oscilador armónico:</p>
+    <p class="math-block">$$ \frac{d^2\theta}{dt^2}+\frac{g}{L}\theta=0 \qquad\Rightarrow\qquad \theta(t)=\theta_0\cos\!\left(\sqrt{\frac{g}{L}}\,t\right) $$</p>
+    <p class="math-block">$$ T=2\pi\sqrt{\frac{L}{g}} \qquad\Rightarrow\qquad T\big|_{L=1\,\text{m}}=2\pi\sqrt{\frac{1}{9.81}}\approx2.006\;\text{s} $$</p>
+    <div class="info-box">
+      <p>Error menor al 1% para ángulos hasta 23° · error menor al 3% para ángulos hasta 40°.</p>
+    </div>
+  </div>
 
-            <h3>Funciones hiperbólicas</h3>
-            <p class="math-block">$$ \sinh(x) = \sum_{n=0}^{\infty}\frac{x^{2n+1}}{(2n+1)!} = x + \frac{x^3}{3!} + \frac{x^5}{5!} + \frac{x^7}{7!} + \cdots $$</p>
-            <p class="math-block">$$ \cosh(x) = \sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!} = 1 + \frac{x^2}{2!} + \frac{x^4}{4!} + \frac{x^6}{6!} + \cdots $$</p>
-            <p><strong>Radio de convergencia:</strong> \( R = \infty \) para ambas</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Aplicaciones</div>
+    <ul>
+      <li><strong>Cálculo numérico:</strong> calculadoras y computadoras evalúan \( \sin x \), \( e^x \), \( \ln x \) mediante series de Taylor truncadas.</li>
+      <li><strong>Física:</strong> aproximación de ángulo pequeño en péndulos, relatividad (\( \gamma\approx1+v^2/2c^2 \)), mecánica cuántica.</li>
+      <li><strong>Ingeniería eléctrica:</strong> linealización de circuitos no lineales alrededor de puntos de operación.</li>
+      <li><strong>Ecuaciones diferenciales:</strong> solución en series de potencias (Frobenius) para EDOs con coeficientes variables.</li>
+      <li><strong>Optimización:</strong> Newton-Raphson y gradiente descendente usan Taylor de primer y segundo orden.</li>
+      <li><strong>Machine learning:</strong> backpropagation utiliza aproximaciones de Taylor para calcular gradientes.</li>
+    </ul>
+  </div>
 
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Aproximación de \( e \)</h2>
-            <p>Queremos calcular el valor de \( e = e^1 \) usando la serie de Maclaurin de la función exponencial:</p>
-            <p class="math-block">$$ e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots $$</p>
-            <p>Sustituyendo \( x = 1 \):</p>
-            <p class="math-block">$$ e = 1 + 1 + \frac{1}{2} + \frac{1}{6} + \frac{1}{24} + \frac{1}{120} + \frac{1}{720} + \cdots $$</p>
-            <p>Calculemos los primeros términos:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>n</th>
-                        <th>Término: \( \frac{1}{n!} \)</th>
-                        <th>Suma parcial \( S_n \)</th>
-                        <th>Error: \( |e - S_n| \)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>1.000000</td>
-                        <td>1.000000</td>
-                        <td>1.718282</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>1.000000</td>
-                        <td>2.000000</td>
-                        <td>0.718282</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>0.500000</td>
-                        <td>2.500000</td>
-                        <td>0.218282</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>0.166667</td>
-                        <td>2.666667</td>
-                        <td>0.051615</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>0.041667</td>
-                        <td>2.708333</td>
-                        <td>0.009948</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>0.008333</td>
-                        <td>2.716667</td>
-                        <td>0.001615</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>≈ 2.75×10⁻⁷</td>
-                        <td>2.718282</td>
-                        <td>≈ 2.07×10⁻⁶</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Con solo 10 términos obtenemos \( e \approx 2.718282 \), con un error de aproximadamente 0.0002%. Observamos que cada término adicional contribuye menos al resultado, demostrando la convergencia rápida de la serie.</p>
-        </section>
+  <div class="card">
+    <div class="card-label">Notación</div>
+    <ul>
+      <li>\( f^{(n)}(a) \) — \( n \)-ésima derivada de \( f \) evaluada en \( a \)</li>
+      <li>\( n! \) — factorial: \( n\times(n-1)\times\cdots\times2\times1 \)</li>
+      <li>\( a \) — punto de expansión (centro de la serie)</li>
+      <li>\( R \) — radio de convergencia de la serie</li>
+      <li>\( R_n(x) \) — resto o error de truncamiento tras \( n \) términos</li>
+      <li>\( S_n(x) \) — suma parcial de los primeros \( n+1 \) términos</li>
+      <li>\( \binom{\alpha}{n}=\dfrac{\alpha(\alpha-1)\cdots(\alpha-n+1)}{n!} \) — coeficiente binomial generalizado</li>
+      <li>\( i=\sqrt{-1} \) — unidad imaginaria</li>
+    </ul>
+  </div>
 
-        <section class="section">
-            <h2>Construcción paso a paso</h2>
-            <p>Veamos cómo construir una serie de Taylor para \( f(x) = e^x \) alrededor de \( a = 0 \):</p>
-            
-            <h3>Paso 1: Calcular las derivadas</h3>
-            <p>Para la función exponencial, todas las derivadas son iguales a la función misma:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( f(x) = e^x \quad \Rightarrow \quad f(0) = 1 \)</li>
-                    <li>\( f'(x) = e^x \quad \Rightarrow \quad f'(0) = 1 \)</li>
-                    <li>\( f''(x) = e^x \quad \Rightarrow \quad f''(0) = 1 \)</li>
-                    <li>\( f'''(x) = e^x \quad \Rightarrow \quad f'''(0) = 1 \)</li>
-                    <li>\( f^{(n)}(x) = e^x \quad \Rightarrow \quad f^{(n)}(0) = 1 \)</li>
-                </ul>
-            </section>
-
-            <h3>Paso 2: Aplicar la fórmula</h3>
-            <p class="math-block">$$ e^x = \frac{1}{0!}x^0 + \frac{1}{1!}x^1 + \frac{1}{2!}x^2 + \frac{1}{3!}x^3 + \cdots = \sum_{n=0}^{\infty}\frac{x^n}{n!} $$</p>
-
-            <h3>Ejemplo con \( f(x) = \sin(x) \)</h3>
-            <p>Las derivadas del seno siguen un patrón cíclico:</p>
-            <section class="math-block">
-                <ul>
-                    <li>\( f(x) = \sin(x) \quad \Rightarrow \quad f(0) = 0 \)</li>
-                    <li>\( f'(x) = \cos(x) \quad \Rightarrow \quad f'(0) = 1 \)</li>
-                    <li>\( f''(x) = -\sin(x) \quad \Rightarrow \quad f''(0) = 0 \)</li>
-                    <li>\( f'''(x) = -\cos(x) \quad \Rightarrow \quad f'''(0) = -1 \)</li>
-                    <li>\( f^{(4)}(x) = \sin(x) \quad \Rightarrow \quad f^{(4)}(0) = 0 \)</li>
-                </ul>
-            </section>
-            <p>El patrón se repite cada 4 derivadas: \( 0, 1, 0, -1, 0, 1, 0, -1, \ldots \)</p>
-            <p>Por lo tanto, solo los términos impares sobreviven:</p>
-            <p class="math-block">$$ \sin(x) = \frac{x}{1!} - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots = \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!} $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Aproximación de \( \sin(0.5) \)</h2>
-            <p>Calculemos \( \sin(0.5) \) usando los primeros términos de la serie:</p>
-            <p class="math-block">$$ \sin(0.5) \approx 0.5 - \frac{(0.5)^3}{6} + \frac{(0.5)^5}{120} - \frac{(0.5)^7}{5040} $$</p>
-            <p class="math-block">$$ \sin(0.5) \approx 0.5 - 0.020833 + 0.000260 - 0.000002 $$</p>
-            <p class="math-block">$$ \sin(0.5) \approx 0.479425 $$</p>
-            <p>El valor real es \( \sin(0.5) \approx 0.479426 \), por lo que nuestro error es menor a \( 10^{-6} \) con solo 4 términos. Para ángulos pequeños (en radianes), la serie converge extremadamente rápido.</p>
-        </section>
-
-        <section class="section">
-            <h2>Relación con otras series</h2>
-            
-            <h3>Fórmula de Euler</h3>
-            <p>Las series de Taylor revelan una de las identidades más hermosas de las matemáticas. Comparando las series de \( e^x \), \( \cos(x) \) y \( \sin(x) \):</p>
-            <p class="math-block">$$ e^{ix} = \sum_{n=0}^{\infty}\frac{(ix)^n}{n!} = 1 + ix - \frac{x^2}{2!} - i\frac{x^3}{3!} + \frac{x^4}{4!} + i\frac{x^5}{5!} - \cdots $$</p>
-            <p>Agrupando términos reales e imaginarios:</p>
-            <p class="math-block">$$ e^{ix} = \left(1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots\right) + i\left(x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots\right) $$</p>
-            <p class="math-block">$$ \boxed{e^{ix} = \cos(x) + i\sin(x)} $$</p>
-            <p>Esta es la famosa <strong>fórmula de Euler</strong>, que conecta las funciones exponencial, trigonométricas y los números complejos. Para \( x = \pi \):</p>
-            <p class="math-block">$$ e^{i\pi} + 1 = 0 $$</p>
-            <p>Considerada por muchos como la ecuación más bella de las matemáticas, relaciona cinco constantes fundamentales: \( e \), \( i \), \( \pi \), 1 y 0.</p>
-
-            <h3>Conexión con transformadas de Fourier</h3>
-            <p>La fórmula de Euler es fundamental para las <a href="transformadas.html">transformadas de Fourier</a>, donde las funciones se descomponen en exponenciales complejas:</p>
-            <p class="math-block">$$ F(\omega) = \int_{-\infty}^{\infty}f(t)e^{-i\omega t}dt = \int_{-\infty}^{\infty}f(t)[\cos(\omega t) - i\sin(\omega t)]dt $$</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Aplicaciones</h2>
-            <p>Las series de Taylor tienen aplicaciones fundamentales en múltiples áreas:</p>
-            <ul>
-                <li><strong>Cálculo numérico:</strong> Las calculadoras y computadoras utilizan series de Taylor para evaluar funciones como \( \sin(x) \), \( \cos(x) \), \( e^x \) y \( \ln(x) \) con alta precisión.</li>
-                <li><strong>Física:</strong> Aproximaciones de órbitas planetarias, oscilaciones de péndulos pequeños (\( \sin(\theta) \approx \theta \)), y mecánica cuántica.</li>
-                <li><strong>Ingeniería eléctrica:</strong> Análisis de circuitos no lineales mediante linealización alrededor de puntos de operación.</li>
-                <li><strong>Ecuaciones diferenciales:</strong> Solución de EDOs mediante series de potencias, método fundamental en física matemática.</li>
-                <li><strong>Optimización:</strong> Métodos de Newton-Raphson y gradiente descendente utilizan aproximaciones de Taylor de primer y segundo orden.</li>
-                <li><strong>Procesamiento de señales:</strong> Análisis espectral y filtrado digital basados en la descomposición en frecuencias.</li>
-                <li><strong>Aprendizaje automático:</strong> Backpropagation en redes neuronales usa aproximaciones de Taylor para calcular gradientes.</li>
-            </ul>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Ejemplo práctico: Péndulo simple</h2>
-            <p>La ecuación del movimiento de un péndulo simple es:</p>
-            <p class="math-block">$$ \frac{d^2\theta}{dt^2} + \frac{g}{L}\sin(\theta) = 0 $$</p>
-            <p>Esta ecuación diferencial no lineal no tiene solución analítica simple. Sin embargo, para ángulos pequeños (\( |\theta| < 15° \)), podemos usar la aproximación de Taylor:</p>
-            <p class="math-block">$$ \sin(\theta) \approx \theta - \frac{\theta^3}{6} + \cdots \approx \theta $$</p>
-            <p>Esto simplifica la ecuación a:</p>
-            <p class="math-block">$$ \frac{d^2\theta}{dt^2} + \frac{g}{L}\theta = 0 $$</p>
-            <p>Esta es la ecuación del oscilador armónico simple, cuya solución es:</p>
-            <p class="math-block">$$ \theta(t) = \theta_0\cos\left(\sqrt{\frac{g}{L}}t\right) $$</p>
-            <p>El período del péndulo se obtiene como:</p>
-            <p class="math-block">$$ T = 2\pi\sqrt{\frac{L}{g}} $$</p>
-            <p>Para \( L = 1 \) m y \( g = 9.81 \) m/s²:</p>
-            <p class="math-block">$$ T = 2\pi\sqrt{\frac{1}{9.81}} \approx 2.006 \text{ segundos} $$</p>
-            <p>Esta aproximación es válida con error menor al 1% para ángulos hasta 23°, y menor al 3% para ángulos hasta 40°.</p>
-        </section>
-
-        <section class="aplicaciones">
-            <h2>Notación</h2>
-            <ul>
-                <li>\( f^{(n)}(a) \): n-ésima derivada de \( f \) evaluada en \( a \).</li>
-                <li>\( n! \): Factorial de \( n \) = \( n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1 \).</li>
-                <li>\( a \): Punto alrededor del cual se expande la serie (centro de expansión).</li>
-                <li>\( R \): Radio de convergencia de la serie.</li>
-                <li>\( R_n(x) \): Resto o término de error después de \( n \) términos.</li>
-                <li>\( S_n(x) \): Suma parcial de los primeros \( n+1 \) términos.</li>
-                <li>\( \binom{\alpha}{n} \): Coeficiente binomial generalizado = \( \frac{\alpha(\alpha-1)\cdots(\alpha-n+1)}{n!} \).</li>
-                <li>\( i = \sqrt{-1} \): Unidad imaginaria.</li>
-            </ul>
-        </section>
-
-        <section class="section">
-            <h2>Tabla de series comunes</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Función \( f(x) \)</th>
-                        <th>Serie de Maclaurin</th>
-                        <th>Radio \( R \)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>\( e^x \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{x^n}{n!} \)</td>
-                        <td>\( \infty \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \sin(x) \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!} \)</td>
-                        <td>\( \infty \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \cos(x) \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!} \)</td>
-                        <td>\( \infty \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \sinh(x) \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{x^{2n+1}}{(2n+1)!} \)</td>
-                        <td>\( \infty \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \cosh(x) \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!} \)</td>
-                        <td>\( \infty \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \ln(1+x) \)</td>
-                        <td>\( \sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n} \)</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>\( \frac{1}{1-x} \)</td>
-                        <td>\( \sum_{n=0}^{\infty}x^n \)</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>\( \frac{1}{1+x} \)</td>
-                        <td>\( \sum_{n=0}^{\infty}(-1)^n x^n \)</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>\( \arctan(x) \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{2n+1} \)</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>\( (1+x)^{\alpha} \)</td>
-                        <td>\( \sum_{n=0}^{\infty}\binom{\alpha}{n}x^n \)</td>
-                        <td>1</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="section">
-            <h2>Aproximaciones de orden bajo</h2>
-            <p>Para valores pequeños de \( x \), las series de Taylor proporcionan aproximaciones útiles:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Función</th>
-                        <th>Aproximación lineal (\( O(x) \))</th>
-                        <th>Aproximación cuadrática (\( O(x^2) \))</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>\( e^x \)</td>
-                        <td>\( 1 + x \)</td>
-                        <td>\( 1 + x + \frac{x^2}{2} \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \sin(x) \)</td>
-                        <td>\( x \)</td>
-                        <td>\( x \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \cos(x) \)</td>
-                        <td>\( 1 \)</td>
-                        <td>\( 1 - \frac{x^2}{2} \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \ln(1+x) \)</td>
-                        <td>\( x \)</td>
-                        <td>\( x - \frac{x^2}{2} \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \frac{1}{1-x} \)</td>
-                        <td>\( 1 + x \)</td>
-                        <td>\( 1 + x + x^2 \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( \sqrt{1+x} \)</td>
-                        <td>\( 1 + \frac{x}{2} \)</td>
-                        <td>\( 1 + \frac{x}{2} - \frac{x^2}{8} \)</td>
-                    </tr>
-                    <tr>
-                        <td>\( (1+x)^{-1} \)</td>
-                        <td>\( 1 - x \)</td>
-                        <td>\( 1 - x + x^2 \)</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Estas aproximaciones son especialmente útiles en física e ingeniería para simplificar ecuaciones cuando trabajamos cerca de un punto de equilibrio o con perturbaciones pequeñas.</p>
-        </section>
-
-        <hr>
-    </main>
-
-    <footer>
-        <p><i>Regresa al <a href="index.html">inicio</a> para explorar más herramientas matemáticas.</i></p>
-    </footer>
-
+  <footer class="site-footer">
+    <p><a href="index.html">Inicio</a> &nbsp;·&nbsp; <a href="https://github.com/lasu-aerospace/calculadora-cientifica">GitHub</a></p>
+  </footer>
+</div>
 </body>
 </html>
