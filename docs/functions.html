@@ -837,24 +837,16 @@
         <div id="resultMath" style="margin-top:6px;color:var(--txt);font-size:1rem;"></div>
         <div class="eq-status ok" id="resultNote" style="margin-top:8px;"></div>
       </div>
-      <div class="graph-wrap" style="margin-top:14px;padding:0;overflow:hidden;position:relative;" id="resultGraphWrap">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;">
+      <div class="graph-wrap" style="margin-top:14px;padding:12px 12px 12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <div class="graph-title" style="margin:0;">Gráfica interactiva — arrastra · rueda para zoom</div>
           <div style="display:flex;gap:6px;">
-            <button class="graph-ctrl-btn" id="gcZoomIn" title="Acercar">+</button>
+            <button class="graph-ctrl-btn" id="gcZoomIn"  title="Acercar">+</button>
             <button class="graph-ctrl-btn" id="gcZoomOut" title="Alejar">−</button>
-            <button class="graph-ctrl-btn" id="gcReset" title="Restablecer vista">⌂</button>
+            <button class="graph-ctrl-btn" id="gcReset"   title="Restablecer vista">⌂</button>
           </div>
         </div>
-        <div style="position:relative;margin:0 12px 12px;">
-          <canvas id="cvResult" style="display:block;width:100%;border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
-          <div id="cvTooltip" style="
-            position:absolute;pointer-events:none;display:none;
-            background:var(--s2);border:1px solid var(--border2);border-radius:6px;
-            font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2);
-            padding:5px 10px;white-space:nowrap;z-index:10;
-          "></div>
-        </div>
+        <canvas id="cvResult" style="display:block;width:100%;border-radius:8px;touch-action:none;"></canvas>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
         <button class="builder-btn secondary" id="s4Reset">✦ Crear otra función</button>
@@ -870,340 +862,841 @@
 </div>
 
 <script>
-// ── Utilidades de dibujo ────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  MOTOR DE GRÁFICAS — Universal, responsive, interactivo
+// ═══════════════════════════════════════════════════════════
+
 const C = {
-  bg:      '#13141a',
-  grid:    '#2a2d3a',
-  axis:    '#363a4a',
-  txt:     '#52566a',
-  accent:  '#4ade80',
-  blue:    '#60a5fa',
-  orange:  '#fb923c',
-  pink:    '#f472b6',
-  purple:  '#a78bfa',
+  bg:'#13141a', grid:'#2a2d3a', axis:'#363a4a', txt:'#52566a',
+  accent:'#4ade80', blue:'#60a5fa', orange:'#fb923c',
+  pink:'#f472b6', purple:'#a78bfa',
 };
 
-function setupCanvas(id) {
-  const canvas = document.getElementById(id);
-  if (!canvas) return null;
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  const w = canvas.clientWidth || canvas.parentElement.clientWidth || 700;
-  const h = canvas.height;
-  canvas.width  = w * dpr;
-  canvas.height = h * dpr;
-  canvas.style.width  = w + 'px';
-  canvas.style.height = h + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  return { ctx, w, h };
+// ── Utilidad: número bonito ─────────────────────────────────
+function fmtNum(n) {
+  if (!isFinite(n)) return '—';
+  const a = Math.abs(n);
+  if (a === 0) return '0';
+  if (a >= 1e4 || (a < 0.01 && a > 0)) return n.toExponential(2);
+  return parseFloat(n.toFixed(3)).toString();
 }
 
-function drawGrid(ctx, w, h, xMin, xMax, yMin, yMax, opts = {}) {
-  const { gridStep = 1, labelStep = 1, showLabels = true } = opts;
-  const toX = x => (x - xMin) / (xMax - xMin) * w;
-  const toY = y => h - (y - yMin) / (yMax - yMin) * h;
+function niceStep(raw) {
+  if (!raw || raw <= 0) return 1;
+  const exp  = Math.floor(Math.log10(raw));
+  const frac = raw / Math.pow(10, exp);
+  const nice = frac < 1.5 ? 1 : frac < 3.5 ? 2 : frac < 7.5 ? 5 : 10;
+  return nice * Math.pow(10, exp);
+}
 
-  ctx.fillStyle = C.bg;
-  ctx.fillRect(0, 0, w, h);
+// ── Fábrica de gráficas interactivas ───────────────────────
+//  opts: { interactive, tooltip, aspectRatio, tipFn }
+//  layers: array de funciones layer(ctx, W, H, toX, toY, view)
+//  Devuelve { redraw, destroy, zoomIn, zoomOut, resetView, setView }
+function makeChart(canvasId, initView, layers, opts = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  const wrap = canvas.parentElement;
+  const AR   = opts.aspectRatio || 0.52;
+  const interactive = opts.interactive !== false;
+  const showTip     = !!opts.tipFn && interactive;
 
-  // Grid lines
-  ctx.strokeStyle = C.grid;
-  ctx.lineWidth = 0.5;
-  for (let x = Math.ceil(xMin / gridStep) * gridStep; x <= xMax; x += gridStep) {
-    ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
-  }
-  for (let y = Math.ceil(yMin / gridStep) * gridStep; y <= yMax; y += gridStep) {
-    ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+  // Always use 1 internally — we scale the canvas resolution manually
+  // and keep all coordinates in CSS-pixel / logical space.
+  const DPR = Math.min(window.devicePixelRatio || 1, 2); // cap at 2× to save memory
+
+  let view = { ...initView };
+  let W = 0, H = 0, ctx = null, rafId = null;
+
+  // ── Resize ──────────────────────────────────────────────
+  function resize() {
+    // Measure the actual inner width of the wrap, accounting for padding
+    const cs = getComputedStyle(wrap);
+    const padH = parseFloat(cs.paddingLeft||0) + parseFloat(cs.paddingRight||0);
+    const newW = Math.floor((wrap.getBoundingClientRect().width || wrap.clientWidth) - padH) || 300;
+    const newH = Math.max(Math.round(newW * AR), 160);
+    if (W === newW && H === newH && ctx) return false;
+    W = newW; H = newH;
+    canvas.width  = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx = canvas.getContext('2d');
+    ctx.scale(DPR, DPR);
+    return true;
   }
 
-  // Axes
-  ctx.strokeStyle = C.axis;
-  ctx.lineWidth = 1.5;
-  if (yMin <= 0 && yMax >= 0) {
-    ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
-  }
-  if (xMin <= 0 && xMax >= 0) {
-    ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+  // ── Coordinate transforms (all in logical/CSS pixels) ───
+  function mkXforms() {
+    const toX  = xv => (xv - view.xMin) / (view.xMax - view.xMin) * W;
+    const toY  = yv => H - (yv - view.yMin) / (view.yMax - view.yMin) * H;
+    const toMX = px =>  view.xMin + (px / W) * (view.xMax - view.xMin);
+    const toMY = py =>  view.yMin + ((H - py) / H) * (view.yMax - view.yMin);
+    return { toX, toY, toMX, toMY };
   }
 
-  // Labels
-  if (showLabels) {
+  // ── Draw ─────────────────────────────────────────────────
+  function draw() {
+    rafId = null;
+    if (!ctx || W === 0) return;
+    const { toX, toY } = mkXforms();
+    const { xMin, xMax, yMin, yMax } = view;
+
+    ctx.fillStyle = C.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid
+    const gs = niceStep((xMax - xMin) / 7);
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 0.5;
+    for (let x = Math.ceil(xMin/gs)*gs; x <= xMax + gs*0.01; x += gs) {
+      const px = toX(x);
+      ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+    }
+    for (let y = Math.ceil(yMin/gs)*gs; y <= yMax + gs*0.01; y += gs) {
+      const py = toY(y);
+      ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1.5;
+    if (yMin <= 0 && yMax >= 0) {
+      ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.stroke();
+    }
+    if (xMin <= 0 && xMax >= 0) {
+      ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H); ctx.stroke();
+    }
+
+    // Labels
+    const pxPerUnit = W / (xMax - xMin);
+    const labelStep = gs * (pxPerUnit * gs < 40 ? 2 : 1);
+    const fontSize  = Math.round(Math.max(8, Math.min(10, W / 50)));
     ctx.fillStyle = C.txt;
-    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.font = `${fontSize}px JetBrains Mono, monospace`;
+
     ctx.textAlign = 'center';
-    for (let x = Math.ceil(xMin / labelStep) * labelStep; x <= xMax; x += labelStep) {
-      if (Math.abs(x) < 1e-9) continue;
-      const px = toX(x); const py = toY(0);
-      const labelY = (py > h - 20) ? py - 8 : (py < 14 ? py + 14 : py + 12);
-      ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, labelY);
+    for (let x = Math.ceil(xMin/labelStep)*labelStep; x <= xMax; x += labelStep) {
+      if (Math.abs(x) < gs * 0.05) continue;
+      const px = toX(x);
+      if (px < fontSize || px > W - fontSize) continue;
+      const axY = toY(0);
+      const ly = axY > H - 14 ? axY - 5 : axY < 12 ? axY + 10 : axY + 11;
+      ctx.fillText(fmtNum(x), px, ly);
     }
     ctx.textAlign = 'right';
-    for (let y = Math.ceil(yMin / labelStep) * labelStep; y <= yMax; y += labelStep) {
-      if (Math.abs(y) < 1e-9) continue;
-      const px = toX(0); const py = toY(y);
-      const labelX = (px < 20) ? px + 24 : px - 4;
-      ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), labelX, py + 3);
+    for (let y = Math.ceil(yMin/labelStep)*labelStep; y <= yMax; y += labelStep) {
+      if (Math.abs(y) < gs * 0.05) continue;
+      const py = toY(y);
+      if (py < 8 || py > H - 6) continue;
+      const axX = toX(0);
+      const lx = axX < 24 ? axX + 28 : axX > W - 8 ? W - 4 : axX - 4;
+      ctx.fillText(fmtNum(y), lx, py + 3);
+    }
+
+    // Layers
+    layers.forEach(fn => { try { fn(ctx, W, H, toX, toY, view); } catch(e){} });
+  }
+
+  function sched() { if (!rafId) rafId = requestAnimationFrame(draw); }
+
+  // ── Zoom ────────────────────────────────────────────────
+  function zoomAt(px, py, factor) {
+    const { toMX, toMY } = mkXforms();
+    const cx = toMX(px), cy = toMY(py);
+    view.xMin = cx + (view.xMin - cx) * factor;
+    view.xMax = cx + (view.xMax - cx) * factor;
+    view.yMin = cy + (view.yMin - cy) * factor;
+    view.yMax = cy + (view.yMax - cy) * factor;
+    sched();
+  }
+
+  // ── Tooltip ─────────────────────────────────────────────
+  let tipEl = null;
+  if (showTip) {
+    tipEl = document.createElement('div');
+    tipEl.style.cssText = `
+      position:absolute;pointer-events:none;display:none;
+      background:var(--s2);border:1px solid var(--border2);border-radius:6px;
+      font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);
+      padding:4px 9px;white-space:nowrap;z-index:10;`;
+    // wrap must be positioned
+    if (getComputedStyle(wrap).position === 'static') wrap.style.position = 'relative';
+    wrap.appendChild(tipEl);
+  }
+
+  function hideTip() { if (tipEl) tipEl.style.display = 'none'; }
+
+  function showCrosshair(mx, my) {
+    if (!opts.tipFn) return;
+    const { toMX, toMY, toX, toY } = mkXforms();
+    const mathX = toMX(mx);
+    const tip = opts.tipFn(mathX);
+    if (!tip) { hideTip(); return; }
+
+    if (tipEl) {
+      tipEl.style.display = '';
+      tipEl.textContent = tip.text;
+      // Position: prefer right of cursor, flip if near edge
+      const tw = tipEl.offsetWidth || 150;
+      const th = tipEl.offsetHeight || 24;
+      let tx = mx + 14, ty = my - th - 8;
+      if (tx + tw > W) tx = mx - tw - 10;
+      if (ty < 4) ty = my + 10;
+      tipEl.style.left = tx + 'px';
+      tipEl.style.top  = ty + 'px';
+    }
+
+    // Crosshair overlay (after main draw)
+    requestAnimationFrame(() => {
+      if (!ctx || tip.y === undefined) return;
+      const px = toX(mathX), py = toY(tip.y);
+      const ay = Math.min(Math.max(toY(0), 0), H);
+      const ax = Math.min(Math.max(toX(0), 0), W);
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = C.txt; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, ay); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ax, py); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = C.accent;
+      ctx.strokeStyle = C.bg; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(px, py, 4.5, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+    });
+  }
+
+  // ── Pointer position (handles mouse + touch uniformly) ──
+  // Returns CSS pixel coords relative to canvas top-left.
+  function getPos(e, touchIndex = 0) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[touchIndex] :
+                e.changedTouches ? e.changedTouches[touchIndex] : e;
+    if (!src) return null;
+    return {
+      x: (src.clientX - r.left),
+      y: (src.clientY - r.top),
+    };
+  }
+
+  // ── Interaction state ────────────────────────────────────
+  let dragging = false, dragStart = null, viewSnap = null, pinchDist = null;
+
+  function onDown(e) {
+    if (e.touches && e.touches.length > 1) return; // handled by pinch
+    e.preventDefault();
+    const pos = getPos(e);
+    if (!pos) return;
+    dragging  = true;
+    dragStart = pos;
+    viewSnap  = { ...view };
+    if (!e.touches) canvas.style.cursor = 'grabbing';
+  }
+
+  function onMove(e) {
+    if (e.touches && e.touches.length >= 2) { onPinch(e); return; }
+    e.preventDefault();
+    const pos = getPos(e);
+    if (!pos) return;
+    const { x: mx, y: my } = pos;
+
+    if (dragging && dragStart && viewSnap) {
+      hideTip();
+      const dx = (mx - dragStart.x) / W * (viewSnap.xMax - viewSnap.xMin);
+      const dy = (my - dragStart.y) / H * (viewSnap.yMax - viewSnap.yMin);
+      view.xMin = viewSnap.xMin - dx; view.xMax = viewSnap.xMax - dx;
+      view.yMin = viewSnap.yMin + dy; view.yMax = viewSnap.yMax + dy;
+      sched();
+    } else if (showTip) {
+      sched();
+      showCrosshair(mx, my);
     }
   }
 
-  return { toX, toY };
+  function onUp(e) {
+    dragging = false;
+    if (!e.touches) canvas.style.cursor = 'crosshair';
+  }
+
+  function onLeave() {
+    dragging = false;
+    hideTip();
+    canvas.style.cursor = 'crosshair';
+  }
+
+  function onTouchEnd(e) {
+    if (e.touches.length === 0) {
+      dragging = false;
+      pinchDist = null;
+      hideTip();
+    }
+  }
+
+  function onWheel(e) {
+    e.preventDefault();
+    const pos = getPos(e);
+    if (!pos) return;
+    zoomAt(pos.x, pos.y, e.deltaY > 0 ? 1.13 : 1/1.13);
+  }
+
+  function onPinch(e) {
+    e.preventDefault();
+    if (e.touches.length < 2) return;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 1) return;
+    const r  = canvas.getBoundingClientRect();
+    const mx = ((e.touches[0].clientX + e.touches[1].clientX)/2) - r.left;
+    const my = ((e.touches[0].clientY + e.touches[1].clientY)/2) - r.top;
+    if (pinchDist) zoomAt(mx, my, pinchDist / dist);
+    pinchDist = dist;
+  }
+
+  if (interactive) {
+    canvas.style.cursor = 'crosshair';
+    canvas.style.touchAction = 'none'; // prevent browser scroll-hijack
+    canvas.addEventListener('mousedown',  onDown,    { passive: false });
+    canvas.addEventListener('mousemove',  onMove,    { passive: false });
+    canvas.addEventListener('mouseup',    onUp);
+    canvas.addEventListener('mouseleave', onLeave);
+    canvas.addEventListener('wheel',      onWheel,   { passive: false });
+    canvas.addEventListener('touchstart', onDown,    { passive: false });
+    canvas.addEventListener('touchmove',  onMove,    { passive: false });
+    canvas.addEventListener('touchend',   onTouchEnd);
+    canvas.addEventListener('touchcancel',onTouchEnd);
+  }
+
+  // ── ResizeObserver ───────────────────────────────────────
+  const ro = new ResizeObserver(() => { if (resize()) sched(); });
+  ro.observe(wrap);
+  resize();
+  sched();
+
+  return {
+    redraw:    sched,
+    setView(v) { view = { ...v }; sched(); },
+    resetView(){ view = { ...initView }; sched(); },
+    zoomIn()   { zoomAt(W/2, H/2, 1/1.35); },
+    zoomOut()  { zoomAt(W/2, H/2,    1.35); },
+    destroy() {
+      ro.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+      if (!interactive) return;
+      canvas.removeEventListener('mousedown',   onDown);
+      canvas.removeEventListener('mousemove',   onMove);
+      canvas.removeEventListener('mouseup',     onUp);
+      canvas.removeEventListener('mouseleave',  onLeave);
+      canvas.removeEventListener('wheel',       onWheel);
+      canvas.removeEventListener('touchstart',  onDown);
+      canvas.removeEventListener('touchmove',   onMove);
+      canvas.removeEventListener('touchend',    onTouchEnd);
+      canvas.removeEventListener('touchcancel', onTouchEnd);
+      if (tipEl && wrap.contains(tipEl)) wrap.removeChild(tipEl);
+    },
+  };
 }
 
-function plotFn(ctx, w, h, fn, color, lineWidth, toX, toY, xMin, xMax, steps = 800) {
-  ctx.strokeStyle = color;
-  ctx.lineWidth = lineWidth || 2;
-  ctx.lineJoin = 'round';
-  const dx = (xMax - xMin) / steps;
-  let started = false;
+// ── Layer helpers ────────────────────────────────────────────
+
+function layerFn(fn, color, lw) {
+  return (ctx, W, H, toX, toY, view) => {
+    ctx.strokeStyle = color; ctx.lineWidth = lw || 2.5; ctx.lineJoin = 'round';
+    const STEPS = Math.round(W * 1.6);
+    const { xMin, xMax, yMin, yMax } = view;
+    const yRange = yMax - yMin;
+    ctx.beginPath();
+    let started = false, prevY = null;
+    for (let i = 0; i <= STEPS; i++) {
+      const x = xMin + i * (xMax - xMin) / STEPS;
+      let y;
+      try { y = fn(x); } catch(e) { started = false; prevY = null; continue; }
+      if (y === null || !isFinite(y) || isNaN(y)) { started = false; prevY = null; continue; }
+      if (prevY !== null && Math.abs(y - prevY) > yRange * 0.55) { started = false; }
+      prevY = y;
+      const px = toX(x), py = toY(y);
+      if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  };
+}
+
+function layerDot(xv, yv, color, r) {
+  return (ctx, W, H, toX, toY) => {
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(toX(xv), toY(yv), r || 5, 0, 2*Math.PI); ctx.fill();
+  };
+}
+
+function layerLegend(items) {
+  return (ctx, W) => {
+    const fs = Math.max(9, Math.min(11, W / 55));
+    ctx.font = `${fs}px JetBrains Mono, monospace`; ctx.textAlign = 'left';
+    items.forEach(({ color, label }, i) => {
+      ctx.fillStyle = color; ctx.fillRect(12, 10 + i*18, 12, 3);
+      ctx.fillStyle = C.txt; ctx.fillText(label, 28, 17 + i*18);
+    });
+  };
+}
+
+function layerDash(x1, y1, x2, y2, color) {
+  return (ctx, W, H, toX, toY) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(toX(x1), toY(y1)); ctx.lineTo(toX(x2), toY(y2)); ctx.stroke();
+    ctx.setLineDash([]);
+  };
+}
+
+function layerHLine(y, color) {
+  return (ctx, W, H, toX, toY) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(W, toY(y)); ctx.stroke();
+    ctx.setLineDash([]);
+  };
+}
+
+function layerVLine(x, color) {
+  return (ctx, W, H, toX, toY) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), H); ctx.stroke();
+    ctx.setLineDash([]);
+  };
+}
+
+function layerCircle(cx, cy, r, color) {
+  return (ctx, W, H, toX, toY) => {
+    const pxR = Math.abs(toX(cx + r) - toX(cx));
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(toX(cx), toY(cy), pxR, 0, 2*Math.PI); ctx.stroke();
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ETIQUETAS DE INTERSECCIÓN — núcleo compartido
+// ─────────────────────────────────────────────────────────────
+
+// Draw a labeled point: dot + pill background + "(x, y)" text
+// Tries to position the label so it stays inside [0,W] × [0,H]
+function drawIntersectionLabel(ctx, W, H, px, py, text, dotColor) {
+  const DOT_R  = 4.5;
+  const PAD    = 4;
+  const FS     = Math.max(8.5, Math.min(10.5, W / 60));
+  const MARGIN = 6; // min distance from canvas edge
+
+  ctx.font = `${FS}px JetBrains Mono, monospace`;
+  const tw = ctx.measureText(text).width;
+  const th = FS + 2;
+  const bw = tw + PAD * 2;
+  const bh = th + PAD * 2;
+
+  // Candidate offsets: prefer top-right, then try others
+  const candidates = [
+    { dx:  DOT_R + 5, dy: -(bh + DOT_R + 2) }, // top-right
+    { dx:  DOT_R + 5, dy:  DOT_R + 2          }, // bottom-right
+    { dx: -(bw + DOT_R + 5), dy: -(bh + DOT_R + 2) }, // top-left
+    { dx: -(bw + DOT_R + 5), dy:  DOT_R + 2   }, // bottom-left
+    { dx:  DOT_R + 5, dy: -bh/2               }, // right-center
+    { dx: -(bw + DOT_R + 5), dy: -bh/2        }, // left-center
+  ];
+
+  let bx = px + candidates[0].dx;
+  let by = py + candidates[0].dy;
+  for (const { dx, dy } of candidates) {
+    const cx = px + dx, cy = py + dy;
+    if (cx >= MARGIN && cx + bw <= W - MARGIN && cy >= MARGIN && cy + bh <= H - MARGIN) {
+      bx = cx; by = cy; break;
+    }
+  }
+  // Final clamp
+  bx = Math.max(MARGIN, Math.min(W - bw - MARGIN, bx));
+  by = Math.max(MARGIN, Math.min(H - bh - MARGIN, by));
+
+  // Pill background
+  ctx.fillStyle = 'rgba(13,14,18,0.82)';
+  ctx.strokeStyle = dotColor;
+  ctx.lineWidth = 1;
+  const br = 4;
   ctx.beginPath();
+  ctx.roundRect
+    ? ctx.roundRect(bx, by, bw, bh, br)
+    : (ctx.rect(bx, by, bw, bh));
+  ctx.fill(); ctx.stroke();
+
+  // Text
+  ctx.fillStyle = '#e4e6f0';
+  ctx.textAlign = 'left';
+  ctx.fillText(text, bx + PAD, by + PAD + FS - 1);
+
+  // Connector line from dot to pill
+  const pillCX = bx + bw / 2, pillCY = by + bh / 2;
+  ctx.strokeStyle = dotColor; ctx.lineWidth = 0.7;
+  ctx.setLineDash([2, 2]);
+  ctx.beginPath();
+  ctx.moveTo(px, py);
+  // go to nearest pill edge rather than center
+  const edgePX = bx + (pillCX < px ? bw : 0);
+  const edgePY = by + bh / 2;
+  ctx.lineTo(edgePX, edgePY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Dot (drawn last so it's on top)
+  ctx.fillStyle = dotColor;
+  ctx.strokeStyle = C.bg; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(px, py, DOT_R, 0, 2*Math.PI);
+  ctx.fill(); ctx.stroke();
+}
+
+// Bisect to refine a root of g(x) = 0 between xa and xb
+function bisect(g, xa, xb, iters = 24) {
+  let a = xa, b = xb;
+  for (let i = 0; i < iters; i++) {
+    const m = (a + b) / 2;
+    const gm = g(m);
+    if (!isFinite(gm)) break;
+    (g(a) * gm <= 0) ? (b = m) : (a = m);
+  }
+  return (a + b) / 2;
+}
+
+// Find sign-change crossings of g(x) in [xMin, xMax], deduplicated by minGap
+function findCrossings(g, xMin, xMax, steps, minGap = 0.05) {
+  const dx = (xMax - xMin) / steps;
+  const roots = [];
+  let prev = null;
   for (let i = 0; i <= steps; i++) {
     const x = xMin + i * dx;
-    const y = fn(x);
-    if (!isFinite(y) || isNaN(y) || y > 1e6 || y < -1e6) { started = false; continue; }
-    const px = toX(x), py = toY(y);
-    if (!started) { ctx.moveTo(px, py); started = true; }
-    else { ctx.lineTo(px, py); }
+    let val;
+    try { val = g(x); } catch(e) { prev = null; continue; }
+    if (val === null || !isFinite(val)) { prev = null; continue; }
+    if (prev !== null && prev.v * val < 0) {
+      const xr = bisect(g, prev.x, x);
+      if (!isFinite(xr)) { prev = { x, v: val }; continue; }
+      if (roots.length === 0 || Math.abs(xr - roots[roots.length-1]) > minGap) {
+        roots.push(xr);
+      }
+    }
+    prev = { x, v: val };
   }
-  ctx.stroke();
+  return roots;
 }
 
-// ── Canvas 1: Línea vertical ────────────────────────────────
+// Master intersection layer:
+//   fns      — array of {fn, color} (the curves on the chart)
+//   hlines   — array of {y, color} (horizontal reference lines, e.g. y=constant)
+//   vlines   — array of {x, color} (vertical reference lines — labels the fn(x) there)
+//   circles  — array of {cx,cy,r,color} (analytic circle intersections)
+function layerIntersections(fns = [], { hlines = [], vlines = [], circles = [] } = {}) {
+  return (ctx, W, H, toX, toY, view) => {
+    const { xMin, xMax, yMin, yMax } = view;
+    const STEPS = Math.round(W * 2.5);
+    const MIN_GAP = (xMax - xMin) * 0.03;
+
+    // Only label points inside the visible area (with a small margin)
+    function visible(x, y) {
+      return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
+    }
+
+    function label(x, y, dotColor) {
+      if (!visible(x, y)) return;
+      const lx = fmtNum(x), ly = fmtNum(y);
+      const text = `(${lx}, ${ly})`;
+      drawIntersectionLabel(ctx, W, H, toX(x), toY(y), text, dotColor);
+    }
+
+    // ── 1. Each fn vs. x-axis (zeros) ─────────────────────
+    fns.forEach(({ fn, color }) => {
+      const roots = findCrossings(x => { const v = fn(x); return v === null ? NaN : v; }, xMin, xMax, STEPS, MIN_GAP);
+      roots.forEach(xr => {
+        const yr = fn(xr);
+        if (yr !== null && Math.abs(yr) < (yMax - yMin) * 0.02) label(xr, 0, color);
+      });
+    });
+
+    // ── 2. Each fn vs. y-axis (x = 0) ─────────────────────
+    if (xMin <= 0 && xMax >= 0) {
+      fns.forEach(({ fn, color }) => {
+        const y0 = fn(0);
+        if (y0 !== null && isFinite(y0)) label(0, y0, color);
+      });
+    }
+
+    // ── 3. Each fn vs. each horizontal line ───────────────
+    hlines.forEach(({ y: hy, color: hc }) => {
+      fns.forEach(({ fn, color: fc }) => {
+        const g = x => { const v = fn(x); return v === null ? NaN : v - hy; };
+        const roots = findCrossings(g, xMin, xMax, STEPS, MIN_GAP);
+        roots.forEach(xr => {
+          const yr = fn(xr);
+          if (yr !== null && isFinite(yr)) label(xr, yr, fc);
+        });
+      });
+    });
+
+    // ── 4. Each fn vs. each vertical line ─────────────────
+    vlines.forEach(({ x: vx }) => {
+      if (vx < xMin || vx > xMax) return;
+      fns.forEach(({ fn, color: fc }) => {
+        const yv = fn(vx);
+        if (yv !== null && isFinite(yv)) label(vx, yv, fc);
+      });
+    });
+
+    // ── 5. Each fn vs. each other fn ──────────────────────
+    for (let i = 0; i < fns.length; i++) {
+      for (let j = i + 1; j < fns.length; j++) {
+        const f1 = fns[i].fn, f2 = fns[j].fn;
+        const c1 = fns[i].color;
+        const g = x => {
+          const a = f1(x), b = f2(x);
+          if (a === null || b === null || !isFinite(a) || !isFinite(b)) return NaN;
+          return a - b;
+        };
+        const roots = findCrossings(g, xMin, xMax, STEPS, MIN_GAP);
+        roots.forEach(xr => {
+          const y1 = f1(xr);
+          if (y1 !== null && isFinite(y1)) label(xr, y1, c1);
+        });
+      }
+    }
+
+    // ── 6. Circle intersections (analytic + fn) ────────────
+    circles.forEach(({ cx, cy, r, color: cc }) => {
+      fns.forEach(({ fn, color: fc }) => {
+        // Check both arc halves: y = cy ± sqrt(r² - (x-cx)²)
+        [-1, 1].forEach(sign => {
+          const circFn = x => {
+            const d = r*r - (x-cx)*(x-cx);
+            return d < 0 ? NaN : cy + sign * Math.sqrt(d);
+          };
+          const g = x => {
+            const yc = circFn(x), yf = fn(x);
+            if (!isFinite(yc) || yf === null || !isFinite(yf)) return NaN;
+            return yf - yc;
+          };
+          const x0 = Math.max(xMin, cx - r), x1 = Math.min(xMax, cx + r);
+          if (x0 >= x1) return;
+          const roots = findCrossings(g, x0, x1, Math.round(STEPS/2), MIN_GAP);
+          roots.forEach(xr => {
+            const yf = fn(xr);
+            if (yf !== null && isFinite(yf)) label(xr, yf, fc);
+          });
+        });
+      });
+    });
+  };
+}
+
+// Convenience wrapper: zeros + y-intercept labels for a single fn
+function layerZeros(fn, color) {
+  return layerIntersections([{ fn, color }]);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  GRÁFICAS EDUCATIVAS (Canvas 1-3, familias, transformaciones)
+// ─────────────────────────────────────────────────────────────
+
+// Canvas 1 — Línea vertical
 {
-  const { ctx, w, h } = setupCanvas('cvVertical') || {};
-  if (ctx) {
-    const { toX, toY } = drawGrid(ctx, w, h, -5, 5, -4, 4, { gridStep: 1, labelStep: 1 });
-
-    // Parabola (is a function)
-    plotFn(ctx, w, h, x => x*x/4 - 2, C.accent, 2.5, toX, toY, -5, 5);
-
-    // Circle (NOT a function — draw manually)
-    ctx.strokeStyle = C.orange;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(toX(2), toY(0), Math.abs(toX(2+2) - toX(2)), 0, 2*Math.PI);
-    ctx.stroke();
-
-    // Vertical test line
-    ctx.strokeStyle = '#f472b6';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 3]);
-    ctx.beginPath(); ctx.moveTo(toX(3), 0); ctx.lineTo(toX(3), h); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Dots on circle (two intersections)
-    [[3, Math.sqrt(3)], [3, -Math.sqrt(3)]].forEach(([x,y]) => {
-      ctx.beginPath(); ctx.arc(toX(x+2-2), toY(y), 5, 0, 2*Math.PI);
-      ctx.fillStyle = C.pink; ctx.fill();
-    });
-
-    // Dot on parabola (one intersection)
-    ctx.beginPath(); ctx.arc(toX(3), toY(3*3/4-2), 5, 0, 2*Math.PI);
-    ctx.fillStyle = C.accent; ctx.fill();
-
-    // Legend
-    ctx.font = '11px JetBrains Mono, monospace';
-    ctx.textAlign = 'left';
-    [
-      [C.accent, 'Función (parábola)'],
-      [C.orange, 'No-función (círculo)'],
-      [C.pink,   'Línea vertical'],
-    ].forEach(([color, text], i) => {
-      ctx.fillStyle = color;
-      ctx.fillRect(12, 10 + i*18, 12, 3);
-      ctx.fillStyle = C.txt;
-      ctx.fillText(text, 28, 17 + i*18);
-    });
-  }
+  const fnPar = x => x*x/4 - 2;
+  makeChart('cvVertical', { xMin:-5, xMax:5, yMin:-4, yMax:4 }, [
+    layerFn(fnPar, C.accent, 2.5),
+    layerCircle(2, 0, 2, C.orange),
+    layerVLine(3, C.pink),
+    // Intersección parábola × línea vertical x=3
+    layerIntersections([{ fn: fnPar, color: C.accent }], { vlines: [{ x: 3 }] }),
+    // Intersecciones círculo × línea vertical x=3 (analytic, on circle)
+    (ctx, W, H, toX, toY) => {
+      [[3, Math.sqrt(3)],[3,-Math.sqrt(3)]].forEach(([x,y]) => {
+        drawIntersectionLabel(ctx, W, H, toX(x), toY(y), `(3, ${fmtNum(y)})`, C.pink);
+      });
+    },
+    layerLegend([
+      { color: C.accent, label: 'Función (parábola)' },
+      { color: C.orange, label: 'No-función (círculo)' },
+      { color: C.pink,   label: 'Línea vertical x=3' },
+    ]),
+  ], { interactive: true });
 }
 
-// ── Canvas 2: Inyectividad ──────────────────────────────────
+// Canvas 2 — Inyectividad
 {
-  const { ctx, w, h } = setupCanvas('cvInyectiva') || {};
-  if (ctx) {
-    const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -2, 6, { gridStep: 1, labelStep: 1 });
-
-    // Cubic (injective)
-    plotFn(ctx, w, h, x => x*x*x/6, C.accent, 2.5, toX, toY, -4, 4);
-
-    // Quadratic (not injective)
-    plotFn(ctx, w, h, x => x*x/4, C.orange, 2.5, toX, toY, -4, 4);
-
-    // Horizontal test line y=1
-    ctx.strokeStyle = '#f472b6';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 3]);
-    ctx.beginPath(); ctx.moveTo(0, toY(1.5)); ctx.lineTo(w, toY(1.5)); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Two dots on parabola at y=1.5 (x=±√6)
-    const xq = Math.sqrt(6);
-    [[xq, 1.5], [-xq, 1.5]].forEach(([x,y]) => {
-      ctx.beginPath(); ctx.arc(toX(x), toY(y), 5, 0, 2*Math.PI);
-      ctx.fillStyle = C.orange; ctx.fill();
-    });
-    // One dot on cubic
-    const xc = Math.cbrt(6*1.5);
-    ctx.beginPath(); ctx.arc(toX(xc), toY(1.5), 5, 0, 2*Math.PI);
-    ctx.fillStyle = C.accent; ctx.fill();
-
-    ctx.font = '11px JetBrains Mono, monospace';
-    ctx.textAlign = 'left';
-    [[C.accent, 'Inyectiva: 1 intersección'], [C.orange, 'No inyectiva: 2 intersecciones'], [C.pink, 'Línea horizontal']].forEach(([col, txt], i) => {
-      ctx.fillStyle = col; ctx.fillRect(12, 10+i*18, 12, 3);
-      ctx.fillStyle = C.txt; ctx.fillText(txt, 28, 17+i*18);
-    });
-  }
+  const fnCub = x => x*x*x/6;
+  const fnPar = x => x*x/4;
+  makeChart('cvInyectiva', { xMin:-4, xMax:4, yMin:-2, yMax:6 }, [
+    layerFn(fnCub, C.accent, 2.5),
+    layerFn(fnPar, C.orange, 2.5),
+    layerHLine(1.5, C.pink),
+    layerIntersections(
+      [{ fn: fnCub, color: C.accent }, { fn: fnPar, color: C.orange }],
+      { hlines: [{ y: 1.5, color: C.pink }] }
+    ),
+    layerLegend([
+      { color: C.accent, label: 'Inyectiva: 1 intersección' },
+      { color: C.orange, label: 'No inyectiva: 2 intersecciones' },
+      { color: C.pink,   label: 'Línea horizontal y=1.5' },
+    ]),
+  ], { interactive: true });
 }
 
-// ── Canvas 3: Inversa ───────────────────────────────────────
+// Canvas 3 — Inversa
 {
-  const { ctx, w, h } = setupCanvas('cvInversa') || {};
-  if (ctx) {
-    const { toX, toY } = drawGrid(ctx, w, h, -3, 5, -3, 5, { gridStep: 1, labelStep: 1 });
-    // y=x line
-    ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(toX(-3), toY(-3)); ctx.lineTo(toX(5), toY(5)); ctx.stroke();
-    ctx.setLineDash([]);
-    // f(x)=e^x
-    plotFn(ctx, w, h, x => Math.exp(x), C.accent, 2.5, toX, toY, -3, 5);
-    // f-1(x)=ln(x)
-    plotFn(ctx, w, h, x => Math.log(x), C.blue, 2.5, toX, toY, 0.01, 5);
-
-    ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'left';
-    [[C.accent,'f(x) = eˣ'],[C.blue,'f⁻¹(x) = ln x'],[C.axis,'y = x']].forEach(([col,txt],i)=>{
-      ctx.fillStyle=col; ctx.fillRect(12, 10+i*18, 12, 3);
-      ctx.fillStyle=C.txt; ctx.fillText(txt, 28, 17+i*18);
-    });
-  }
+  const fnExp = x => Math.exp(x);
+  const fnLn  = x => x > 0 ? Math.log(x) : null;
+  const fnId  = x => x; // y=x for intersection reference
+  makeChart('cvInversa', { xMin:-3, xMax:5, yMin:-3, yMax:5 }, [
+    layerDash(-3,-3,5,5, C.axis),
+    layerFn(fnExp, C.accent, 2.5),
+    layerFn(fnLn,  C.blue,   2.5),
+    // eˣ hits x-axis never (always > 0), but hits y-axis at (0,1)
+    // ln(x) hits x-axis at (1,0) and y-axis never (domain x>0)
+    // eˣ and ln(x) intersect y=x at x=1 (eˣ) → not shown (they don't cross y=x in visible range)
+    // eˣ vs ln(x): they cross each other at x=1 ??? No — e^1=e≠ln(1)=0. They don't intersect.
+    // But both intersect y=x: eˣ=x has no real solution; ln(x)=x also no. So: just axis intersections.
+    layerIntersections(
+      [{ fn: fnExp, color: C.accent }, { fn: fnLn, color: C.blue }]
+    ),
+    layerLegend([
+      { color: C.accent, label: 'f(x) = eˣ' },
+      { color: C.blue,   label: 'f⁻¹(x) = ln x' },
+      { color: C.axis,   label: 'y = x' },
+    ]),
+  ], { interactive: true });
 }
 
-// ── Lineal ──────────────────────────────────────────────────
+// ── Familias — charts con redibujado dinámico ────────────────
+let chartLineal = null, chartCuad = null, chartPot = null,
+    chartExp = null, chartLog = null, chartTrig = null,
+    chartTransform = null;
+
 function drawLineal() {
   const m = parseFloat(document.getElementById('slopeM').value);
   const b = parseFloat(document.getElementById('slopeB').value);
   document.getElementById('slopeVal').textContent = m;
   document.getElementById('slopeBVal').textContent = b;
-  const c = setupCanvas('cvLineal');
-  if (!c) return;
-  const { ctx, w, h } = c;
-  const { toX, toY } = drawGrid(ctx, w, h, -6, 6, -5, 5, { gridStep: 1, labelStep: 2 });
-  plotFn(ctx, w, h, x => m*x+b, C.accent, 2.5, toX, toY, -6, 6);
-}
-
-// ── Cuadrática ──────────────────────────────────────────────
-function drawCuad() {
-  const a = parseFloat(document.getElementById('quadA').value) || 0.01;
-  const b = parseFloat(document.getElementById('quadB').value);
-  const c_ = parseFloat(document.getElementById('quadC').value);
-  document.getElementById('quadAVal').textContent = a;
-  document.getElementById('quadBVal').textContent = b;
-  document.getElementById('quadCVal').textContent = c_;
-  const cv = setupCanvas('cvCuad');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -6, 6, -5, 8, { gridStep: 1, labelStep: 2 });
-  plotFn(ctx, w, h, x => a*x*x+b*x+c_, C.accent, 2.5, toX, toY, -6, 6);
-  // Vertex dot
-  const vx = -b/(2*a);
-  const vy = a*vx*vx+b*vx+c_;
-  ctx.beginPath(); ctx.arc(toX(vx), toY(vy), 6, 0, 2*Math.PI);
-  ctx.fillStyle = C.orange; ctx.fill();
-}
-
-// ── Potencia ────────────────────────────────────────────────
-function drawPot() {
-  const n = parseInt(document.getElementById('powN').value);
-  document.getElementById('powNVal').textContent = n;
-  const cv = setupCanvas('cvPot');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -4, 4, { gridStep: 1, labelStep: 2 });
-  if (n < 0) {
-    // Plot separately left and right of 0
-    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, -4, -0.05);
-    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, 0.05, 4);
-  } else {
-    plotFn(ctx, w, h, x => Math.pow(x, n), C.accent, 2.5, toX, toY, n%2===0 ? -4 : -4, 4);
-  }
-}
-
-// ── Exponencial ─────────────────────────────────────────────
-function drawExp() {
-  let a = parseFloat(document.getElementById('expA').value);
-  document.getElementById('expAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
-  const cv = setupCanvas('cvExp');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -4, 4, -0.5, 8, { gridStep: 1, labelStep: 2 });
-  if (a <= 0 || a === 1) return;
-  plotFn(ctx, w, h, x => Math.pow(a, x), C.accent, 2.5, toX, toY, -4, 4);
-  // Dot at (0,1)
-  ctx.beginPath(); ctx.arc(toX(0), toY(1), 5, 0, 2*Math.PI);
-  ctx.fillStyle = C.orange; ctx.fill();
-}
-
-// ── Logarítmica ─────────────────────────────────────────────
-function drawLog() {
-  let a = parseFloat(document.getElementById('logA').value);
-  document.getElementById('logAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
-  const cv = setupCanvas('cvLog');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -0.5, 8, -5, 5, { gridStep: 1, labelStep: 2 });
-  if (a <= 0 || a === 1) return;
-  plotFn(ctx, w, h, x => Math.log(x)/Math.log(a), C.accent, 2.5, toX, toY, 0.01, 8);
-  // Asymptote
-  ctx.strokeStyle = C.pink; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
-  ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-// ── Trigonométricas ─────────────────────────────────────────
-function drawTrig() {
-  const A = parseFloat(document.getElementById('trigA').value);
-  const W = parseFloat(document.getElementById('trigW').value);
-  document.getElementById('trigAVal').textContent = A;
-  document.getElementById('trigWVal').textContent = W;
-  const cv = setupCanvas('cvTrig');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -4*Math.PI/W, 4*Math.PI/W, -3, 3, { gridStep: Math.PI/W, labelStep: Math.PI/W, showLabels: false });
-  // Label π values
-  ctx.fillStyle = C.txt; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
-  for (let k = -2; k <= 2; k++) {
-    if (k===0) continue;
-    const xv = k*Math.PI/W;
-    const label = k===1?'π/ω': k===-1?'-π/ω': `${k}π/ω`;
-    ctx.fillText(label, toX(xv), toY(0)+14);
-  }
-  // sin
-  plotFn(ctx, w, h, x => A*Math.sin(W*x), C.accent, 2.5, toX, toY, -4*Math.PI/W, 4*Math.PI/W);
-  // cos
-  plotFn(ctx, w, h, x => A*Math.cos(W*x), C.blue, 2.5, toX, toY, -4*Math.PI/W, 4*Math.PI/W);
-  // tan (with gap handling)
-  ctx.strokeStyle = C.orange; ctx.lineWidth = 1.5;
-  const xMin = -4*Math.PI/W, xMax = 4*Math.PI/W, steps = 1200;
-  const dx = (xMax-xMin)/steps;
-  let started = false; ctx.beginPath();
-  for (let i=0; i<=steps; i++) {
-    const x = xMin + i*dx;
-    const y = Math.tan(W*x);
-    const yClamp = A > 0 ? A*2.5 : 2.5;
-    if (!isFinite(y) || Math.abs(y) > yClamp*2) { started=false; continue; }
-    const py = toY(y);
-    if (!started) { ctx.moveTo(toX(x), py); started=true; } else { ctx.lineTo(toX(x), py); }
-  }
-  ctx.stroke();
-
-  ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign='left';
-  [[C.accent,'A·sen(ωx)'],[C.blue,'A·cos(ωx)'],[C.orange,'tan(ωx)']].forEach(([col,txt],i)=>{
-    ctx.fillStyle=col; ctx.fillRect(12,10+i*18,12,3);
-    ctx.fillStyle=C.txt; ctx.fillText(txt,28,17+i*18);
+  if (chartLineal && chartLineal.destroy) chartLineal.destroy();
+  const fn = x => m*x + b;
+  chartLineal = makeChart('cvLineal', { xMin:-6, xMax:6, yMin:-5, yMax:5 }, [
+    layerFn(fn, C.accent, 2.5),
+    layerIntersections([{ fn, color: C.accent }]),
+    layerLegend([{ color: C.accent, label: `f(x) = ${m}x + ${b}` }]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y }; }
   });
 }
 
-// ── Transformaciones ────────────────────────────────────────
+function drawCuad() {
+  const a = parseFloat(document.getElementById('quadA').value) || 0.01;
+  const b = parseFloat(document.getElementById('quadB').value);
+  const c = parseFloat(document.getElementById('quadC').value);
+  document.getElementById('quadAVal').textContent = a;
+  document.getElementById('quadBVal').textContent = b;
+  document.getElementById('quadCVal').textContent = c;
+  if (chartCuad && chartCuad.destroy) chartCuad.destroy();
+  const fn = x => a*x*x + b*x + c;
+  const vx = -b/(2*a), vy = fn(vx);
+  chartCuad = makeChart('cvCuad', { xMin:-6, xMax:6, yMin:-5, yMax:8 }, [
+    layerFn(fn, C.accent, 2.5),
+    layerIntersections([{ fn, color: C.accent }]),
+    // Vertex label (special named point)
+    (ctx, W, H, toX, toY, view) => {
+      const { xMin, xMax, yMin, yMax } = view;
+      if (vx >= xMin && vx <= xMax && vy >= yMin && vy <= yMax)
+        drawIntersectionLabel(ctx, W, H, toX(vx), toY(vy),
+          `V(${fmtNum(vx)}, ${fmtNum(vy)})`, C.orange);
+    },
+    layerLegend([
+      { color: C.accent, label: `f(x) = ${a}x² + ${b}x + ${c}` },
+      { color: C.orange, label: `Vértice` },
+    ]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y }; }
+  });
+}
+
+function drawPot() {
+  const n = parseInt(document.getElementById('powN').value);
+  document.getElementById('powNVal').textContent = n;
+  if (chartPot && chartPot.destroy) chartPot.destroy();
+  const fn = x => {
+    if (n < 0 && Math.abs(x) < 1e-9) return null;
+    return Math.pow(x, n);
+  };
+  chartPot = makeChart('cvPot', { xMin:-4, xMax:4, yMin:-4, yMax:4 }, [
+    layerFn(fn, C.accent, 2.5),
+    layerIntersections([{ fn, color: C.accent }]),
+    layerLegend([{ color: C.accent, label: `f(x) = x^${n}` }]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return y !== null ? { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y } : null; }
+  });
+}
+
+function drawExp() {
+  const a = parseFloat(document.getElementById('expA').value);
+  document.getElementById('expAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
+  if (a <= 0 || a === 1) return;
+  if (chartExp && chartExp.destroy) chartExp.destroy();
+  const fn = x => Math.pow(a, x);
+  chartExp = makeChart('cvExp', { xMin:-4, xMax:4, yMin:-0.5, yMax:8 }, [
+    layerFn(fn, C.accent, 2.5),
+    layerIntersections([{ fn, color: C.accent }]),
+    layerLegend([
+      { color: C.accent, label: `f(x) = ${Math.abs(a-Math.E)<0.05?'e':a.toFixed(2)}^x` },
+    ]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y }; }
+  });
+}
+
+function drawLog() {
+  const a = parseFloat(document.getElementById('logA').value);
+  document.getElementById('logAVal').textContent = Math.abs(a - Math.E) < 0.05 ? 'e' : a.toFixed(2);
+  if (a <= 0 || a === 1) return;
+  if (chartLog && chartLog.destroy) chartLog.destroy();
+  const fn = x => x > 0 ? Math.log(x)/Math.log(a) : null;
+  chartLog = makeChart('cvLog', { xMin:-0.5, xMax:8, yMin:-5, yMax:5 }, [
+    layerFn(fn, C.accent, 2.5),
+    layerVLine(0, C.pink),
+    layerIntersections([{ fn, color: C.accent }]),
+    layerLegend([
+      { color: C.accent, label: `f(x) = log_${Math.abs(a-Math.E)<0.05?'e':a.toFixed(1)}(x)` },
+      { color: C.pink,   label: 'Asíntota x=0' },
+    ]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return y !== null ? { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y } : null; }
+  });
+}
+
+function drawTrig() {
+  const A  = parseFloat(document.getElementById('trigA').value);
+  const ww = parseFloat(document.getElementById('trigW').value);
+  document.getElementById('trigAVal').textContent = A;
+  document.getElementById('trigWVal').textContent = ww;
+  if (chartTrig && chartTrig.destroy) chartTrig.destroy();
+  const P     = Math.PI / ww;
+  const fnSin = x => A * Math.sin(ww * x);
+  const fnCos = x => A * Math.cos(ww * x);
+  const fnTan = x => {
+    const t = Math.tan(ww * x);
+    return Math.abs(t) > A * 3 + 3 ? null : t;
+  };
+  // For trig: only label sin vs x-axis and sin vs cos intersections
+  // (tan has infinitely many zeros — cap to visible)
+  chartTrig = makeChart('cvTrig', { xMin:-4*P, xMax:4*P, yMin:-A*2-1, yMax:A*2+1 }, [
+    layerFn(fnSin, C.accent, 2.5),
+    layerFn(fnCos, C.blue,   2.5),
+    layerFn(fnTan, C.orange, 1.5),
+    layerIntersections(
+      [{ fn: fnSin, color: C.accent }, { fn: fnCos, color: C.blue }]
+      // note: tan excluded from labeling to avoid clutter
+    ),
+    layerLegend([
+      { color: C.accent, label: `${A}·sen(${ww}x)` },
+      { color: C.blue,   label: `${A}·cos(${ww}x)` },
+      { color: C.orange, label: `tan(${ww}x)` },
+    ]),
+  ], { interactive: true,
+    tipFn: x => { const y = fnSin(x); return { text: `x=${fmtNum(x)}  sin=${fmtNum(y)}`, y }; }
+  });
+}
+
 function drawTransform() {
   const h_ = parseFloat(document.getElementById('th').value);
   const k  = parseFloat(document.getElementById('tk').value);
@@ -1211,19 +1704,29 @@ function drawTransform() {
   document.getElementById('thVal').textContent = h_;
   document.getElementById('tkVal').textContent = k;
   document.getElementById('tcVal').textContent = c_;
-  const cv = setupCanvas('cvTransform');
-  if (!cv) return;
-  const { ctx, w, h } = cv;
-  const { toX, toY } = drawGrid(ctx, w, h, -5, 5, -2, 8, { gridStep: 1, labelStep: 2 });
-  plotFn(ctx, w, h, x => x*x, C.grid, 1.5, toX, toY, -5, 5);
-  plotFn(ctx, w, h, x => c_*(x-h_)*(x-h_)+k, C.accent, 2.5, toX, toY, -5, 5);
-  // Vertex dot
-  ctx.beginPath(); ctx.arc(toX(h_), toY(k), 6, 0, 2*Math.PI);
-  ctx.fillStyle = C.orange; ctx.fill();
-  ctx.font='11px JetBrains Mono, monospace'; ctx.textAlign='left';
-  [[C.txt,'x² (base)'],[C.accent,'c(x−h)²+k']].forEach(([col,txt],i)=>{
-    ctx.fillStyle=col; ctx.fillRect(12,10+i*18,12,3);
-    ctx.fillStyle=C.txt; ctx.fillText(txt,28,17+i*18);
+  if (chartTransform && chartTransform.destroy) chartTransform.destroy();
+  const fn   = x => c_*(x-h_)*(x-h_) + k;
+  const base = x => x*x;
+  chartTransform = makeChart('cvTransform', { xMin:-5, xMax:5, yMin:-2, yMax:8 }, [
+    layerFn(base, C.grid,   1.5),
+    layerFn(fn,   C.accent, 2.5),
+    layerIntersections(
+      [{ fn, color: C.accent }, { fn: base, color: C.blue }]
+    ),
+    // Vertex label
+    (ctx, W, H, toX, toY, view) => {
+      const { xMin, xMax, yMin, yMax } = view;
+      if (h_ >= xMin && h_ <= xMax && k >= yMin && k <= yMax)
+        drawIntersectionLabel(ctx, W, H, toX(h_), toY(k),
+          `V(${fmtNum(h_)}, ${fmtNum(k)})`, C.orange);
+    },
+    layerLegend([
+      { color: C.txt,    label: 'x² (base)' },
+      { color: C.accent, label: `${c_}(x−${h_})²+${k}` },
+      { color: C.orange, label: 'Vértice' },
+    ]),
+  ], { interactive: true,
+    tipFn: x => { const y = fn(x); return { text: `x=${fmtNum(x)}  f=${fmtNum(y)}`, y }; }
   });
 }
 
@@ -1236,10 +1739,10 @@ document.getElementById('familyTabs').addEventListener('click', e => {
   btn.classList.add('active');
   const tab = btn.dataset.tab;
   document.getElementById('tab-'+tab).classList.add('active');
-  setTimeout(()=>{
-    const draws = {lineal:drawLineal, cuadratica:drawCuad, potencia:drawPot, exponencial:drawExp, logaritmo:drawLog, trigono:drawTrig};
-    if (draws[tab]) draws[tab]();
-  }, 50);
+  setTimeout(() => {
+    ({ lineal:drawLineal, cuadratica:drawCuad, potencia:drawPot,
+       exponencial:drawExp, logaritmo:drawLog, trigono:drawTrig })[tab]?.();
+  }, 60);
 });
 
 // ── Sliders ─────────────────────────────────────────────────
@@ -1862,8 +2365,8 @@ function builderInit() {
     } catch(e) { return expr; }
   }
 
-  // ── Interactive graph state ─────────────────────────────────
-  let igraph = null; // holds the interactive graph instance
+  // ── Result graph — powered by makeChart ────────────────────
+  let igraph = null;
 
   function drawResultGraph(v, expr) {
     const compiled = (() => { try { return math.compile(expr); } catch(e) { return null; } })();
@@ -1876,363 +2379,43 @@ function builderInit() {
       } catch(e) { return null; }
     };
 
-    // ── Smart initial range ─────────────────────────────────────
+    // Smart initial view
     const PROBE = 600, BROAD = 20;
-    const xs = Array.from({length: PROBE+1}, (_, i) => -BROAD + i * (2*BROAD/PROBE));
-    const validPts = xs.map(x => ({ x, y: ev(x) })).filter(p => p.y !== null);
-    if (validPts.length < 4) { $('resultNote').textContent = 'No se pudo graficar (dominio vacío)'; return; }
+    const pts = Array.from({length: PROBE+1}, (_,i) => -BROAD + i*(2*BROAD/PROBE))
+      .map(x => ({ x, y: ev(x) })).filter(p => p.y !== null);
+    if (pts.length < 4) { $('resultNote').textContent = 'No se pudo graficar (dominio vacío)'; return; }
 
-    const yvs = validPts.map(p => p.y).sort((a,b) => a-b);
-    const q1 = yvs[Math.floor(yvs.length * 0.10)];
-    const q3 = yvs[Math.floor(yvs.length * 0.90)];
-    const iqr = q3 - q1;
-    const goodPts = validPts.filter(p => p.y >= q1 - 2*iqr && p.y <= q3 + 2*iqr);
+    const yvs = pts.map(p => p.y).sort((a,b) => a-b);
+    const q1 = yvs[Math.floor(yvs.length*0.10)], q3 = yvs[Math.floor(yvs.length*0.90)];
+    const good = pts.filter(p => p.y >= q1-2*(q3-q1) && p.y <= q3+2*(q3-q1));
 
-    let rxMin = Math.min(...goodPts.map(p=>p.x));
-    let rxMax = Math.max(...goodPts.map(p=>p.x));
-    let ryMin = Math.min(...goodPts.map(p=>p.y));
-    let ryMax = Math.max(...goodPts.map(p=>p.y));
+    let rxMin = Math.min(...good.map(p=>p.x)), rxMax = Math.max(...good.map(p=>p.x));
+    let ryMin = Math.min(...good.map(p=>p.y)), ryMax = Math.max(...good.map(p=>p.y));
+    const xSp = rxMax-rxMin||2, ySp = ryMax-ryMin||2;
+    if (Math.abs(ryMin)<ySp*3) ryMin=Math.min(ryMin,0);
+    if (Math.abs(ryMax)<ySp*3) ryMax=Math.max(ryMax,0);
+    if (Math.abs(rxMin)<xSp*3) rxMin=Math.min(rxMin,0);
+    if (Math.abs(rxMax)<xSp*3) rxMax=Math.max(rxMax,0);
+    const px=((rxMax-rxMin)*0.14)||1.5, py=((ryMax-ryMin)*0.18)||1.5;
+    const initView = { xMin:rxMin-px, xMax:rxMax+px, yMin:ryMin-py, yMax:ryMax+py };
 
-    const xSpan = rxMax - rxMin || 2, ySpan = ryMax - ryMin || 2;
-    if (Math.abs(ryMin) < ySpan*3) ryMin = Math.min(ryMin, 0);
-    if (Math.abs(ryMax) < ySpan*3) ryMax = Math.max(ryMax, 0);
-    if (Math.abs(rxMin) < xSpan*3) rxMin = Math.min(rxMin, 0);
-    if (Math.abs(rxMax) < xSpan*3) rxMax = Math.max(rxMax, 0);
-
-    const padX = (rxMax-rxMin)*0.14 || 1.5;
-    const padY = (ryMax-ryMin)*0.18 || 1.5;
-    const initView = {
-      xMin: rxMin - padX, xMax: rxMax + padX,
-      yMin: ryMin - padY, yMax: ryMax + padY,
-    };
-
-    // ── Canvas setup ────────────────────────────────────────────
-    const canvas = $('cvResult');
-    const wrap   = canvas.parentElement;
-    const tooltip = $('cvTooltip');
-
-    // Destroy previous interactive instance
+    // Wire control buttons
     if (igraph && igraph.destroy) igraph.destroy();
+    igraph = makeChart('cvResult', initView, [
+      layerFn(ev, C.accent, 2.5),
+      layerIntersections([{ fn: ev, color: C.accent }]),
+      layerLegend([
+        { color: C.accent, label: `f(${v}) = ${expr.length>34?expr.slice(0,34)+'…':expr}` },
+      ]),
+    ], {
+      interactive: true,
+      aspectRatio: 0.60,
+      tipFn: (x) => { const y = ev(x); return y!==null ? { text: `${v}=${fmtNum(x)}  f=${fmtNum(y)}`, y } : null; },
+    });
 
-    // ── Interactive graph object ────────────────────────────────
-    igraph = (() => {
-      const DPR = window.devicePixelRatio || 1;
-      let view = { ...initView };
-      let W = 0, H = 0;
-      let ctx;
-      let isDragging = false, dragStart = null, viewAtDrag = null;
-      let lastPinchDist = null;
-      let rafId = null;
-      let dirty = true;
-
-      function resize() {
-        W = wrap.clientWidth;
-        H = Math.round(W * 0.55);
-        H = Math.max(H, 260);
-        canvas.width  = W * DPR;
-        canvas.height = H * DPR;
-        canvas.style.width  = W + 'px';
-        canvas.style.height = H + 'px';
-        ctx = canvas.getContext('2d');
-        ctx.scale(DPR, DPR);
-        // equalise scale on first setup
-        equaliseScale();
-        dirty = true;
-      }
-
-      function equaliseScale() {
-        const xSpan = view.xMax - view.xMin;
-        const ySpan = view.yMax - view.yMin;
-        const pxX = W / xSpan;
-        const pxY = H / ySpan;
-        const s = Math.min(pxX, pxY);
-        const cx = (view.xMin + view.xMax) / 2;
-        const cy = (view.yMin + view.yMax) / 2;
-        view.xMin = cx - W/(2*s);
-        view.xMax = cx + W/(2*s);
-        view.yMin = cy - H/(2*s);
-        view.yMax = cy + H/(2*s);
-      }
-
-      // Math ↔ pixel
-      const toX  = xv => (xv - view.xMin) / (view.xMax - view.xMin) * W;
-      const toY  = yv => H - (yv - view.yMin) / (view.yMax - view.yMin) * H;
-      const toMX = px => view.xMin + px / W * (view.xMax - view.xMin);
-      const toMY = py => view.yMin + (H - py) / H * (view.yMax - view.yMin);
-
-      function draw() {
-        rafId = null;
-        dirty = false;
-        if (!ctx) return;
-
-        const xMin = view.xMin, xMax = view.xMax;
-        const yMin = view.yMin, yMax = view.yMax;
-
-        // Background
-        ctx.fillStyle = C.bg;
-        ctx.fillRect(0, 0, W, H);
-
-        // Grid
-        const rawStep = niceStep((xMax - xMin) / 8);
-        const gridStep = rawStep;
-
-        ctx.strokeStyle = C.grid;
-        ctx.lineWidth = 0.5;
-        for (let x = Math.ceil(xMin/gridStep)*gridStep; x <= xMax; x += gridStep) {
-          ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), H); ctx.stroke();
-        }
-        for (let y = Math.ceil(yMin/gridStep)*gridStep; y <= yMax; y += gridStep) {
-          ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(W, toY(y)); ctx.stroke();
-        }
-
-        // Axes
-        ctx.strokeStyle = C.axis; ctx.lineWidth = 1.5;
-        if (yMin <= 0 && yMax >= 0) {
-          ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.stroke();
-        }
-        if (xMin <= 0 && xMax >= 0) {
-          ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H); ctx.stroke();
-        }
-
-        // Axis labels
-        ctx.fillStyle = C.txt;
-        ctx.font = `${Math.max(9, Math.round(10/DPR*DPR))}px JetBrains Mono, monospace`;
-        ctx.textAlign = 'center';
-        const labelStep = gridStep * (W / (xMax-xMin) < 60 ? 2 : 1);
-        for (let x = Math.ceil(xMin/labelStep)*labelStep; x <= xMax; x += labelStep) {
-          if (Math.abs(x) < gridStep*0.1) continue;
-          const px = toX(x);
-          const axY = toY(0);
-          const ly = (axY > H-18) ? axY-6 : (axY < 14 ? axY+12 : axY+12);
-          ctx.fillText(fmtN(x), px, ly);
-        }
-        ctx.textAlign = 'right';
-        for (let y = Math.ceil(yMin/labelStep)*labelStep; y <= yMax; y += labelStep) {
-          if (Math.abs(y) < gridStep*0.1) continue;
-          const py = toY(y);
-          const axX = toX(0);
-          const lx = (axX < 28) ? axX+32 : axX-4;
-          ctx.fillText(fmtN(y), lx, py+3);
-        }
-
-        // ── Plot function ──────────────────────────────────────
-        ctx.strokeStyle = C.accent;
-        ctx.lineWidth = 2.5;
-        ctx.lineJoin = 'round';
-        ctx.beginPath();
-        const STEPS = Math.round(W * 1.5);
-        let started = false, prevYv = null;
-        for (let i = 0; i <= STEPS; i++) {
-          const xv = xMin + i*(xMax-xMin)/STEPS;
-          const yv = ev(xv);
-          if (yv === null) { started=false; prevYv=null; continue; }
-          // discontinuity
-          if (prevYv !== null && Math.abs(yv-prevYv) > (yMax-yMin)*0.5) { started=false; }
-          prevYv = yv;
-          const px = toX(xv), py = toY(yv);
-          if (!started) { ctx.moveTo(px, py); started=true; } else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-
-        // Zero dots
-        ctx.fillStyle = C.orange;
-        for (let i = 0; i < STEPS; i++) {
-          const x0 = xMin + i*(xMax-xMin)/STEPS;
-          const x1 = xMin + (i+1)*(xMax-xMin)/STEPS;
-          const y0 = ev(x0), y1 = ev(x1);
-          if (y0!==null && y1!==null && y0*y1<0) {
-            const xz = x0 - y0*(x1-x0)/(y1-y0);
-            ctx.beginPath(); ctx.arc(toX(xz), toY(0), 5, 0, 2*Math.PI); ctx.fill();
-          }
-        }
-
-        // Legend
-        ctx.font = '11px JetBrains Mono, monospace';
-        ctx.textAlign = 'left';
-        ctx.fillStyle = C.accent; ctx.fillRect(12, 10, 12, 3);
-        ctx.fillStyle = C.txt;
-        const lbl = `f(${v}) = ${expr.length>34 ? expr.slice(0,34)+'…' : expr}`;
-        ctx.fillText(lbl, 28, 17);
-        ctx.fillStyle = C.orange; ctx.fillRect(12, 28, 12, 3);
-        ctx.fillStyle = C.txt; ctx.fillText('Ceros de f', 28, 35);
-      }
-
-      function schedDraw() { if (!rafId) rafId = requestAnimationFrame(draw); }
-
-      // ── Zoom around a point ─────────────────────────────────
-      function zoomAt(mx, my, factor) {
-        const cx = toMX(mx), cy = toMY(my);
-        view.xMin = cx + (view.xMin-cx)*factor;
-        view.xMax = cx + (view.xMax-cx)*factor;
-        view.yMin = cy + (view.yMin-cy)*factor;
-        view.yMax = cy + (view.yMax-cy)*factor;
-        schedDraw();
-      }
-
-      // ── Mouse events ────────────────────────────────────────
-      function onMouseDown(e) {
-        isDragging = true;
-        const r = canvas.getBoundingClientRect();
-        dragStart = { x: e.clientX - r.left, y: e.clientY - r.top };
-        viewAtDrag = { ...view };
-        canvas.style.cursor = 'grabbing';
-      }
-      function onMouseMove(e) {
-        const r = canvas.getBoundingClientRect();
-        const mx = e.clientX - r.left, my = e.clientY - r.top;
-
-        // Tooltip
-        const mathX = toMX(mx), mathY = ev(mathX);
-        if (mathY !== null) {
-          tooltip.style.display = '';
-          tooltip.textContent = `x = ${fmtN(mathX)}   f(x) = ${fmtN(mathY)}`;
-          const ttW = 180, ttH = 28;
-          let ttX = mx + 14, ttY = my - 34;
-          if (ttX + ttW > W) ttX = mx - ttW - 10;
-          if (ttY < 0) ttY = my + 10;
-          tooltip.style.left = ttX + 'px';
-          tooltip.style.top  = ttY + 'px';
-          // crosshair dot
-          schedDraw();
-          // draw crosshair on top (after main draw)
-          requestAnimationFrame(() => {
-            if (!ctx) return;
-            const py = toY(mathY);
-            ctx.fillStyle = C.accent;
-            ctx.strokeStyle = C.bg;
-            ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(toX(mathX), py, 5, 0, 2*Math.PI);
-            ctx.fill(); ctx.stroke();
-            // dashed drop lines
-            ctx.setLineDash([3,3]);
-            ctx.strokeStyle = C.txt; ctx.lineWidth = 0.8;
-            ctx.beginPath(); ctx.moveTo(toX(mathX), py); ctx.lineTo(toX(mathX), toY(0)); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(toX(mathX), py); ctx.lineTo(toX(0) < 0 ? 0 : toX(0) > W ? W : toX(0), py); ctx.stroke();
-            ctx.setLineDash([]);
-          });
-        } else {
-          tooltip.style.display = 'none';
-        }
-
-        if (!isDragging) return;
-        const dx = (mx - dragStart.x) / W * (viewAtDrag.xMax - viewAtDrag.xMin);
-        const dy = (my - dragStart.y) / H * (viewAtDrag.yMax - viewAtDrag.yMin);
-        view.xMin = viewAtDrag.xMin - dx;
-        view.xMax = viewAtDrag.xMax - dx;
-        view.yMin = viewAtDrag.yMin + dy;
-        view.yMax = viewAtDrag.yMax + dy;
-        schedDraw();
-      }
-      function onMouseUp() { isDragging=false; canvas.style.cursor='crosshair'; }
-      function onMouseLeave() { isDragging=false; tooltip.style.display='none'; canvas.style.cursor='crosshair'; }
-      function onWheel(e) {
-        e.preventDefault();
-        const r = canvas.getBoundingClientRect();
-        const mx = e.clientX - r.left, my = e.clientY - r.top;
-        const factor = e.deltaY > 0 ? 1.12 : 1/1.12;
-        zoomAt(mx, my, factor);
-      }
-
-      // ── Touch events ────────────────────────────────────────
-      function getTouchMid(touches) {
-        return {
-          x: (touches[0].clientX + touches[1].clientX)/2,
-          y: (touches[0].clientY + touches[1].clientY)/2,
-        };
-      }
-      function getTouchDist(touches) {
-        const dx = touches[0].clientX - touches[1].clientX;
-        const dy = touches[0].clientY - touches[1].clientY;
-        return Math.sqrt(dx*dx+dy*dy);
-      }
-      function onTouchStart(e) {
-        e.preventDefault();
-        if (e.touches.length === 1) {
-          const r = canvas.getBoundingClientRect();
-          isDragging = true;
-          dragStart = { x: e.touches[0].clientX-r.left, y: e.touches[0].clientY-r.top };
-          viewAtDrag = { ...view };
-          lastPinchDist = null;
-        } else if (e.touches.length === 2) {
-          isDragging = false;
-          lastPinchDist = getTouchDist(e.touches);
-        }
-      }
-      function onTouchMove(e) {
-        e.preventDefault();
-        const r = canvas.getBoundingClientRect();
-        if (e.touches.length === 1 && isDragging) {
-          const mx = e.touches[0].clientX-r.left, my = e.touches[0].clientY-r.top;
-          const dx = (mx-dragStart.x)/W*(viewAtDrag.xMax-viewAtDrag.xMin);
-          const dy = (my-dragStart.y)/H*(viewAtDrag.yMax-viewAtDrag.yMin);
-          view.xMin = viewAtDrag.xMin-dx; view.xMax = viewAtDrag.xMax-dx;
-          view.yMin = viewAtDrag.yMin+dy; view.yMax = viewAtDrag.yMax+dy;
-          schedDraw();
-        } else if (e.touches.length === 2) {
-          const dist = getTouchDist(e.touches);
-          if (lastPinchDist) {
-            const mid = getTouchMid(e.touches);
-            const mx = mid.x - r.left, my = mid.y - r.top;
-            zoomAt(mx, my, lastPinchDist/dist);
-          }
-          lastPinchDist = dist;
-        }
-      }
-      function onTouchEnd(e) { if (e.touches.length === 0) isDragging=false; lastPinchDist=null; }
-
-      // Bind events
-      canvas.addEventListener('mousedown',  onMouseDown);
-      canvas.addEventListener('mousemove',  onMouseMove);
-      canvas.addEventListener('mouseup',    onMouseUp);
-      canvas.addEventListener('mouseleave', onMouseLeave);
-      canvas.addEventListener('wheel',      onWheel, { passive: false });
-      canvas.addEventListener('touchstart', onTouchStart, { passive: false });
-      canvas.addEventListener('touchmove',  onTouchMove,  { passive: false });
-      canvas.addEventListener('touchend',   onTouchEnd);
-
-      // Control buttons
-      $('gcZoomIn').onclick  = () => zoomAt(W/2, H/2, 1/1.35);
-      $('gcZoomOut').onclick = () => zoomAt(W/2, H/2, 1.35);
-      $('gcReset').onclick   = () => { view = { ...initView }; equaliseScale(); schedDraw(); };
-
-      // ResizeObserver
-      const ro = new ResizeObserver(() => { resize(); schedDraw(); });
-      ro.observe(wrap);
-
-      resize();
-      schedDraw();
-
-      return {
-        destroy() {
-          canvas.removeEventListener('mousedown',  onMouseDown);
-          canvas.removeEventListener('mousemove',  onMouseMove);
-          canvas.removeEventListener('mouseup',    onMouseUp);
-          canvas.removeEventListener('mouseleave', onMouseLeave);
-          canvas.removeEventListener('wheel',      onWheel);
-          canvas.removeEventListener('touchstart', onTouchStart);
-          canvas.removeEventListener('touchmove',  onTouchMove);
-          canvas.removeEventListener('touchend',   onTouchEnd);
-          ro.disconnect();
-          if (rafId) cancelAnimationFrame(rafId);
-        }
-      };
-    })();
-  }
-
-  function fmtN(n) {
-    if (Math.abs(n) >= 1e4 || (Math.abs(n) < 0.01 && n !== 0)) return n.toExponential(2);
-    return parseFloat(n.toFixed(4)).toString();
-  }
-
-  function niceStep(raw) {
-    const exp = Math.floor(Math.log10(raw));
-    const frac = raw / Math.pow(10, exp);
-    let nice = 1;
-    if (frac < 1.5) nice = 1;
-    else if (frac < 3.5) nice = 2;
-    else if (frac < 7.5) nice = 5;
-    else nice = 10;
-    return nice * Math.pow(10, exp);
+    $('gcZoomIn').onclick  = () => igraph && igraph.zoomIn();
+    $('gcZoomOut').onclick = () => igraph && igraph.zoomOut();
+    $('gcReset').onclick   = () => igraph && igraph.resetView();
   }
 
   $('s4Reset').addEventListener('click', () => {

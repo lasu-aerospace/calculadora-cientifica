@@ -216,6 +216,48 @@ canvas#chart{display:block;width:100%;height:300px;border-radius:10px;}
 
 /* hidden file input */
 #csvImport{display:none;}
+
+/* ── ANALYSIS PANEL ── */
+.analysis-card{grid-column:1/-1;}
+.anl-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.anl-tab{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--s1);
+  color:var(--txt3);cursor:pointer;transition:all .2s;}
+.anl-tab:hover{border-color:var(--border2);color:var(--txt2);}
+.anl-tab.sel{border-color:#38bdf8;background:rgba(56,189,248,.08);color:#38bdf8;}
+.anl-pane{display:none;flex-direction:column;gap:14px;}
+.anl-pane.vis{display:flex;}
+.anl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.anl-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;
+  color:var(--txt3);text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.anl-sel,.anl-input{background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:7px 11px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt);
+  outline:none;cursor:pointer;transition:border-color .2s;}
+.anl-sel:focus,.anl-input:focus{border-color:var(--border2);}
+.anl-input{width:110px;cursor:text;}
+.anl-btn{padding:7px 16px;border-radius:8px;border:1px solid rgba(56,189,248,.4);
+  background:rgba(56,189,248,.07);color:#38bdf8;
+  font-family:'Familjen Grotesk',sans-serif;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap;}
+.anl-btn:hover{background:rgba(56,189,248,.16);}
+.anl-results{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px 20px;
+  display:none;flex-direction:column;gap:10px;}
+.anl-results.vis{display:flex;}
+.anl-eq{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--txt);
+  background:var(--s2);border-radius:8px;padding:10px 14px;letter-spacing:.02em;border-left:3px solid #38bdf8;
+  word-break:break-all;}
+.anl-metrics{display:flex;gap:8px;flex-wrap:wrap;}
+.anl-metric{background:var(--s2);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:3px;}
+.anl-metric-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.2em;
+  color:var(--txt3);text-transform:uppercase;}
+.anl-metric-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:var(--txt);}
+.anl-pts-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);}
+.lagrange-eval{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px;}
+.lagrange-eval-result{font-family:'JetBrains Mono',monospace;font-size:13px;color:#a78bfa;
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);
+  border-radius:8px;padding:7px 13px;display:none;}
+.lagrange-eval-result.vis{display:block;}
+canvas#anlChart,canvas#lagChart{display:block;width:100%;height:220px;border-radius:10px;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -325,6 +367,59 @@ canvas#chart{display:block;width:100%;height:300px;border-radius:10px;}
             <rect x="6" y="6" width="12" height="12" rx="2"/>
           </svg>Detener todo
         </button>
+      </div>
+    </div>
+
+    <!-- ANALYSIS -->
+    <div class="card analysis-card">
+      <div class="card-label">Análisis matemático</div>
+      <div class="anl-tabs">
+        <button class="anl-tab sel" onclick="anlTab('reg')" id="tab-reg">Regresión</button>
+        <button class="anl-tab" onclick="anlTab('lagrange')" id="tab-lagrange">Interpolación de Lagrange</button>
+      </div>
+
+      <!-- REGRESSION -->
+      <div class="anl-pane vis" id="pane-reg">
+        <div class="anl-row">
+          <span class="anl-label">Serie</span>
+          <select class="anl-sel" id="reg-series"></select>
+          <span class="anl-label">Tipo</span>
+          <select class="anl-sel" id="reg-type">
+            <option value="linear">Lineal  y = a·x + b</option>
+            <option value="poly2">Polinomial grado 2</option>
+            <option value="poly3">Polinomial grado 3</option>
+            <option value="exp">Exponencial  y = a·eᵇˣ</option>
+            <option value="log">Logarítmica  y = a·ln(x) + b</option>
+            <option value="power">Potencial  y = a·xᵇ</option>
+          </select>
+          <button class="anl-btn" onclick="runRegression()">Calcular</button>
+        </div>
+        <div class="anl-results" id="reg-results">
+          <div class="anl-eq" id="reg-eq"></div>
+          <div class="anl-metrics" id="reg-metrics"></div>
+          <div class="anl-pts-note" id="reg-note"></div>
+          <canvas id="anlChart"></canvas>
+        </div>
+      </div>
+
+      <!-- LAGRANGE -->
+      <div class="anl-pane" id="pane-lagrange">
+        <div class="anl-row">
+          <span class="anl-label">Serie</span>
+          <select class="anl-sel" id="lag-series"></select>
+          <button class="anl-btn" onclick="runLagrange()">Calcular polinomio</button>
+        </div>
+        <div class="anl-results" id="lag-results">
+          <div class="anl-eq" id="lag-eq"></div>
+          <div class="anl-metrics" id="lag-metrics"></div>
+          <div class="lagrange-eval">
+            <span class="anl-label">Evaluar en x =</span>
+            <input class="anl-input" type="number" id="lag-x" placeholder="valor de x" step="any">
+            <button class="anl-btn" onclick="evalLagrange()">→ f(x)</button>
+            <div class="lagrange-eval-result" id="lag-result"></div>
+          </div>
+          <canvas id="lagChart"></canvas>
+        </div>
       </div>
     </div>
 
@@ -952,6 +1047,396 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function fmt(v){if(v==null)return'';return Number.isInteger(v)?String(v):Number(v.toFixed(2)).toString();}
 function hexA(h,a){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
 function rRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+
+// ═══════════════════════════════════════════════════
+//  ANALYSIS — TAB SWITCH
+// ═══════════════════════════════════════════════════
+function anlTab(id){
+  ['reg','lagrange'].forEach(t=>{
+    document.getElementById('tab-'+t)?.classList.toggle('sel',t===id);
+    document.getElementById('pane-'+t)?.classList.toggle('vis',t===id);
+  });
+  refreshAnlSelects();
+}
+function refreshAnlSelects(){
+  const ids=['reg-series','lag-series'];
+  ids.forEach(selId=>{
+    const sel=document.getElementById(selId);
+    if(!sel)return;
+    const prev=sel.value;
+    sel.innerHTML=S.series.filter(s=>S.data.some(d=>d.sid===s.id))
+      .map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+    if(prev&&[...sel.options].some(o=>o.value===prev))sel.value=prev;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  MATH HELPERS
+// ═══════════════════════════════════════════════════
+function getPts(sid){
+  return S.data.filter(d=>d.sid===sid).map(d=>({x:d.time,y:d.value})).sort((a,b)=>a.x-b.x);
+}
+function fmtC(v,prec=4){
+  if(isNaN(v)||!isFinite(v))return'?';
+  return Number(v.toFixed(prec)).toString();
+}
+function R2(pts,fn){
+  const yMean=pts.reduce((s,p)=>s+p.y,0)/pts.length;
+  const ss_tot=pts.reduce((s,p)=>s+(p.y-yMean)**2,0);
+  const ss_res=pts.reduce((s,p)=>s+(p.y-fn(p.x))**2,0);
+  return ss_tot===0?1:1-ss_res/ss_tot;
+}
+function RMSE(pts,fn){
+  return Math.sqrt(pts.reduce((s,p)=>s+(p.y-fn(p.x))**2,0)/pts.length);
+}
+function metric(lbl,val,accent=''){
+  return`<div class="anl-metric"><div class="anl-metric-lbl">${lbl}</div><div class="anl-metric-val" style="${accent?'color:'+accent:''}">${val}</div></div>`;
+}
+
+// ── LEAST SQUARES: solve Ax=b via Gaussian elimination ──
+function solveLS(A,b){
+  const n=A.length;
+  const M=A.map((r,i)=>[...r,b[i]]);
+  for(let col=0;col<n;col++){
+    let maxR=col;
+    for(let r=col+1;r<n;r++)if(Math.abs(M[r][col])>Math.abs(M[maxR][col]))maxR=r;
+    [M[col],M[maxR]]=[M[maxR],M[col]];
+    if(Math.abs(M[col][col])<1e-14)return null;
+    for(let r=0;r<n;r++)if(r!==col){
+      const f=M[r][col]/M[col][col];
+      for(let c=col;c<=n;c++)M[r][c]-=f*M[col][c];
+    }
+  }
+  return M.map((r,i)=>r[n]/r[i]);
+}
+
+// ── POLYNOMIAL REGRESSION (degree d) ──
+function polyReg(pts,d){
+  const n=d+1;
+  const A=Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>pts.reduce((s,p)=>s+Math.pow(p.x,r+c),0)));
+  const b=Array.from({length:n},(_,r)=>pts.reduce((s,p)=>s+Math.pow(p.x,r)*p.y,0));
+  return solveLS(A,b);
+}
+
+// ═══════════════════════════════════════════════════
+//  REGRESSION ENGINE
+// ═══════════════════════════════════════════════════
+let _lastReg=null;
+
+function runRegression(){
+  refreshAnlSelects();
+  const sid=document.getElementById('reg-series')?.value;
+  const type=document.getElementById('reg-type')?.value;
+  if(!sid){showToast('No hay series con datos','warn');return;}
+  const pts=getPts(sid);
+  const s=S.series.find(s=>s.id===sid);
+
+  let fn,eqStr,ok=true,warn='';
+
+  if(type==='linear'){
+    const c=polyReg(pts,1);
+    if(!c){ok=false;}else{
+      fn=x=>c[0]+c[1]*x;
+      eqStr=`y = ${fmtC(c[1])}·x + ${fmtC(c[0])}`;
+    }
+  } else if(type==='poly2'){
+    if(pts.length<3){showToast('Se necesitan ≥3 puntos para grado 2','warn');return;}
+    const c=polyReg(pts,2);
+    if(!c){ok=false;}else{
+      fn=x=>c[0]+c[1]*x+c[2]*x*x;
+      eqStr=`y = ${fmtC(c[2])}·x² + ${fmtC(c[1])}·x + ${fmtC(c[0])}`;
+    }
+  } else if(type==='poly3'){
+    if(pts.length<4){showToast('Se necesitan ≥4 puntos para grado 3','warn');return;}
+    const c=polyReg(pts,3);
+    if(!c){ok=false;}else{
+      fn=x=>c[0]+c[1]*x+c[2]*x*x+c[3]*x*x*x;
+      eqStr=`y = ${fmtC(c[3])}·x³ + ${fmtC(c[2])}·x² + ${fmtC(c[1])}·x + ${fmtC(c[0])}`;
+    }
+  } else if(type==='exp'){
+    const pos=pts.filter(p=>p.y>0);
+    if(pos.length<pts.length)warn='⚠ Se ignoraron puntos con y≤0';
+    if(pos.length<2){showToast('Se necesitan ≥2 puntos y>0 para exponencial','warn');return;}
+    const lnPts=pos.map(p=>({x:p.x,y:Math.log(p.y)}));
+    const c=polyReg(lnPts,1);
+    if(!c){ok=false;}else{
+      const a=Math.exp(c[0]),b=c[1];
+      fn=x=>a*Math.exp(b*x);
+      eqStr=`y = ${fmtC(a)}·e^(${fmtC(b)}·x)`;
+    }
+  } else if(type==='log'){
+    const pos=pts.filter(p=>p.x>0);
+    if(pos.length<pts.length)warn='⚠ Se ignoraron puntos con x≤0';
+    if(pos.length<2){showToast('Se necesitan ≥2 puntos x>0 para logarítmica','warn');return;}
+    const lnPts=pos.map(p=>({x:Math.log(p.x),y:p.y}));
+    const c=polyReg(lnPts,1);
+    if(!c){ok=false;}else{
+      fn=x=>c[0]+c[1]*Math.log(x);
+      eqStr=`y = ${fmtC(c[1])}·ln(x) + ${fmtC(c[0])}`;
+    }
+  } else if(type==='power'){
+    const pos=pts.filter(p=>p.x>0&&p.y>0);
+    if(pos.length<pts.length)warn='⚠ Se ignoraron puntos con x≤0 o y≤0';
+    if(pos.length<2){showToast('Se necesitan ≥2 puntos x,y>0 para potencial','warn');return;}
+    const lnPts=pos.map(p=>({x:Math.log(p.x),y:Math.log(p.y)}));
+    const c=polyReg(lnPts,1);
+    if(!c){ok=false;}else{
+      const a=Math.exp(c[0]),b=c[1];
+      fn=x=>a*Math.pow(x,b);
+      eqStr=`y = ${fmtC(a)}·x^${fmtC(b)}`;
+    }
+  }
+
+  if(!ok){showToast('El sistema no pudo resolverse','err');return;}
+
+  const r2=R2(pts,fn);
+  const rmse=RMSE(pts,fn);
+
+  document.getElementById('reg-eq').textContent=eqStr;
+  document.getElementById('reg-metrics').innerHTML=
+    metric('R²',fmtC(r2,4),r2>0.95?'#4ade80':r2>0.8?'#facc15':'#f87171')+
+    metric('RMSE',fmtC(rmse,4))+
+    metric('Puntos',pts.length);
+  document.getElementById('reg-note').textContent=warn||`${pts.length} puntos — Serie: ${s?.name||''}`;
+  document.getElementById('reg-results').classList.add('vis');
+
+  _lastReg={pts,fn,type,s};
+  drawRegChart(pts,fn,s?.color||'#38bdf8');
+  showToast('Regresión calculada','ok');
+}
+
+function drawRegChart(pts,fn,color){
+  const cv=document.getElementById('anlChart');
+  if(!cv)return;
+  const W=cv.parentElement.offsetWidth,H=220,DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
+
+  const P={t:16,r:16,b:36,l:52};
+  const cw=W-P.l-P.r,ch=H-P.t-P.b;
+
+  const allX=pts.map(p=>p.x),allY=pts.map(p=>p.y);
+  const xMn=Math.min(...allX),xMx=Math.max(...allX);
+  const xR=xMx-xMn||1;
+  // include fn range in y
+  const fYs=Array.from({length:60},(_,i)=>fn(xMn+(xR/59)*i)).filter(isFinite);
+  const yMn=Math.min(...allY,...fYs),yMx=Math.max(...allY,...fYs);
+  const yP=(yMx-yMn||1)*.15;
+  const yLo=yMn-yP,yHi=yMx+yP,yR=yHi-yLo;
+
+  const sx=x=>P.l+((x-xMn)/xR)*cw;
+  const sy=y=>P.t+ch-((y-yLo)/yR)*ch;
+
+  ctx.fillStyle='#13141a';rRect(ctx,P.l,P.t,cw,ch,8);ctx.fill();
+
+  // grid
+  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=P.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cw,y);ctx.stroke();}
+  for(let i=0;i<=5;i++){const x=P.l+(cw/5)*i;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,P.t+ch);ctx.stroke();}
+
+  // axis labels
+  ctx.font=`10px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';
+  ctx.textAlign='right';
+  for(let i=0;i<=4;i++)ctx.fillText(fmtC(yLo+yR*(1-i/4),2),P.l-6,P.t+(ch/4)*i+4);
+  ctx.textAlign='center';
+  for(let i=0;i<=5;i++)ctx.fillText(fmtC(xMn+(xR/5)*i,2),P.l+(cw/5)*i,P.t+ch+16);
+
+  // regression curve
+  ctx.beginPath();ctx.strokeStyle='#38bdf8';ctx.lineWidth=2;ctx.setLineDash([]);
+  const steps=200;
+  for(let i=0;i<=steps;i++){
+    const x=xMn+(xR/steps)*i,y=fn(x);
+    if(!isFinite(y))continue;
+    i===0?ctx.moveTo(sx(x),sy(y)):ctx.lineTo(sx(x),sy(y));
+  }
+  ctx.stroke();
+
+  // data points
+  pts.forEach(p=>{
+    const x=sx(p.x),y=sy(p.y);
+    ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);
+    ctx.fillStyle='#13141a';ctx.fill();
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  LAGRANGE INTERPOLATION
+// ═══════════════════════════════════════════════════
+let _lagPts=null;
+
+function lagrangeEval(pts,x){
+  let result=0;
+  for(let i=0;i<pts.length;i++){
+    let term=pts[i].y;
+    for(let j=0;j<pts.length;j++){
+      if(j!==i)term*=(x-pts[j].x)/(pts[i].x-pts[j].x);
+    }
+    result+=term;
+  }
+  return result;
+}
+
+function lagrangeTerm(pts,i){
+  // Returns string representation of the i-th basis polynomial * pts[i].y
+  const xi=pts[i].x;
+  let numParts=[],denParts=[];
+  for(let j=0;j<pts.length;j++){
+    if(j===i)continue;
+    numParts.push(`(x - ${fmtC(pts[j].x,3)})`);
+    denParts.push(`(${fmtC(xi,3)} - ${fmtC(pts[j].x,3)})`);
+  }
+  const den=denParts.reduce((acc,_,idx)=>{
+    const vals=pts.filter((_,j)=>j!==i).map(p=>pts[i].x-p.x);
+    return vals.reduce((a,b)=>a*b,1);
+  },1);
+  // compute denominator numerically
+  const denomVal=pts.filter((_,j)=>j!==i).reduce((acc,p)=>acc*(xi-p.x),1);
+  const coeff=pts[i].y/denomVal;
+  return{coeff,numParts,denomVal,yi:pts[i].y};
+}
+
+function buildLagrangeEqStr(pts){
+  if(pts.length===1)return`P(x) = ${fmtC(pts[0].y,4)}`;
+  if(pts.length>8)return`P(x) = polinomio de grado ${pts.length-1} (${pts.length} nodos)`;
+  const terms=pts.map((p,i)=>{
+    const denomVal=pts.filter((_,j)=>j!==i).reduce((acc,q)=>acc*(p.x-q.x),1);
+    const coeff=p.y/denomVal;
+    const numStr=pts.filter((_,j)=>j!==i).map(q=>`(x-${fmtC(q.x,2)})`).join('·');
+    return`${fmtC(coeff,3)}·${numStr}`;
+  });
+  return`P(x) = ${terms.join(' + ')}`;
+}
+
+function runLagrange(){
+  refreshAnlSelects();
+  const sid=document.getElementById('lag-series')?.value;
+  if(!sid){showToast('No hay series con datos','warn');return;}
+  const pts=getPts(sid);
+  const s=S.series.find(s=>s.id===sid);
+
+  // check for duplicate x values
+  const xs=pts.map(p=>p.x);
+  const unique=new Set(xs.map(v=>Math.round(v*1e10)));
+  if(unique.size<xs.length){showToast('Hay valores x duplicados — imposible interpolar','err');return;}
+
+  _lagPts=pts;
+  document.getElementById('lag-eq').textContent=buildLagrangeEqStr(pts);
+
+  const r2=R2(pts,x=>lagrangeEval(pts,x));
+  document.getElementById('lag-metrics').innerHTML=
+    metric('Grado',pts.length-1)+
+    metric('Nodos',pts.length)+
+    metric('R² (datos)',fmtC(r2,4),'#4ade80');
+
+  document.getElementById('lag-results').classList.add('vis');
+  document.getElementById('lag-result').classList.remove('vis');
+  drawLagrangeChart(pts,s?.color||'#a78bfa');
+  showToast('Interpolación calculada','ok');
+}
+
+function evalLagrange(){
+  if(!_lagPts){showToast('Calcula primero la interpolación','warn');return;}
+  const xv=parseFloat(document.getElementById('lag-x')?.value);
+  if(isNaN(xv)){showToast('Ingresa un valor de x válido','warn');return;}
+  const yv=lagrangeEval(_lagPts,xv);
+  const el=document.getElementById('lag-result');
+  el.textContent=`P(${fmtC(xv,4)}) = ${fmtC(yv,6)}`;
+  el.classList.add('vis');
+  // re-draw with marker
+  const s=S.series.find(s=>_lagPts.some(p=>S.data.find(d=>d.sid===s.id&&d.time===p.x)));
+  drawLagrangeChart(_lagPts,s?.color||'#a78bfa',{x:xv,y:yv});
+}
+
+function drawLagrangeChart(pts,color,evalPt=null){
+  const cv=document.getElementById('lagChart');
+  if(!cv)return;
+  const W=cv.parentElement.offsetWidth,H=220,DPR=window.devicePixelRatio||1;
+  cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(DPR,DPR);
+
+  const P={t:16,r:16,b:36,l:52};
+  const cw=W-P.l-P.r,ch=H-P.t-P.b;
+
+  const allX=pts.map(p=>p.x);
+  const xMn=Math.min(...allX),xMx=Math.max(...allX);
+  // extend range slightly for visualization
+  const xPad=(xMx-xMn||1)*.15;
+  const xLo=xMn-xPad,xHi=xMx+xPad,xR=xHi-xLo;
+
+  const steps=300;
+  const curveY=Array.from({length:steps+1},(_,i)=>lagrangeEval(pts,xLo+(xR/steps)*i));
+  const allY=[...pts.map(p=>p.y),...curveY.filter(isFinite)];
+  if(evalPt)allY.push(evalPt.y);
+  const yMn=Math.min(...allY),yMx=Math.max(...allY);
+  const yP=(yMx-yMn||1)*.15;
+  const yLo=yMn-yP,yHi=yMx+yP,yR=yHi-yLo;
+
+  const sx=x=>P.l+((x-xLo)/xR)*cw;
+  const sy=y=>P.t+ch-((y-yLo)/yR)*ch;
+
+  ctx.fillStyle='#13141a';rRect(ctx,P.l,P.t,cw,ch,8);ctx.fill();
+
+  // grid
+  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=P.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cw,y);ctx.stroke();}
+  for(let i=0;i<=5;i++){const x=P.l+(cw/5)*i;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,P.t+ch);ctx.stroke();}
+
+  // axis labels
+  ctx.font=`10px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';
+  ctx.textAlign='right';
+  for(let i=0;i<=4;i++)ctx.fillText(fmtC(yLo+yR*(1-i/4),2),P.l-6,P.t+(ch/4)*i+4);
+  ctx.textAlign='center';
+  for(let i=0;i<=5;i++)ctx.fillText(fmtC(xLo+(xR/5)*i,2),P.l+(cw/5)*i,P.t+ch+16);
+
+  // interpolation curve (gradient)
+  const grad=ctx.createLinearGradient(P.l,0,P.l+cw,0);
+  grad.addColorStop(0,'#a78bfa');grad.addColorStop(1,'#38bdf8');
+  ctx.beginPath();ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.setLineDash([]);
+  let first=true;
+  for(let i=0;i<=steps;i++){
+    const x=xLo+(xR/steps)*i,y=curveY[i];
+    if(!isFinite(y)||Math.abs(y)>1e8){first=true;continue;}
+    first?(ctx.moveTo(sx(x),sy(y)),first=false):ctx.lineTo(sx(x),sy(y));
+  }
+  ctx.stroke();
+
+  // data nodes
+  pts.forEach(p=>{
+    const x=sx(p.x),y=sy(p.y);
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);
+    ctx.fillStyle='#13141a';ctx.fill();
+    ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.stroke();
+    ctx.fillStyle=color;ctx.font=`bold 10px 'JetBrains Mono',monospace`;
+    ctx.textAlign='center';ctx.fillText(fmtC(p.y,2),x,y-12);
+  });
+
+  // eval point marker
+  if(evalPt&&isFinite(evalPt.y)&&Math.abs(evalPt.y)<1e8){
+    const ex=sx(evalPt.x),ey=sy(evalPt.y);
+    // crosshair
+    ctx.strokeStyle='rgba(167,139,250,.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(ex,P.t);ctx.lineTo(ex,P.t+ch);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(P.l,ey);ctx.lineTo(P.l+cw,ey);ctx.stroke();
+    ctx.setLineDash([]);
+    // dot
+    ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);
+    ctx.fillStyle='#a78bfa';ctx.fill();
+    ctx.strokeStyle='#13141a';ctx.lineWidth=2;ctx.stroke();
+    // label
+    ctx.fillStyle='#a78bfa';ctx.font=`bold 11px 'JetBrains Mono',monospace`;
+    ctx.textAlign='center';
+    const lx=ex+cw/2>W-40?ex-6:ex+6;
+    ctx.textAlign=lx>ex?'left':'right';
+    ctx.fillText(fmtC(evalPt.y,4),lx,ey-10);
+  }
+}
+
+// Hook: refresh selects whenever data changes
+const _origRecord=record;
+// We patch redraw to also refresh selects
+const _origRedraw=redraw;
+function redraw(){_origRedraw();refreshAnlSelects();}
 
 let _tt;
 function showToast(msg,type=''){

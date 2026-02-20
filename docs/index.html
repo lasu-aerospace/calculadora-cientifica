@@ -89,54 +89,41 @@
 </div>
 
 <script>
-  /* ── Carousel ── */
-  const container = document.querySelector('.carousel-container');
-  const cards     = document.querySelectorAll('.card-snap');
-  const btnLeft   = document.getElementById('btnLeft');
-  const btnRight  = document.getElementById('btnRight');
-  const dotsEl    = document.getElementById('dots');
-  let idx = 0;
-
-  cards.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.addEventListener('click', () => go(i));
-    dotsEl.appendChild(d);
-  });
-
-  function go(n) {
-    idx = Math.max(0, Math.min(n, cards.length - 1));
-    const w = cards[0].getBoundingClientRect().width;
-    container.scrollTo({ left: w * idx, behavior: 'smooth' });
-    document.querySelectorAll('.dot').forEach((d, i) =>
-      d.classList.toggle('active', i === idx));
-  }
-
-  btnRight.addEventListener('click', () => go(idx + 1));
-  btnLeft.addEventListener('click',  () => go(idx - 1));
-
-  container.addEventListener('scrollend', () => {
-    const w = cards[0].getBoundingClientRect().width;
-    idx = Math.round(container.scrollLeft / w);
-    document.querySelectorAll('.dot').forEach((d, i) =>
-      d.classList.toggle('active', i === idx));
-  });
-
   /* ── Sidenav ── */
   const sidenav        = document.getElementById('sidenav');
   const sidenavToggle  = document.getElementById('sidenavToggle');
   const sidenavOpenBtn = document.getElementById('sidenavOpenBtn');
   const overlay        = document.getElementById('sidenavOverlay');
+  const page           = document.querySelector('.page');
+
+  const W_FULL      = '220px';
+  const W_COLLAPSED = '52px';
+
+  function isMobile() { return window.innerWidth <= 600; }
+
+  function applyPageMargin(collapsed) {
+    if (!isMobile()) {
+      page.style.marginLeft = collapsed ? W_COLLAPSED : W_FULL;
+    } else {
+      page.style.marginLeft = '';
+    }
+  }
 
   function collapse() {
     sidenav.classList.add('collapsed');
     sidenavToggle.innerHTML = '&#10095;';
+    applyPageMargin(true);
   }
+
   function expand() {
     sidenav.classList.remove('collapsed');
     sidenav.classList.remove('open');
     sidenavToggle.innerHTML = '&#10094;';
+    applyPageMargin(false);
   }
+
+  // Set initial margin on load
+  applyPageMargin(sidenav.classList.contains('collapsed'));
 
   sidenavToggle.addEventListener('click', () => {
     sidenav.classList.contains('collapsed') ? expand() : collapse();
@@ -150,6 +137,11 @@
   overlay.addEventListener('click', () => {
     sidenav.classList.remove('open');
     overlay.classList.remove('active');
+  });
+
+  // Re-apply on resize
+  window.addEventListener('resize', () => {
+    applyPageMargin(sidenav.classList.contains('collapsed'));
   });
 </script>
 </body>
