@@ -851,6 +851,187 @@ function catmullRom(ctx,pts,tension,sx,sy){
   }
 }
 
+// ═══════════════════════════════════════════════════
+//  PAN / ZOOM ENGINE  (shared by all canvases)
+// ═══════════════════════════════════════════════════
+// Each chart keeps a viewport: {xLo,xHi,yLo,yHi}
+// null → auto-fit on next draw
+const VP={main:null,reg:null,lag:null};
+
+/* Compute auto-fit viewport from data extents */
+function autoVP(xs,ys,padX=0.08,padY=0.18){
+  const xMn=Math.min(...xs),xMx=Math.max(...xs);
+  const yMn=Math.min(...ys),yMx=Math.max(...ys);
+  const dx=(xMx-xMn)||1,dy=(yMx-yMn)||1;
+  return{xLo:xMn-dx*padX,xHi:xMx+dx*padX,yLo:yMn-dy*padY,yHi:yMx+dy*padY};
+}
+
+/* Convert canvas pixel → data coords given viewport + padding */
+function px2data(px,py,vp,W,H,P){
+  const cw=W-P.l-P.r,ch=H-P.t-P.b;
+  const x=vp.xLo+(px-P.l)/cw*(vp.xHi-vp.xLo);
+  const y=vp.yHi-(py-P.t)/ch*(vp.yHi-vp.yLo);
+  return{x,y};
+}
+
+/* Zoom viewport around a data point by factor (>1 = zoom in) */
+function zoomVP(vp,cx,cy,factor){
+  const dx=(vp.xHi-vp.xLo)/factor;
+  const dy=(vp.yHi-vp.yLo)/factor;
+  return{xLo:cx-dx/2,xHi:cx+dx/2,yLo:cy-dy/2,yHi:cy+dy/2};
+}
+
+/* Pan viewport by pixel delta */
+function panVP(vp,dpx,dpy,W,H,P){
+  const cw=W-P.l-P.r,ch=H-P.t-P.b;
+  const dx=dpx/cw*(vp.xHi-vp.xLo);
+  const dy=dpy/ch*(vp.yHi-vp.yLo);
+  return{xLo:vp.xLo-dx,xHi:vp.xHi-dx,yLo:vp.yLo+dy,yHi:vp.yHi+dy};
+}
+
+/* Attach unified mouse/touch/wheel listeners to a canvas */
+function bindInteraction(cv,vpKey,onDraw,resetFn){
+  let drag=null;          // {x,y} last pointer position in canvas coords
+  let lastTouchDist=null; // for pinch
+  let lastTouchMid=null;
+  const DPR=()=>window.devicePixelRatio||1;
+  const P={t:22,r:22,b:46,l:56};
+
+  function canvasXY(e){
+    const r=cv.getBoundingClientRect();
+    return{x:e.clientX-r.left,y:e.clientY-r.top};
+  }
+  function touchMidDist(t){
+    const a=t[0],b=t[1];
+    const mx=(a.clientX+b.clientX)/2,my=(a.clientY+b.clientY)/2;
+    const dist=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+    const r=cv.getBoundingClientRect();
+    return{mid:{x:mx-r.left,y:my-r.top},dist};
+  }
+
+  // ── WHEEL (mouse scroll / trackpad pinch via ctrlKey) ──
+  cv.addEventListener('wheel',e=>{
+    e.preventDefault();
+    if(!VP[vpKey])return;
+    const {x,y}=canvasXY(e);
+    const W=cv.clientWidth,H=cv.clientHeight;
+    const dc=px2data(x,y,VP[vpKey],W,H,P);
+    // ctrlKey → pinch-to-zoom from OS; otherwise scroll pan or zoom
+    const isZoom=e.ctrlKey||e.metaKey||Math.abs(e.deltaY)>Math.abs(e.deltaX)&&!e.shiftKey&&e.deltaMode===0&&Math.abs(e.deltaY)>2;
+    if(isZoom){
+      const factor=e.deltaY<0?1.12:1/1.12;
+      VP[vpKey]=zoomVP(VP[vpKey],dc.x,dc.y,factor);
+    } else {
+      // pan: shiftKey → horizontal, otherwise vertical
+      const dpx=e.shiftKey?e.deltaY:e.deltaX;
+      const dpy=e.shiftKey?0:e.deltaY;
+      VP[vpKey]=panVP(VP[vpKey],dpx,dpy,W,H,P);
+    }
+    onDraw();
+  },{passive:false});
+
+  // ── MOUSE DRAG ──
+  cv.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    cv.style.cursor='grabbing';
+    drag=canvasXY(e);
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!drag||!VP[vpKey])return;
+    const pos=canvasXY(e);
+    const W=cv.clientWidth,H=cv.clientHeight;
+    VP[vpKey]=panVP(VP[vpKey],pos.x-drag.x,pos.y-drag.y,W,H,P);
+    drag=pos;
+    onDraw();
+  });
+  window.addEventListener('mouseup',()=>{drag=null;cv.style.cursor='grab';});
+  cv.style.cursor='grab';
+
+  // ── DOUBLE-CLICK reset ──
+  cv.addEventListener('dblclick',()=>{VP[vpKey]=null;resetFn();});
+
+  // ── TOUCH ──
+  cv.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    if(e.touches.length===1){
+      drag={x:e.touches[0].clientX,y:e.touches[0].clientY};
+      lastTouchDist=null;
+    } else if(e.touches.length===2){
+      drag=null;
+      const td=touchMidDist(e.touches);
+      lastTouchDist=td.dist;lastTouchMid=td.mid;
+    }
+  },{passive:false});
+  cv.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(!VP[vpKey])return;
+    const W=cv.clientWidth,H=cv.clientHeight;
+    if(e.touches.length===1&&drag){
+      const nx=e.touches[0].clientX,ny=e.touches[0].clientY;
+      VP[vpKey]=panVP(VP[vpKey],nx-drag.x,ny-drag.y,W,H,P);
+      drag={x:nx,y:ny};
+      onDraw();
+    } else if(e.touches.length===2&&lastTouchDist!==null){
+      const td=touchMidDist(e.touches);
+      const factor=td.dist/lastTouchDist;
+      const r=cv.getBoundingClientRect();
+      const dc=px2data(td.mid.x,td.mid.y,VP[vpKey],W,H,P);
+      VP[vpKey]=zoomVP(VP[vpKey],dc.x,dc.y,factor);
+      // also pan from mid movement
+      VP[vpKey]=panVP(VP[vpKey],td.mid.x-lastTouchMid.x,td.mid.y-lastTouchMid.y,W,H,P);
+      lastTouchDist=td.dist;lastTouchMid=td.mid;
+      onDraw();
+    }
+  },{passive:false});
+  cv.addEventListener('touchend',e=>{
+    e.preventDefault();
+    if(e.touches.length<2){lastTouchDist=null;}
+    if(e.touches.length===0){drag=null;}
+  },{passive:false});
+}
+
+/* Draw a nice grid with smart tick spacing */
+function drawGrid(ctx,vp,P,cw,ch,fmtX,fmtY){
+  const xRange=vp.xHi-vp.xLo,yRange=vp.yHi-vp.yLo;
+  function niceStep(range,ticks){
+    const raw=range/ticks;
+    const mag=Math.pow(10,Math.floor(Math.log10(raw)));
+    const norm=raw/mag;
+    let step=norm<1.5?1:norm<3?2:norm<7?5:10;
+    return step*mag;
+  }
+  const xStep=niceStep(xRange,6),yStep=niceStep(yRange,5);
+  const sx=x=>P.l+(x-vp.xLo)/xRange*cw;
+  const sy=y=>P.t+ch-(y-vp.yLo)/yRange*ch;
+
+  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
+  // X grid lines
+  const x0=Math.ceil(vp.xLo/xStep)*xStep;
+  for(let xv=x0;xv<=vp.xHi+xStep*0.01;xv+=xStep){
+    const px=sx(xv);if(px<P.l-1||px>P.l+cw+1)continue;
+    ctx.beginPath();ctx.moveTo(px,P.t);ctx.lineTo(px,P.t+ch);ctx.stroke();
+  }
+  // Y grid lines
+  const y0=Math.ceil(vp.yLo/yStep)*yStep;
+  for(let yv=y0;yv<=vp.yHi+yStep*0.01;yv+=yStep){
+    const py=sy(yv);if(py<P.t-1||py>P.t+ch+1)continue;
+    ctx.beginPath();ctx.moveTo(P.l,py);ctx.lineTo(P.l+cw,py);ctx.stroke();
+  }
+  // X labels
+  ctx.font=`10px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';ctx.textAlign='center';
+  for(let xv=x0;xv<=vp.xHi+xStep*0.01;xv+=xStep){
+    const px=sx(xv);if(px<P.l||px>P.l+cw)continue;
+    ctx.fillText(fmtX(xv),px,P.t+ch+16);
+  }
+  // Y labels
+  ctx.textAlign='right';
+  for(let yv=y0;yv<=vp.yHi+yStep*0.01;yv+=yStep){
+    const py=sy(yv);if(py<P.t||py>P.t+ch)continue;
+    ctx.fillText(fmtY(yv),P.l-7,py+3.5);
+  }
+  return{sx,sy};
+}
+
 function redraw(){
   const cv=document.getElementById('chart');
   const emp=document.getElementById('cempty');
@@ -860,11 +1041,12 @@ function redraw(){
 
   if(!S.data.length){
     cv.style.display='none';emp.style.display='flex';
-    leg.style.display='none';mt.textContent='0 puntos';return;
+    leg.style.display='none';mt.textContent='0 puntos';
+    VP.main=null;return;
   }
   cv.style.display='block';emp.style.display='none';leg.style.display='flex';
   const usedIds=[...new Set(S.data.map(d=>d.sid))];
-  mt.textContent=`${S.data.length} pt · ${usedIds.length} serie(s)`;
+  mt.textContent=`${S.data.length} pt · ${usedIds.length} serie(s)  · scroll/pellizco: zoom · arrastrar: pan · doble-clic: reset`;
 
   leg.innerHTML='';
   S.series.filter(s=>usedIds.includes(s.id)).forEach(s=>{
@@ -880,42 +1062,34 @@ function redraw(){
   const P={t:22,r:22,b:46,l:56};
   const cw=W-P.l-P.r,ch=H-P.t-P.b;
 
+  // Auto-fit viewport on first draw or after reset
+  if(!VP.main){
+    const allT=S.data.map(d=>d.time),allV=S.data.map(d=>d.value);
+    VP.main=autoVP(allT,allV,0.06,0.18);
+  }
+  const vp=VP.main;
+  const xRange=vp.xHi-vp.xLo,yRange=vp.yHi-vp.yLo;
+
   ctx.fillStyle='#13141a';rRect(ctx,P.l,P.t,cw,ch,10);ctx.fill();
 
-  const allV=S.data.map(d=>d.value);
-  const vMn=Math.min(...allV),vMx=Math.max(...allV);
-  const vp=(vMx-vMn||1)*.18;
-  const vLo=vMn-vp,vHi=vMx+vp,vR=vHi-vLo;
-  const allT=S.data.map(d=>d.time);
-  const tMn=Math.min(...allT),tMx=Math.max(...allT);
-  const tR=tMx-tMn||1;
+  // clip to chart area
+  ctx.save();ctx.beginPath();ctx.rect(P.l,P.t,cw,ch);ctx.clip();
 
-  const sx=t=>P.l+((t-tMn)/tR)*cw;
-  const sy=v=>P.t+ch-((v-vLo)/vR)*ch;
+  const {sx,sy}=drawGrid(ctx,vp,P,cw,ch,
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(xRange||1))))).toString(),
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(yRange||1))))).toString()
+  );
 
-  // grid
-  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){const y=P.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cw,y);ctx.stroke();}
-  for(let i=0;i<=5;i++){const x=P.l+(cw/5)*i;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,P.t+ch);ctx.stroke();}
-
-  // axis labels
-  ctx.font=`11px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';
-  ctx.textAlign='right';
-  for(let i=0;i<=4;i++)ctx.fillText(fmt(vLo+vR*(1-i/4)),P.l-9,P.t+(ch/4)*i+4);
-  ctx.textAlign='center';
-  for(let i=0;i<=5;i++)ctx.fillText((tMn+(tR/5)*i).toFixed(1),P.l+(cw/5)*i,P.t+ch+18);
   ctx.save();ctx.translate(16,P.t+ch/2);ctx.rotate(-Math.PI/2);
   ctx.fillStyle='#3a3e52';ctx.font=`10px 'JetBrains Mono',monospace`;ctx.textAlign='center';
   ctx.fillText('VALOR',0,0);ctx.restore();
-  
 
-  // series
   const ten=S.tension;
   S.series.forEach(s=>{
     const pts=S.data.filter(d=>d.sid===s.id).sort((a,b)=>a.time-b.time);
     if(!pts.length)return;
 
-    // area fill using spline
+    // area fill
     ctx.save();ctx.beginPath();
     ctx.moveTo(sx(pts[0].time),P.t+ch);
     catmullRom(ctx,pts,ten,sx,sy);
@@ -931,9 +1105,10 @@ function redraw(){
     catmullRom(ctx,pts,ten,sx,sy);
     ctx.stroke();
 
-    // dots + value labels
+    // dots + labels (only if not too zoomed-out)
     pts.forEach(p=>{
       const x=sx(p.time),y=sy(p.value);
+      if(x<P.l-8||x>P.l+cw+8||y<P.t-8||y>P.t+ch+8)return;
       ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);
       ctx.fillStyle='#13141a';ctx.fill();
       ctx.strokeStyle=s.color;ctx.lineWidth=2.2;ctx.stroke();
@@ -941,6 +1116,7 @@ function redraw(){
       ctx.textAlign='center';ctx.fillText(fmt(p.value),x,y-12);
     });
   });
+  ctx.restore();// unclip
 }
 
 // ═══════════════════════════════════════════════════
@@ -959,6 +1135,7 @@ function askClear(sid){
   if(sid)return clearSeries(sid);
   askConfirm('¿Limpiar todo?','Se eliminarán todos los puntos de todas las series.',()=>{
     S.data=[];S.series.forEach(s=>seriesResetTimer(s));
+    VP.main=null;
     rebuildLog();render();redraw();ctrlSync();
     showToast('Todos los datos eliminados','warn');
   });
@@ -1201,7 +1378,14 @@ function runRegression(){
   document.getElementById('reg-results').classList.add('vis');
 
   _lastReg={pts,fn,type,s};
+  VP.reg=null; // reset viewport for new regression
   drawRegChart(pts,fn,s?.color||'#38bdf8');
+  // bind interaction once (idempotent guard)
+  const cv=document.getElementById('anlChart');
+  if(cv&&!cv._intBound){
+    cv._intBound=true;
+    bindInteraction(cv,'reg',()=>{if(_lastReg)drawRegChart(_lastReg.pts,_lastReg.fn,_lastReg.s?.color||'#38bdf8');},()=>{if(_lastReg)drawRegChart(_lastReg.pts,_lastReg.fn,_lastReg.s?.color||'#38bdf8');});
+  }
   showToast('Regresión calculada','ok');
 }
 
@@ -1215,39 +1399,33 @@ function drawRegChart(pts,fn,color){
   const P={t:16,r:16,b:36,l:52};
   const cw=W-P.l-P.r,ch=H-P.t-P.b;
 
-  const allX=pts.map(p=>p.x),allY=pts.map(p=>p.y);
-  const xMn=Math.min(...allX),xMx=Math.max(...allX);
-  const xR=xMx-xMn||1;
-  // include fn range in y
-  const fYs=Array.from({length:60},(_,i)=>fn(xMn+(xR/59)*i)).filter(isFinite);
-  const yMn=Math.min(...allY,...fYs),yMx=Math.max(...allY,...fYs);
-  const yP=(yMx-yMn||1)*.15;
-  const yLo=yMn-yP,yHi=yMx+yP,yR=yHi-yLo;
-
-  const sx=x=>P.l+((x-xMn)/xR)*cw;
-  const sy=y=>P.t+ch-((y-yLo)/yR)*ch;
+  // Auto-fit
+  if(!VP.reg){
+    const allX=pts.map(p=>p.x),allY=pts.map(p=>p.y);
+    const xMn=Math.min(...allX),xMx=Math.max(...allX),xR=(xMx-xMn)||1;
+    const fYs=Array.from({length:60},(_,i)=>fn(xMn+(xR/59)*i)).filter(isFinite);
+    VP.reg=autoVP(allX,[...allY,...fYs],0.08,0.15);
+  }
+  const vp=VP.reg;
+  const xRange=vp.xHi-vp.xLo,yRange=vp.yHi-vp.yLo;
 
   ctx.fillStyle='#13141a';rRect(ctx,P.l,P.t,cw,ch,8);ctx.fill();
+  ctx.save();ctx.beginPath();ctx.rect(P.l,P.t,cw,ch);ctx.clip();
 
-  // grid
-  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){const y=P.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cw,y);ctx.stroke();}
-  for(let i=0;i<=5;i++){const x=P.l+(cw/5)*i;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,P.t+ch);ctx.stroke();}
-
-  // axis labels
-  ctx.font=`10px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';
-  ctx.textAlign='right';
-  for(let i=0;i<=4;i++)ctx.fillText(fmtC(yLo+yR*(1-i/4),2),P.l-6,P.t+(ch/4)*i+4);
-  ctx.textAlign='center';
-  for(let i=0;i<=5;i++)ctx.fillText(fmtC(xMn+(xR/5)*i,2),P.l+(cw/5)*i,P.t+ch+16);
+  const {sx,sy}=drawGrid(ctx,vp,P,cw,ch,
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(xRange||1))))).toString(),
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(yRange||1))))).toString()
+  );
 
   // regression curve
   ctx.beginPath();ctx.strokeStyle='#38bdf8';ctx.lineWidth=2;ctx.setLineDash([]);
-  const steps=200;
+  const xMn2=vp.xLo,xMx2=vp.xHi;
+  const steps=300;
+  let first=true;
   for(let i=0;i<=steps;i++){
-    const x=xMn+(xR/steps)*i,y=fn(x);
-    if(!isFinite(y))continue;
-    i===0?ctx.moveTo(sx(x),sy(y)):ctx.lineTo(sx(x),sy(y));
+    const x=xMn2+(xMx2-xMn2)/steps*i,y=fn(x);
+    if(!isFinite(y)){first=true;continue;}
+    first?(ctx.moveTo(sx(x),sy(y)),first=false):ctx.lineTo(sx(x),sy(y));
   }
   ctx.stroke();
 
@@ -1258,6 +1436,7 @@ function drawRegChart(pts,fn,color){
     ctx.fillStyle='#13141a';ctx.fill();
     ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
   });
+  ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1331,7 +1510,14 @@ function runLagrange(){
 
   document.getElementById('lag-results').classList.add('vis');
   document.getElementById('lag-result').classList.remove('vis');
+  VP.lag=null; // reset viewport for new interpolation
   drawLagrangeChart(pts,s?.color||'#a78bfa');
+  // bind interaction once
+  const lcv=document.getElementById('lagChart');
+  if(lcv&&!lcv._intBound){
+    lcv._intBound=true;
+    bindInteraction(lcv,'lag',()=>{if(_lagPts){const ls=S.series.find(s=>_lagPts.some(p=>S.data.find(d=>d.sid===s.id&&d.time===p.x)));drawLagrangeChart(_lagPts,ls?.color||'#a78bfa');}},()=>{if(_lagPts){const ls=S.series.find(s=>_lagPts.some(p=>S.data.find(d=>d.sid===s.id&&d.time===p.x)));drawLagrangeChart(_lagPts,ls?.color||'#a78bfa');}});
+  }
   showToast('Interpolación calculada','ok');
 }
 
@@ -1343,7 +1529,7 @@ function evalLagrange(){
   const el=document.getElementById('lag-result');
   el.textContent=`P(${fmtC(xv,4)}) = ${fmtC(yv,6)}`;
   el.classList.add('vis');
-  // re-draw with marker
+  // re-draw keeping current viewport (don't reset VP.lag)
   const s=S.series.find(s=>_lagPts.some(p=>S.data.find(d=>d.sid===s.id&&d.time===p.x)));
   drawLagrangeChart(_lagPts,s?.color||'#a78bfa',{x:xv,y:yv});
 }
@@ -1358,46 +1544,40 @@ function drawLagrangeChart(pts,color,evalPt=null){
   const P={t:16,r:16,b:36,l:52};
   const cw=W-P.l-P.r,ch=H-P.t-P.b;
 
-  const allX=pts.map(p=>p.x);
-  const xMn=Math.min(...allX),xMx=Math.max(...allX);
-  // extend range slightly for visualization
-  const xPad=(xMx-xMn||1)*.15;
-  const xLo=xMn-xPad,xHi=xMx+xPad,xR=xHi-xLo;
-
-  const steps=300;
-  const curveY=Array.from({length:steps+1},(_,i)=>lagrangeEval(pts,xLo+(xR/steps)*i));
-  const allY=[...pts.map(p=>p.y),...curveY.filter(isFinite)];
-  if(evalPt)allY.push(evalPt.y);
-  const yMn=Math.min(...allY),yMx=Math.max(...allY);
-  const yP=(yMx-yMn||1)*.15;
-  const yLo=yMn-yP,yHi=yMx+yP,yR=yHi-yLo;
-
-  const sx=x=>P.l+((x-xLo)/xR)*cw;
-  const sy=y=>P.t+ch-((y-yLo)/yR)*ch;
+  // Auto-fit (include evalPt if present)
+  if(!VP.lag){
+    const allX=pts.map(p=>p.x);
+    const xMn=Math.min(...allX),xMx=Math.max(...allX);
+    const xPad=(xMx-xMn||1)*.15;
+    const xLo2=xMn-xPad,xHi2=xMx+xPad;
+    const steps2=200;
+    const curveY2=Array.from({length:steps2+1},(_,i)=>lagrangeEval(pts,xLo2+(xHi2-xLo2)/steps2*i));
+    const allY2=[...pts.map(p=>p.y),...curveY2.filter(v=>isFinite(v)&&Math.abs(v)<1e8)];
+    if(evalPt)allY2.push(evalPt.y);
+    VP.lag=autoVP(allX,allY2,0.15,0.15);
+  }
+  const vp=VP.lag;
+  const xRange=vp.xHi-vp.xLo,yRange=vp.yHi-vp.yLo;
 
   ctx.fillStyle='#13141a';rRect(ctx,P.l,P.t,cw,ch,8);ctx.fill();
+  ctx.save();ctx.beginPath();ctx.rect(P.l,P.t,cw,ch);ctx.clip();
 
-  // grid
-  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){const y=P.t+(ch/4)*i;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cw,y);ctx.stroke();}
-  for(let i=0;i<=5;i++){const x=P.l+(cw/5)*i;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,P.t+ch);ctx.stroke();}
+  const {sx,sy}=drawGrid(ctx,vp,P,cw,ch,
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(xRange||1))))).toString(),
+    v=>Number(v.toFixed(Math.max(0,2-Math.floor(Math.log10(yRange||1))))).toString()
+  );
 
-  // axis labels
-  ctx.font=`10px 'JetBrains Mono',monospace`;ctx.fillStyle='#52566a';
-  ctx.textAlign='right';
-  for(let i=0;i<=4;i++)ctx.fillText(fmtC(yLo+yR*(1-i/4),2),P.l-6,P.t+(ch/4)*i+4);
-  ctx.textAlign='center';
-  for(let i=0;i<=5;i++)ctx.fillText(fmtC(xLo+(xR/5)*i,2),P.l+(cw/5)*i,P.t+ch+16);
-
-  // interpolation curve (gradient)
+  // interpolation curve
+  const steps=300;
   const grad=ctx.createLinearGradient(P.l,0,P.l+cw,0);
   grad.addColorStop(0,'#a78bfa');grad.addColorStop(1,'#38bdf8');
   ctx.beginPath();ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.setLineDash([]);
-  let first=true;
+  let fst=true;
   for(let i=0;i<=steps;i++){
-    const x=xLo+(xR/steps)*i,y=curveY[i];
-    if(!isFinite(y)||Math.abs(y)>1e8){first=true;continue;}
-    first?(ctx.moveTo(sx(x),sy(y)),first=false):ctx.lineTo(sx(x),sy(y));
+    const xv=vp.xLo+(vp.xHi-vp.xLo)/steps*i;
+    const yv=lagrangeEval(pts,xv);
+    if(!isFinite(yv)||Math.abs(yv)>1e8){fst=true;continue;}
+    fst?(ctx.moveTo(sx(xv),sy(yv)),fst=false):ctx.lineTo(sx(xv),sy(yv));
   }
   ctx.stroke();
 
@@ -1411,25 +1591,22 @@ function drawLagrangeChart(pts,color,evalPt=null){
     ctx.textAlign='center';ctx.fillText(fmtC(p.y,2),x,y-12);
   });
 
-  // eval point marker
+  // eval marker
   if(evalPt&&isFinite(evalPt.y)&&Math.abs(evalPt.y)<1e8){
     const ex=sx(evalPt.x),ey=sy(evalPt.y);
-    // crosshair
     ctx.strokeStyle='rgba(167,139,250,.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(ex,P.t);ctx.lineTo(ex,P.t+ch);ctx.stroke();
     ctx.beginPath();ctx.moveTo(P.l,ey);ctx.lineTo(P.l+cw,ey);ctx.stroke();
     ctx.setLineDash([]);
-    // dot
     ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);
     ctx.fillStyle='#a78bfa';ctx.fill();
     ctx.strokeStyle='#13141a';ctx.lineWidth=2;ctx.stroke();
-    // label
     ctx.fillStyle='#a78bfa';ctx.font=`bold 11px 'JetBrains Mono',monospace`;
-    ctx.textAlign='center';
-    const lx=ex+cw/2>W-40?ex-6:ex+6;
-    ctx.textAlign=lx>ex?'left':'right';
+    const lx=ex+10;
+    ctx.textAlign='left';
     ctx.fillText(fmtC(evalPt.y,4),lx,ey-10);
   }
+  ctx.restore();
 }
 
 // Hook: refresh selects whenever data changes
@@ -1500,6 +1677,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   enumMics();
   navigator.mediaDevices?.addEventListener('devicechange',enumMics);
   window.addEventListener('resize',()=>{if(S.data.length)redraw();});
+
+  // Bind pan/zoom to main chart
+  const mainCv=document.getElementById('chart');
+  if(mainCv){
+    bindInteraction(mainCv,'main',
+      ()=>{if(S.data.length)redraw();},
+      ()=>{VP.main=null;if(S.data.length)redraw();}
+    );
+  }
 });
 </script>
 </body>
