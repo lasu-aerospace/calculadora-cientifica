@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFD · Wind Tunnel Aerodinámico</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Familjen+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0d0e12; --s0: #13141a; --s1: #1a1c24; --s2: #22252f;
+  --border: #2a2d3a; --border2: #363a4a;
+  --txt: #e4e6f0; --txt2: #8b90a8; --txt3: #52566a;
+  --accent: #4ade80; --accent2: #60a5fa; --accent3: #f59e0b;
+  --accent4: #c084fc; --red: #f87171; --teal: #2dd4bf;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg); color: var(--txt);
+  font-family: 'Familjen Grotesk', sans-serif;
+  display: flex; flex-direction: column;
+}
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);
+}
+
+/* ── HEADER ── */
+.app-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 20px; flex-shrink: 0;
+  background: var(--s0); border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+.app-header-title {
+  font-family: 'Instrument Serif', serif; font-size: 1.3rem;
+  background: linear-gradient(135deg,#e4e6f0 40%,#52566a); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.app-header-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--txt3);
+}
+.app-header-badge {
+  margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 4px;
+  background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.25); color: var(--red);
+}
+
+/* ── MAIN LAYOUT ── */
+.app-body { display: flex; flex: 1; min-height: 0; }
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  width: 220px; flex-shrink: 0;
+  background: var(--s0); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 14px 13px;
+  scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.left-panel::-webkit-scrollbar { width: 4px; }
+.left-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.p-section-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 8px;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--txt3);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.p-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 7px 11px; border-radius: 7px; border: 1px solid;
+  font-family: 'Familjen Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.btn + .btn { margin-top: 6px; }
+.btn-run {
+  background: rgba(74,222,128,.1); border-color: rgba(74,222,128,.4); color: var(--accent);
+  font-size: 13px; padding: 9px;
+}
+.btn-run:hover:not(:disabled) { background: rgba(74,222,128,.18); border-color: var(--accent); }
+.btn-run:disabled { opacity: .35; cursor: not-allowed; }
+.btn-sec {
+  background: var(--s2); border-color: var(--border); color: var(--txt2);
+  position: relative; overflow: hidden;
+}
+.btn-sec:hover { border-color: var(--border2); color: var(--txt); }
+.btn-sec input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0; width: 100%;
+}
+
+/* Form controls */
+.form-group { margin-bottom: 10px; }
+.form-label { font-size: 11px; color: var(--txt2); margin-bottom: 4px; display: block; }
+.form-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 9px; color: var(--txt);
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none;
+  transition: border-color .15s;
+}
+.form-input:focus { border-color: var(--accent2); }
+.range-row { display: flex; align-items: center; gap: 6px; }
+.range-row input[type="range"] { flex: 1; accent-color: var(--accent2); cursor: pointer; }
+.range-val {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--accent2); min-width: 40px; text-align: right; white-space: nowrap;
+}
+.rho-line {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--txt3); margin-top: 3px;
+}
+
+/* Flow direction grid */
+.flow-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin-bottom: 8px;
+}
+.flow-btn {
+  padding: 5px 2px; border: 1px solid var(--border);
+  background: var(--s2); border-radius: 5px; text-align: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--txt3); cursor: pointer; transition: all .15s; user-select: none;
+}
+.flow-btn:hover { border-color: var(--border2); color: var(--txt2); }
+.flow-btn.active { background: rgba(96,165,250,.1); border-color: rgba(96,165,250,.5); color: var(--accent2); }
+
+/* Model info tag */
+.model-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--txt3); margin-top: 6px; line-height: 1.4;
+  padding: 5px 8px; background: var(--s1); border-radius: 5px;
+  border: 1px solid var(--border);
+}
+
+/* ── CANVAS AREA ── */
+.canvas-area { flex: 1; position: relative; overflow: hidden; }
+#wt-canvas { width: 100%; height: 100%; display: block; }
+
+.canvas-overlay {
+  position: absolute; top: 12px; left: 12px; pointer-events: none;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--txt3);
+}
+.canvas-hint {
+  position: absolute; bottom: 12px; right: 12px; pointer-events: none;
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--txt3);
+  text-align: right; line-height: 1.7;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute; inset: 0;
+  background: rgba(13,14,18,.82); display: none;
+  align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+}
+.loading-overlay.active { display: flex; }
+.loading-ring {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid var(--border); border-top-color: var(--accent2);
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-msg {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: .1em; color: var(--txt2);
+}
+.loading-progress {
+  width: 180px; height: 2px; background: var(--border); border-radius: 1px;
+}
+.loading-bar {
+  height: 100%; width: 0%; background: var(--accent2); border-radius: 1px;
+  transition: width .2s ease;
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  width: 210px; flex-shrink: 0;
+  background: var(--s0); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 14px 13px;
+  scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.coeff-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+}
+.coeff-row:last-child { border-bottom: none; }
+.coeff-name { font-size: 12px; color: var(--txt2); }
+.coeff-val { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--accent2); }
+.coeff-val.green { color: var(--accent); }
+.coeff-val.amber { color: var(--accent3); }
+.coeff-val.teal  { color: var(--teal); }
+
+.no-data {
+  font-size: 12px; color: var(--txt3); text-align: center;
+  font-style: italic; padding: 24px 0 12px;
+}
+
+/* Colorscale */
+.cs-bar {
+  height: 8px; border-radius: 4px;
+  background: linear-gradient(to right, #1e3cc8, #00c8c8, #64dc50, #ffc800);
+  margin: 6px 0 3px;
+}
+.cs-labels { display: flex; justify-content: space-between; }
+.cs-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--txt3); }
+
+/* Mini chart */
+.mini-chart-wrap { margin-top: 4px; }
+#drag-chart { width: 100%; display: block; }
+
+@media (max-width: 860px) { .right-panel { display: none; } }
+@media (max-width: 600px) { .left-panel { width: 190px; } }
+
+/* ── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 99990;
+  background: rgba(0,0,0,.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--s0); border: 1px solid var(--border);
+  border-radius: 18px; width: 100%; max-width: 640px;
+  max-height: 82vh; display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: translateY(16px) scale(.98);
+  transition: transform .28s cubic-bezier(.22,.8,.3,1);
+  position: relative;
+}
+.modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+/* Red top accent line */
+.modal::before {
+  content: ''; display: block; height: 2px;
+  background: linear-gradient(90deg, rgba(248,113,113,0), var(--red) 40%, rgba(245,158,11,.6) 100%);
+}
+
+.modal-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  flex-shrink: 0;
+}
+.modal-head-left {}
+.modal-head-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 5px;
+}
+.modal-head-title {
+  font-family: 'Instrument Serif', serif; font-size: 1.5rem;
+  font-weight: 400; line-height: 1.15;
+  background: linear-gradient(135deg, #e4e6f0 30%, #8b90a8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.modal-close {
+  width: 28px; height: 28px; flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 7px; border: 1px solid var(--border);
+  background: var(--s2); color: var(--txt3); font-size: 14px;
+  transition: all .15s; margin-top: 2px;
+}
+.modal-close:hover { border-color: var(--border2); color: var(--txt); background: var(--s1); }
+
+.modal-body {
+  overflow-y: auto; padding: 0;
+  scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+  flex: 1;
+}
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Tabs */
+.modal-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; padding: 0 22px;
+}
+.modal-tab {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--txt3); padding: 9px 14px 8px;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s; margin-bottom: -1px;
+  white-space: nowrap; user-select: none;
+}
+.modal-tab:hover { color: var(--txt2); }
+.modal-tab.active { color: var(--txt); border-bottom-color: var(--accent2); }
+
+/* Tab panels */
+.tab-panel { display: none; padding: 20px 22px 22px; }
+.tab-panel.active { display: block; }
+
+/* Prose */
+.modal-p {
+  font-size: 13.5px; color: var(--txt2); line-height: 1.7; margin-bottom: 12px;
+}
+.modal-p:last-child { margin-bottom: 0; }
+.modal-p strong { color: var(--txt); font-weight: 600; }
+.modal-p em { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; color: var(--txt); }
+.modal-p a { color: var(--accent2); text-decoration: none; }
+.modal-p a:hover { text-decoration: underline; }
+
+/* Section header inside tab */
+.modal-sh {
+  font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--txt3); margin: 18px 0 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-sh::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.modal-sh:first-child { margin-top: 0; }
+
+/* Comparison table */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 14px; }
+.cmp-table th {
+  font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--txt3); padding: 7px 10px;
+  border-bottom: 1px solid var(--border); text-align: left;
+  background: var(--s2);
+}
+.cmp-table td { padding: 7px 10px; color: var(--txt2); border-bottom: 1px solid var(--border); vertical-align: top; }
+.cmp-table td:first-child { color: var(--txt); font-weight: 600; font-size: 12px; }
+.cmp-table tbody tr:last-child td { border-bottom: none; }
+.cmp-table tbody tr:hover { background: rgba(255,255,255,.015); }
+.tag-bad  { display: inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); color:var(--red); }
+.tag-ok   { display: inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.3); color:var(--accent); }
+.tag-warn { display: inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.3); color:var(--accent3); }
+
+/* Pipeline steps */
+.pipeline { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; }
+.pipe-step {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.pipe-step:last-child { border-bottom: none; }
+.pipe-num {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+  background: var(--s2); border: 1px solid var(--border2); color: var(--accent2);
+  margin-top: 1px;
+}
+.pipe-content {}
+.pipe-title { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 2px; }
+.pipe-desc  { font-size: 12px; color: var(--txt2); line-height: 1.55; }
+.pipe-code  {
+  margin-top: 5px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  color: var(--teal); background: var(--s2); border: 1px solid var(--border);
+  border-radius: 5px; padding: 5px 9px; line-height: 1.5;
+}
+
+/* Software cards */
+.sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.sw-card {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 12px;
+}
+.sw-card-name { font-size: 13px; font-weight: 700; color: var(--txt); margin-bottom: 2px; }
+.sw-card-type { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent3); margin-bottom: 5px; }
+.sw-card-desc { font-size: 11.5px; color: var(--txt2); line-height: 1.5; }
+.sw-card.free  { border-left: 2px solid var(--accent); }
+.sw-card.paid  { border-left: 2px solid var(--accent3); }
+.sw-card.cloud { border-left: 2px solid var(--accent2); }
+
+/* Info infobox */
+.infobox {
+  background: var(--s1); border: 1px solid var(--border);
+  border-left: 2px solid var(--accent2);
+  border-radius: 7px; padding: 10px 13px; margin-bottom: 12px;
+  font-size: 12.5px; color: var(--txt2); line-height: 1.6;
+}
+.infobox.warn { border-left-color: var(--accent3); }
+.infobox.danger { border-left-color: var(--red); }
+.infobox strong { color: var(--txt); }
+
+/* Badge clickable */
+.app-header-badge {
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.app-header-badge:hover {
+  background: rgba(248,113,113,.16);
+  border-color: rgba(248,113,113,.55);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div>
+    <div class="app-header-title"><em>CFD Wind Tunnel</em></div>
+    <div class="app-header-sub">Simulación aerodinámica educativa · Flujo heurístico</div>
+  </div>
+  <button class="app-header-badge" id="cfd-badge-btn" title="¿Por qué no es CFD real? Haz clic">⚠ no es CFD real</button>
+</header>
+
+<!-- ════════════════════════════════════
+     MODAL: Por qué no es CFD real
+════════════════════════════════════ -->
+<div class="modal-backdrop" id="cfd-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <!-- top accent line via ::before -->
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <div class="modal-head-eyebrow">⚠ Aviso técnico importante</div>
+        <div class="modal-head-title"><em>Por qué esto no es<br>CFD real</em></div>
+      </div>
+      <button class="modal-close" id="modal-close-btn" aria-label="Cerrar">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="modal-tabs">
+      <div class="modal-tab active" data-tab="why">Limitaciones</div>
+      <div class="modal-tab" data-tab="how">Cómo interpretarlo</div>
+      <div class="modal-tab" data-tab="real">CFD real</div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ── TAB 1: Por qué no es CFD real ── -->
+      <div class="tab-panel active" id="tab-why">
+
+        <div class="infobox danger">
+          <strong>Este simulador es un modelo heurístico educativo.</strong> Los resultados son cualitativos y no deben usarse para diseño, certificación ni toma de decisiones de ingeniería.
+        </div>
+
+        <div class="modal-sh">El modelo matemático real vs. el de esta app</div>
+
+        <table class="cmp-table">
+          <thead><tr><th>Aspecto</th><th>CFD real</th><th>Esta app</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Ecuaciones base</td>
+              <td>Navier-Stokes completas<br><span style="font-family:monospace;font-size:11px;color:var(--txt3)">∂u/∂t + (u·∇)u = −∇p/ρ + ν∇²u</span></td>
+              <td><span class="tag-bad">Ninguna</span> Flujo uniforme + gaussiana heurística sobre normales</td>
+            </tr>
+            <tr>
+              <td>Viscosidad</td>
+              <td>Modelada (turbulencia k-ε, k-ω SST, LES…)</td>
+              <td><span class="tag-bad">Ignorada</span> Solo aparece en la fórmula de Cf (placa plana)</td>
+            </tr>
+            <tr>
+              <td>Separación de flujo</td>
+              <td>Capturada con mallas finas y modelos de pared</td>
+              <td><span class="tag-bad">No existe</span> Los streamlines nunca se separan correctamente</td>
+            </tr>
+            <tr>
+              <td>Presión</td>
+              <td>Campo de presión resuelto por Poisson</td>
+              <td><span class="tag-bad">No se resuelve</span> Solo velocidad estimada</td>
+            </tr>
+            <tr>
+              <td>Estela (wake)</td>
+              <td>Zona de recirculación detrás del objeto</td>
+              <td><span class="tag-bad">No modelada</span> La deflexión decae con distancia pero no recircula</td>
+            </tr>
+            <tr>
+              <td>Sustentación L</td>
+              <td>Integral de presión y fricción sobre superficie</td>
+              <td><span class="tag-bad">Completamente ficticia</span> L = 0.3 × D (factor fijo, sin geometría)</td>
+            </tr>
+            <tr>
+              <td>Grilla</td>
+              <td>Millones de celdas, refinamiento en capa límite</td>
+              <td><span class="tag-warn">22³ = 10 648 puntos</span> Resolución mínima (educativo)</td>
+            </tr>
+            <tr>
+              <td>Coeficientes Cd / Cl</td>
+              <td>Convergen con refinamiento de malla y son validados en túnel</td>
+              <td><span class="tag-bad">Estimación gruesa</span> Solo válidos como orden de magnitud</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="modal-sh">Qué sí funciona cualitativamente</div>
+        <div class="modal-p">
+          <strong>La dirección de las streamlines</strong> alrededor del cuerpo tiene sentido: el flujo se desplaza alrededor de la superficie, no la atraviesa. <strong>El arrastre frontal</strong> (forma bluff body) sí captura la tendencia correcta respecto al ángulo de ataque. <strong>La caída de densidad con altitud</strong> es exacta — usa la misma escala barométrica estándar <em>ρ = ρ₀ e<sup>−h/8.5</sup></em>. <strong>El número de Reynolds</strong> está calculado correctamente aunque la geometría característica sea una aproximación.
+        </div>
+      </div>
+
+      <!-- ── TAB 2: Cómo interpretarlo ── -->
+      <div class="tab-panel" id="tab-how">
+
+        <div class="infobox">
+          Interpreta los resultados de esta app como <strong>exploración conceptual</strong>, no como datos de ingeniería. Sirve para intuir tendencias, no para cuantificar con precisión.
+        </div>
+
+        <div class="modal-sh">Qué puedes leer de los streamlines</div>
+        <div class="modal-p">
+          <strong>Color → velocidad relativa.</strong> Azul frío = flujo lento (cerca del cuerpo, zona de alta presión frontal). Verde/amarillo = flujo acelerado (zona de baja presión, flancos del objeto). Esta tendencia es cualitativamente correcta para cuerpos romos a bajo número de Mach.
+        </div>
+        <div class="modal-p">
+          <strong>Separación de líneas.</strong> Donde los streamlines divergen bruscamente hay una zona de stagnation (punto de remanso). Donde convergen, el flujo acelera. En la realidad, detrás del cuerpo habría una zona de recirculación que esta app no muestra.
+        </div>
+        <div class="modal-p">
+          <strong>Ángulo de ataque.</strong> Variar α y β muestra cómo cambia la sección frontal expuesta al flujo (A proyectada). Este cambio de área es la razón principal por la que el arrastre varía — ese mecanismo sí es correcto.
+        </div>
+
+        <div class="modal-sh">Cómo leer los coeficientes</div>
+        <table class="cmp-table">
+          <thead><tr><th>Coeficiente</th><th>Fiabilidad</th><th>Cómo usarlo</th></tr></thead>
+          <tbody>
+            <tr><td>Re (Reynolds)</td><td><span class="tag-ok">Correcto</span></td><td>Indica si el flujo es laminar (&lt;5×10⁵) o turbulento. Muy útil para comparar regímenes.</td></tr>
+            <tr><td>q (presión dinámica)</td><td><span class="tag-ok">Correcto</span></td><td>½ρV² es exacto. Escala todo lo demás.</td></tr>
+            <tr><td>A proyectada</td><td><span class="tag-ok">Razonable</span></td><td>Calculada con producto vectorial de triángulos. Correcta para la geometría normalizada.</td></tr>
+            <tr><td>Cd arrastre</td><td><span class="tag-warn">Orden de magnitud</span></td><td>Para cuerpos romos suele sobreestimar. Para formas aerodinámicas, subestima mucho. No usar en diseño.</td></tr>
+            <tr><td>Cl sustentación</td><td><span class="tag-bad">Ficticio</span></td><td>0.3 fijo, sin información de geometría. Ignorar completamente.</td></tr>
+            <tr><td>Potencia W</td><td><span class="tag-warn">Tendencia válida</span></td><td>P = D·V muestra cómo crece cúbicamente con la velocidad — la tendencia es correcta.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="modal-sh">Regla de oro</div>
+        <div class="infobox warn">
+          <strong>Usa esta app para responder preguntas del tipo:</strong> "¿Aumenta o disminuye el arrastre si giro el objeto 30°?" o "¿Cómo cambia la potencia necesaria al doblar la velocidad?". <strong>No la uses para:</strong> determinar cargas estructurales, calcular pérdida de combustible, predecir velocidad terminal, ni dimensionar superficies de control.
+        </div>
+      </div>
+
+      <!-- ── TAB 3: Cómo hacer CFD real ── -->
+      <div class="tab-panel" id="tab-real">
+
+        <div class="modal-p">
+          Un análisis CFD real resuelve las ecuaciones de Navier-Stokes discretizadas mediante métodos de volúmenes finitos o elementos finitos. El proceso estándar tiene tres etapas:
+        </div>
+
+        <div class="modal-sh">Pipeline CFD profesional</div>
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">1</div>
+            <div class="pipe-content">
+              <div class="pipe-title">Geometría limpia (CAD)</div>
+              <div class="pipe-desc">El STL de impresión 3D suele tener demasiados triángulos, huecos o normales invertidas. Se necesita una geometría watertight sellada. Herramientas: FreeCAD, Fusion 360, CATIA, Solidworks.</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">2</div>
+            <div class="pipe-content">
+              <div class="pipe-title">Mallado (meshing)</div>
+              <div class="pipe-desc">Genera la grilla volumétrica: celdas hexaédricas o tetraédricas con refinamiento en la capa límite. La calidad del mallado (skewness, aspect ratio) determina la convergencia.</div>
+              <div class="pipe-code">snappyHexMesh (OpenFOAM) · ANSYS Meshing · Gmsh · Pointwise</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">3</div>
+            <div class="pipe-content">
+              <div class="pipe-title">Condiciones de contorno</div>
+              <div class="pipe-desc">Definir: inlet (velocidad o presión de entrada), outlet (presión de salida), paredes (no-slip), simetría si aplica. Elegir modelo de turbulencia: k-ω SST para aerodinámica externa es el estándar.</div>
+              <div class="pipe-code">k-ω SST · Spalart-Allmaras · k-ε RNG · LES (para detalles finos)</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">4</div>
+            <div class="pipe-content">
+              <div class="pipe-title">Solución iterativa</div>
+              <div class="pipe-desc">El solver resuelve las ecuaciones acopladas de momentum y continuidad hasta que los residuos convergen (tipicamente &lt; 10⁻⁴ para RANS estacionario). En HPC puede tomar horas o días.</div>
+              <div class="pipe-code">simpleFoam (estado estacionario) · pimpleFoam (transitorio)</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">5</div>
+            <div class="pipe-content">
+              <div class="pipe-title">Post-procesado</div>
+              <div class="pipe-desc">Extraer Cd, Cl, campos de presión, esfuerzo de pared (wall shear), iso-superficies de vorticidad (Q-criterion), streamlines 3D reales.</div>
+              <div class="pipe-code">ParaView (gratis) · Ensight · Tecplot · FieldView</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-sh">Software recomendado según presupuesto</div>
+        <div class="sw-grid">
+          <div class="sw-card free">
+            <div class="sw-card-name">OpenFOAM</div>
+            <div class="sw-card-type">Open source · C++</div>
+            <div class="sw-card-desc">El estándar industrial libre. Curva de aprendizaje empinada, pero potente para aerodinámica externa, combustión y multifísica.</div>
+          </div>
+          <div class="sw-card free">
+            <div class="sw-card-name">SU2</div>
+            <div class="sw-card-type">Open source · Aeroespacial</div>
+            <div class="sw-card-desc">Desarrollado en Stanford. Especializado en aerodinámica compresible, optimización de forma y análisis adjunto.</div>
+          </div>
+          <div class="sw-card paid">
+            <div class="sw-card-name">ANSYS Fluent</div>
+            <div class="sw-card-type">Comercial · Industry standard</div>
+            <div class="sw-card-desc">Más usado en industria aeroespacial y automotriz. GUI excelente, modelos validados. Caro pero con licencias académicas.</div>
+          </div>
+          <div class="sw-card paid">
+            <div class="sw-card-name">STAR-CCM+</div>
+            <div class="sw-card-type">Comercial · Siemens</div>
+            <div class="sw-card-desc">Mallado automatizado de alta calidad, ideal para geometrías complejas. Muy usado en automotriz y marino.</div>
+          </div>
+          <div class="sw-card cloud">
+            <div class="sw-card-name">SimScale</div>
+            <div class="sw-card-type">Cloud · OpenFOAM backend</div>
+            <div class="sw-card-desc">CFD en el navegador, sin instalación. Plan gratuito disponible. Ideal para estudiantes con geometrías sencillas.</div>
+          </div>
+          <div class="sw-card cloud">
+            <div class="sw-card-name">Cadence Fidelity</div>
+            <div class="sw-card-type">Cloud / HPC</div>
+            <div class="sw-card-desc">Solver LES/DES de alta fidelidad para aerodinámica de precisión. Requiere HPC. Nivel investigación y defensa.</div>
+          </div>
+        </div>
+
+        <div class="modal-sh">Para el proyecto TLV-1 específicamente</div>
+        <div class="infobox">
+          Para un cohete subsónico (&lt;0.3 Mach) en régimen turbulento (Re &gt; 10⁶), la combinación recomendada es: <strong>OpenFOAM + snappyHexMesh + modelo k-ω SST</strong>. Configurar un dominio cilindrático (no cúbico) alineado con el eje del cohete, con refinamiento en la capa límite de 0.001× la longitud característica. Para obtener Cd confiable, hacer un estudio de independencia de malla con al menos 3 refinamientos.
+        </div>
+        <div class="modal-p">
+          <strong>Validación experimental:</strong> cualquier simulación CFD debe validarse contra datos de túnel de viento o vuelo. Para un cohete universitario, comparar con la base de datos OpenRocket o RASAero como primera referencia, y realizar al menos una prueba estática de arrastre si el presupuesto lo permite.
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div><!-- /modal -->
+</div><!-- /modal-backdrop -->
+
+<div class="app-body">
+
+  <!-- LEFT: controls -->
+  <div class="left-panel">
+
+    <div>
+      <div class="p-section-label">Modelo 3D</div>
+      <button class="btn btn-sec">
+        📂 Cargar STL
+        <input type="file" id="stl-input" accept=".stl">
+      </button>
+      <button class="btn btn-sec" id="demo-btn">🚀 Demo — Cohete</button>
+      <div class="model-tag" id="model-tag" style="display:none"></div>
+    </div>
+
+    <div>
+      <div class="p-section-label">Dirección del flujo</div>
+      <div class="flow-grid">
+        <div class="flow-btn" data-d="-1,0,0">−X</div>
+        <div class="flow-btn" data-d="0,1,0">+Y</div>
+        <div class="flow-btn" data-d="1,0,0">+X</div>
+        <div class="flow-btn" data-d="0,-1,0">−Y</div>
+        <div class="flow-btn active" data-d="0,0,-1">−Z</div>
+        <div class="flow-btn" data-d="0,0,1">+Z</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ángulo α · elevación</label>
+        <div class="range-row">
+          <input type="range" id="r-alpha" min="-45" max="45" value="0">
+          <span class="range-val" id="v-alpha">0°</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ángulo β · deslizamiento</label>
+        <div class="range-row">
+          <input type="range" id="r-beta" min="-45" max="45" value="0">
+          <span class="range-val" id="v-beta">0°</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="p-section-label">Condiciones</div>
+      <div class="form-group">
+        <label class="form-label">Velocidad V∞ (m/s)</label>
+        <input type="number" class="form-input" id="inp-vel" value="30" min="1" max="340">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Altitud (km)</label>
+        <div class="range-row">
+          <input type="range" id="r-alt" min="0" max="40" value="0" step="0.5">
+          <span class="range-val" id="v-alt">0 km</span>
+        </div>
+        <div class="rho-line">ρ = <span id="rho-val">1.225</span> kg/m³</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Streamlines</label>
+        <div class="range-row">
+          <input type="range" id="r-seeds" min="30" max="180" value="70" step="10">
+          <span class="range-val" id="v-seeds">70</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-run" id="run-btn" disabled>▶ Simular</button>
+
+  </div>
+
+  <!-- CENTER: canvas -->
+  <div class="canvas-area">
+    <canvas id="wt-canvas"></canvas>
+    <div class="canvas-overlay" id="c-status">Sin modelo — carga un STL o usa el demo</div>
+    <div class="canvas-hint">
+      Arrastrar → rotar<br>
+      Shift+drag → pan<br>
+      Scroll → zoom
+    </div>
+    <div class="loading-overlay" id="loading">
+      <div class="loading-ring"></div>
+      <div class="loading-msg" id="load-msg">Calculando...</div>
+      <div class="loading-progress"><div class="loading-bar" id="load-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: data -->
+  <div class="right-panel">
+    <div>
+      <div class="p-section-label">Coeficientes</div>
+      <div id="coeff-panel">
+        <div class="no-data">Ejecuta la simulación para ver los datos</div>
+      </div>
+    </div>
+    <div id="cs-section" style="display:none">
+      <div class="p-section-label">Velocidad (m/s)</div>
+      <div class="cs-bar"></div>
+      <div class="cs-labels">
+        <span class="cs-lbl" id="cs-min">0</span>
+        <span class="cs-lbl" id="cs-max">60</span>
+      </div>
+    </div>
+    <div id="chart-section" style="display:none">
+      <div class="p-section-label">Arrastre vs ángulo α</div>
+      <div class="mini-chart-wrap">
+        <canvas id="drag-chart" height="90"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  CFD Wind Tunnel · Implementación del modelo heurístico de
+//  cfdtlv_1.py en el navegador con Three.js r128
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Estado global ──────────────────────────────────────────────────
+const S = {
+  mesh: null,               // { vertices: Float32Array, normals: Float32Array, numTris }
+  flowDir: [0, 0, -1],
+  alpha: 0, beta: 0,
+  V: 30, rho: 1.225, mu: 1.81e-5,
+  nSeeds: 70,
+  lastCoeffs: null
+};
+
+// ── Three.js renderer ──────────────────────────────────────────────
+const canvas = document.getElementById('wt-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x0d0e12, 1);
+renderer.shadowMap.enabled = true;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0d0e12, 0.08);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 200);
+camera.position.set(3.5, 2.5, 4.5);
+camera.lookAt(0, 0, 0);
+
+// ── Lights ────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x1a2040, 1.0));
+const sun = new THREE.DirectionalLight(0xe4e6f0, 1.4);
+sun.position.set(6, 10, 6);
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0x1a3a6a, 0.6);
+fill.position.set(-5, -3, -5);
+scene.add(fill);
+
+// ── Scene object management ────────────────────────────────────────
+let simGroup = new THREE.Group();
+scene.add(simGroup);
+
+function clearSim() {
+  scene.remove(simGroup);
+  simGroup = new THREE.Group();
+  scene.add(simGroup);
+}
+
+// ── Persistent: tunnel box & axes ─────────────────────────────────
+(function buildTunnel() {
+  // Outer tunnel
+  const outerGeo = new THREE.BoxGeometry(3.8, 3.8, 3.8);
+  const outerEdges = new THREE.EdgesGeometry(outerGeo);
+  const tunnelMat = new THREE.LineBasicMaterial({ color: 0x0f2a44, transparent: true, opacity: 0.8 });
+  scene.add(new THREE.LineSegments(outerEdges, tunnelMat));
+
+  // Inner guide
+  const innerGeo = new THREE.BoxGeometry(2.8, 2.8, 2.8);
+  const innerEdges = new THREE.EdgesGeometry(innerGeo);
+  scene.add(new THREE.LineSegments(innerEdges, new THREE.LineBasicMaterial({ color: 0x091820, transparent: true, opacity: 0.5 })));
+
+  // Tunnel glow panels (subtle face planes)
+  for (let axis = 0; axis < 3; axis++) {
+    for (let sign = -1; sign <= 1; sign += 2) {
+      const planeGeo = new THREE.PlaneGeometry(3.8, 3.8);
+      const planeMat = new THREE.MeshBasicMaterial({ color: 0x0a1828, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+      const plane = new THREE.Mesh(planeGeo, planeMat);
+      const pos = [0, 0, 0];
+      pos[axis] = sign * 1.9;
+      plane.position.set(...pos);
+      if (axis === 0) plane.rotation.y = Math.PI/2;
+      else if (axis === 1) plane.rotation.x = Math.PI/2;
+      scene.add(plane);
+    }
+  }
+
+  // Grid on tunnel floor
+  const gridHelper = new THREE.GridHelper(3.8, 10, 0x0f1e30, 0x0a1520);
+  gridHelper.position.y = -1.9;
+  scene.add(gridHelper);
+
+  // Axes indicator
+  const axes = new THREE.AxesHelper(0.5);
+  axes.position.set(-1.7, -1.7, -1.7);
+  scene.add(axes);
+})();
+
+// ── Orbit controls ─────────────────────────────────────────────────
+const orbit = { down: false, shift: false, lx: 0, ly: 0, theta: 0.6, phi: 0.45, r: 6, px: 0, py: 0 };
+
+canvas.addEventListener('mousedown', e => { orbit.down = true; orbit.shift = e.shiftKey; orbit.lx = e.clientX; orbit.ly = e.clientY; });
+window.addEventListener('mouseup', () => orbit.down = false);
+window.addEventListener('mousemove', e => {
+  if (!orbit.down) return;
+  const dx = e.clientX - orbit.lx, dy = e.clientY - orbit.ly;
+  orbit.lx = e.clientX; orbit.ly = e.clientY;
+  if (orbit.shift) {
+    orbit.px -= dx * 0.005 * orbit.r;
+    orbit.py += dy * 0.005 * orbit.r;
+  } else {
+    orbit.theta -= dx * 0.012;
+    orbit.phi = Math.max(0.05, Math.min(Math.PI - 0.05, orbit.phi + dy * 0.012));
+  }
+  updateCam();
+});
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  orbit.r = Math.max(1, Math.min(40, orbit.r * (1 + e.deltaY * 0.001)));
+  updateCam();
+}, { passive: false });
+// Touch
+let ptLast = null;
+canvas.addEventListener('touchstart', e => { ptLast = [e.touches[0].clientX, e.touches[0].clientY]; }, { passive: true });
+canvas.addEventListener('touchend', () => ptLast = null, { passive: true });
+canvas.addEventListener('touchmove', e => {
+  if (!ptLast || e.touches.length !== 1) return;
+  const dx = e.touches[0].clientX - ptLast[0], dy = e.touches[0].clientY - ptLast[1];
+  ptLast = [e.touches[0].clientX, e.touches[0].clientY];
+  orbit.theta -= dx * 0.012;
+  orbit.phi = Math.max(0.05, Math.min(Math.PI - 0.05, orbit.phi + dy * 0.012));
+  updateCam();
+}, { passive: true });
+
+function updateCam() {
+  const x = orbit.r * Math.sin(orbit.phi) * Math.sin(orbit.theta);
+  const y = orbit.r * Math.cos(orbit.phi);
+  const z = orbit.r * Math.sin(orbit.phi) * Math.cos(orbit.theta);
+  camera.position.set(x + orbit.px, y + orbit.py, z);
+  camera.lookAt(orbit.px, orbit.py, 0);
+}
+updateCam();
+
+// ── Resize ─────────────────────────────────────────────────────────
+function onResize() {
+  const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  // Redraw mini chart if available
+  if (S.lastCoeffs) drawDragChart(S.lastCoeffs);
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+// ── Render loop ─────────────────────────────────────────────────────
+let t0 = 0;
+function animate(t) {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate(0);
+
+// ── STL Parser ─────────────────────────────────────────────────────
+function parseSTL(buffer) {
+  // Try binary first
+  const view = new DataView(buffer);
+  const numTris = view.getUint32(80, true);
+  const expectedBytes = 84 + numTris * 50;
+  if (buffer.byteLength === expectedBytes && numTris > 0) {
+    return parseSTLBinary(view, numTris);
+  }
+  // ASCII fallback
+  const text = new TextDecoder().decode(buffer);
+  return parseSTLASCII(text);
+}
+
+function parseSTLBinary(view, numTris) {
+  const V = new Float32Array(numTris * 9);
+  const N = new Float32Array(numTris * 9);
+  for (let i = 0; i < numTris; i++) {
+    const off = 84 + i * 50;
+    const nx = view.getFloat32(off, true), ny = view.getFloat32(off+4, true), nz = view.getFloat32(off+8, true);
+    for (let v = 0; v < 3; v++) {
+      const b = (i*3+v)*3, vo = off + 12 + v*12;
+      V[b]=view.getFloat32(vo,true); V[b+1]=view.getFloat32(vo+4,true); V[b+2]=view.getFloat32(vo+8,true);
+      N[b]=nx; N[b+1]=ny; N[b+2]=nz;
+    }
+  }
+  return { vertices: V, normals: N, numTris };
+}
+
+function parseSTLASCII(text) {
+  const V = [], N = [];
+  let cn = [0,0,0];
+  for (const line of text.split('\n')) {
+    const t = line.trim();
+    if (t.startsWith('facet normal')) {
+      const p = t.split(/\s+/);
+      cn = [parseFloat(p[2]),parseFloat(p[3]),parseFloat(p[4])];
+    } else if (t.startsWith('vertex')) {
+      const p = t.split(/\s+/);
+      V.push(parseFloat(p[1]),parseFloat(p[2]),parseFloat(p[3]));
+      N.push(...cn);
+    }
+  }
+  return { vertices: new Float32Array(V), normals: new Float32Array(N), numTris: V.length/9 };
+}
+
+// ── Demo rocket geometry ────────────────────────────────────────────
+function buildDemoRocket() {
+  const V = [], N = [];
+  const SEG = 20;
+
+  function tri(p0, p1, p2) {
+    const ax=p1[0]-p0[0],ay=p1[1]-p0[1],az=p1[2]-p0[2];
+    const bx=p2[0]-p0[0],by=p2[1]-p0[1],bz=p2[2]-p0[2];
+    const nx=ay*bz-az*by, ny=az*bx-ax*bz, nz=ax*by-ay*bx;
+    const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)+1e-12;
+    V.push(...p0,...p1,...p2);
+    N.push(nx/nl,ny/nl,nz/nl, nx/nl,ny/nl,nz/nl, nx/nl,ny/nl,nz/nl);
+  }
+
+  const R=0.5, BH=3.0, NH=1.8;
+
+  // Cylinder body (y: −BH/2 → +BH/2)
+  for(let i=0;i<SEG;i++){
+    const a0=(i/SEG)*Math.PI*2, a1=((i+1)/SEG)*Math.PI*2;
+    const x0=Math.cos(a0)*R,z0=Math.sin(a0)*R,x1=Math.cos(a1)*R,z1=Math.sin(a1)*R;
+    tri([x0,-BH/2,z0],[x1,-BH/2,z1],[x1,BH/2,z1]);
+    tri([x0,-BH/2,z0],[x1,BH/2,z1],[x0,BH/2,z0]);
+    // Caps
+    tri([0,-BH/2,0],[Math.cos(a1)*R,-BH/2,Math.sin(a1)*R],[Math.cos(a0)*R,-BH/2,Math.sin(a0)*R]);
+  }
+
+  // Nose cone (y: +BH/2 → +BH/2+NH)
+  const apex=[0,BH/2+NH,0];
+  for(let i=0;i<SEG;i++){
+    const a0=(i/SEG)*Math.PI*2, a1=((i+1)/SEG)*Math.PI*2;
+    tri([Math.cos(a0)*R,BH/2,Math.sin(a0)*R], apex, [Math.cos(a1)*R,BH/2,Math.sin(a1)*R]);
+  }
+
+  // 4 trapezoidal fins at bottom
+  const FH=0.9, FL=0.6, FW=0.04;
+  [0,1,2,3].forEach(fi => {
+    const fa=fi*Math.PI/2;
+    const cx=Math.cos(fa)*R, cz=Math.sin(fa)*R;
+    const nx2=Math.cos(fa), nz2=Math.sin(fa);
+    const rx=-Math.sin(fa)*FW/2, rz=Math.cos(fa)*FW/2;
+    const yb=-BH/2, yt=-BH/2+FH;
+    const ox=cx+nx2*FL, oz=cz+nz2*FL;
+    // Fin face (simplified as flat quad → 2 tris)
+    const A=[cx+rx,yb,cz+rz], B=[cx-rx,yb,cz-rz];
+    const C=[ox,yb,oz], D=[ox,yt,oz];
+    const E=[cx+rx,yt,cz+rz], F=[cx-rx,yt,cz-rz];
+    tri(A,C,B); tri(A,E,C); tri(E,D,C);
+    tri(B,C,A); tri(C,E,A); tri(C,D,E);
+  });
+
+  return { vertices: new Float32Array(V), normals: new Float32Array(N), numTris: V.length/9 };
+}
+
+// ── Normalize to ~[-1,1]^3 ─────────────────────────────────────────
+function normalizeMesh(m) {
+  const v=m.vertices;
+  let mnX=1e9,mnY=1e9,mnZ=1e9,mxX=-1e9,mxY=-1e9,mxZ=-1e9;
+  for(let i=0;i<v.length;i+=3){
+    if(v[i]<mnX)mnX=v[i]; if(v[i]>mxX)mxX=v[i];
+    if(v[i+1]<mnY)mnY=v[i+1]; if(v[i+1]>mxY)mxY=v[i+1];
+    if(v[i+2]<mnZ)mnZ=v[i+2]; if(v[i+2]>mxZ)mxZ=v[i+2];
+  }
+  const cx=(mnX+mxX)/2, cy=(mnY+mxY)/2, cz=(mnZ+mxZ)/2;
+  const sc=2.0/Math.max(mxX-mnX,mxY-mnY,mxZ-mnZ,1e-10);
+  const nv=new Float32Array(v.length);
+  for(let i=0;i<v.length;i+=3){
+    nv[i]=(v[i]-cx)*sc; nv[i+1]=(v[i+1]-cy)*sc; nv[i+2]=(v[i+2]-cz)*sc;
+  }
+  return {...m, vertices:nv};
+}
+
+// ── Vector utilities ───────────────────────────────────────────────
+const V3 = {
+  cross: (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]],
+  dot: (a,b) => a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  norm: v => { const l=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2])+1e-12; return [v[0]/l,v[1]/l,v[2]/l]; },
+  add: (a,b) => [a[0]+b[0],a[1]+b[1],a[2]+b[2]],
+  scale: (v,s) => [v[0]*s,v[1]*s,v[2]*s],
+  len: v => Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]),
+  // Rodrigues rotation
+  rotate: (v, axis, angle) => {
+    const c=Math.cos(angle), s=Math.sin(angle);
+    const dot=V3.dot(v,axis);
+    const cr=V3.cross(axis,v);
+    return [v[0]*c+cr[0]*s+axis[0]*dot*(1-c), v[1]*c+cr[1]*s+axis[1]*dot*(1-c), v[2]*c+cr[2]*s+axis[2]*dot*(1-c)];
+  }
+};
+
+function effectiveFlowDir() {
+  let d = [...S.flowDir];
+  // Determine perpendicular axes for α, β rotations
+  const worldUp = Math.abs(d[1]) > 0.9 ? [1,0,0] : [0,1,0];
+  const right = V3.norm(V3.cross(d, worldUp));
+  d = V3.norm(V3.rotate(d, right, S.alpha * Math.PI/180));
+  d = V3.norm(V3.rotate(d, [0,1,0], S.beta * Math.PI/180));
+  return d;
+}
+
+// ── Velocity field (heuristic) ──────────────────────────────────────
+// Uniform flow + deflection near surface (same logic as Python code)
+async function computeVelocityField(meshData, flowDir, V_inf, gridRes=22, strength=1.5, onProgress) {
+  const { vertices: verts, normals: norms } = meshData;
+
+  // Sample surface points (max 600)
+  const nPts = verts.length / 3;
+  const stride = Math.max(1, Math.floor(nPts / 600));
+  const sp = [], sn = [];
+  for (let i = 0; i < nPts; i += stride) {
+    sp.push(verts[i*3], verts[i*3+1], verts[i*3+2]);
+    sn.push(norms[i*3], norms[i*3+1], norms[i*3+2]);
+  }
+  const nSurf = sp.length / 3;
+
+  const PAD = 1.8, L = PAD*2, dx = L/(gridRes-1);
+  const origin = [-PAD, -PAD, -PAD];
+  const total = gridRes**3;
+  const velocity = new Float32Array(total * 3);
+
+  // Estimate sigma for influence decay
+  const sigma = 0.09 * L * Math.sqrt(3);
+
+  let processed = 0;
+  const BATCH = 300; // points per async chunk
+
+  for (let start = 0; start < total; start += BATCH) {
+    const end = Math.min(start + BATCH, total);
+    for (let idx = start; idx < end; idx++) {
+      const iz = Math.floor(idx / (gridRes*gridRes));
+      const iy = Math.floor((idx % (gridRes*gridRes)) / gridRes);
+      const ix = idx % gridRes;
+      const px = origin[0]+ix*dx, py = origin[1]+iy*dx, pz = origin[2]+iz*dx;
+
+      let vx=flowDir[0]*V_inf, vy=flowDir[1]*V_inf, vz=flowDir[2]*V_inf;
+
+      let md2 = 1e30, ni = 0;
+      for (let j=0; j<nSurf; j++) {
+        const ddx=px-sp[j*3], ddy=py-sp[j*3+1], ddz=pz-sp[j*3+2];
+        const d2=ddx*ddx+ddy*ddy+ddz*ddz;
+        if (d2<md2) { md2=d2; ni=j; }
+      }
+      const dist = Math.sqrt(md2);
+      const infl = Math.exp(-(dist*dist)/(sigma*sigma));
+      vx += strength*infl*sn[ni*3]*V_inf;
+      vy += strength*infl*sn[ni*3+1]*V_inf;
+      vz += strength*infl*sn[ni*3+2]*V_inf;
+
+      velocity[idx*3]=vx; velocity[idx*3+1]=vy; velocity[idx*3+2]=vz;
+    }
+    processed = end;
+    onProgress(processed / total);
+    await sleep(0); // yield to browser
+  }
+
+  return { velocity, gridRes, origin, dx };
+}
+
+// ── Trilinear interpolation ────────────────────────────────────────
+function velAt(px, py, pz, field) {
+  const { velocity: V, gridRes: G, origin: O, dx } = field;
+  const fx=(px-O[0])/dx, fy=(py-O[1])/dx, fz=(pz-O[2])/dx;
+  const ix=Math.floor(fx), iy=Math.floor(fy), iz=Math.floor(fz);
+  if (ix<0||ix>=G-1||iy<0||iy>=G-1||iz<0||iz>=G-1) return null;
+  const tx=fx-ix, ty=fy-iy, tz=fz-iz;
+  let vx=0,vy=0,vz=0;
+  for (let dz=0;dz<2;dz++) for (let dy=0;dy<2;dy++) for (let dx=0;dx<2;dx++) {
+    const w=(dx?tx:1-tx)*(dy?ty:1-ty)*(dz?tz:1-tz);
+    const i=((iz+dz)*G*G+(iy+dy)*G+(ix+dx))*3;
+    vx+=V[i]*w; vy+=V[i+1]*w; vz+=V[i+2]*w;
+  }
+  return [vx,vy,vz];
+}
+
+// ── Streamline tracing (Euler) ─────────────────────────────────────
+function traceStreamline(x, y, z, field, maxSteps=250, dt=0.07) {
+  const pts=[], speeds=[];
+  for (let s=0; s<maxSteps; s++) {
+    pts.push(x,y,z);
+    const v = velAt(x,y,z,field);
+    if (!v) break;
+    const sp=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+    speeds.push(sp);
+    if (sp < 0.001) break;
+    x += v[0]/(sp+1e-10)*dt;
+    y += v[1]/(sp+1e-10)*dt;
+    z += v[2]/(sp+1e-10)*dt;
+  }
+  return { pts, speeds };
+}
+
+// ── Seed plane ────────────────────────────────────────────────────
+function makeSeeds(dir, n, r=1.35) {
+  let worldUp = Math.abs(dir[1]) > 0.9 ? [1,0,0] : [0,1,0];
+  const right = V3.norm(V3.cross(dir, worldUp));
+  const up2   = V3.norm(V3.cross(right, dir));
+  const center = V3.scale(dir, -1.6); // upstream
+  const seeds = [];
+  const n1d = Math.ceil(Math.sqrt(n));
+  for (let i=0; i<n1d; i++) for (let j=0; j<n1d; j++) {
+    if (seeds.length >= n) break;
+    const s=(i/(n1d-1+1e-9)-0.5)*2*r, t=(j/(n1d-1+1e-9)-0.5)*2*r;
+    seeds.push(V3.add(center, V3.add(V3.scale(right,s), V3.scale(up2,t))));
+  }
+  return seeds;
+}
+
+// ── Aerodynamic coefficients ───────────────────────────────────────
+function aeroCoeffs(meshData, dir, V_inf, rho, mu) {
+  const v = meshData.vertices;
+  const nT = v.length / 9;
+  let A_proj = 0;
+  for (let i=0; i<nT; i++) {
+    const b=i*9;
+    const ax=v[b+3]-v[b],ay=v[b+4]-v[b+1],az=v[b+5]-v[b+2];
+    const bx=v[b+6]-v[b],by=v[b+7]-v[b+1],bz=v[b+8]-v[b+2];
+    const nx=ay*bz-az*by, ny=az*bx-ax*bz, nz=ax*by-ay*bx;
+    const area=0.5*Math.sqrt(nx*nx+ny*ny+nz*nz);
+    const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)+1e-12;
+    const dot=-(nx/nl)*dir[0]-(ny/nl)*dir[1]-(nz/nl)*dir[2];
+    if (dot>0) A_proj += area*dot;
+  }
+  // Characteristic length from bounding box
+  let mnX=1e9,mnY=1e9,mnZ=1e9,mxX=-1e9,mxY=-1e9,mxZ=-1e9;
+  for(let i=0;i<v.length;i+=3){
+    if(v[i]<mnX)mnX=v[i]; if(v[i]>mxX)mxX=v[i];
+    if(v[i+1]<mnY)mnY=v[i+1]; if(v[i+1]>mxY)mxY=v[i+1];
+    if(v[i+2]<mnZ)mnZ=v[i+2]; if(v[i+2]>mxZ)mxZ=v[i+2];
+  }
+  const Lc = Math.cbrt((mxX-mnX)*(mxY-mnY)*(mxZ-mnZ));
+  const q  = 0.5 * rho * V_inf * V_inf;
+  const Re = rho * V_inf * Lc / mu;
+  const Cf = 0.074 / (Math.pow(Re, 0.2) + 1e-12);
+  const D  = q * A_proj * (1.0 + Cf);
+  const L  = q * A_proj * 0.3;
+  const W  = D * V_inf;
+  const Cd = D / (q * A_proj + 1e-10);
+  const Cl = L / (q * A_proj + 1e-10);
+  return { A_proj, Re, Cf, q, D, L, W, Cd, Cl, Lc };
+}
+
+// ── Speed → color ──────────────────────────────────────────────────
+function speed2rgb(t) {
+  t = Math.max(0, Math.min(1, t));
+  // cold blue → cyan → green → yellow
+  if (t < 0.33) {
+    const s=t/0.33;
+    return [0.08+s*0.02, 0.25+s*0.55, 0.9-s*0.05];
+  } else if (t < 0.66) {
+    const s=(t-0.33)/0.33;
+    return [0.1+s*0.28, 0.8+s*0.15, 0.85-s*0.55];
+  } else {
+    const s=(t-0.66)/0.34;
+    return [0.38+s*0.62, 0.95+s*0.05, 0.3-s*0.25];
+  }
+}
+
+// ── Build Three.js scene from simulation data ──────────────────────
+function buildScene(meshData, streamlines, dir, velRange) {
+  clearSim();
+
+  // 1. Model mesh
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices, 3));
+  geo.setAttribute('normal',   new THREE.Float32BufferAttribute(meshData.normals, 3));
+  geo.computeBoundingSphere();
+  const mat = new THREE.MeshPhongMaterial({
+    color: 0x7a8a9e, specular: 0x203040, shininess: 50,
+    transparent: true, opacity: 0.88, side: THREE.DoubleSide
+  });
+  simGroup.add(new THREE.Mesh(geo, mat));
+
+  // Wireframe overlay
+  const wfGeo = new THREE.WireframeGeometry(geo);
+  const wfMat = new THREE.LineBasicMaterial({ color: 0x2a4060, transparent: true, opacity: 0.12 });
+  simGroup.add(new THREE.LineSegments(wfGeo, wfMat));
+
+  // 2. Streamlines
+  const slPos = [], slCol = [];
+  const [smin, smax] = velRange;
+
+  for (const sl of streamlines) {
+    if (sl.pts.length < 6) continue;
+    const np = sl.pts.length / 3;
+    for (let i=0; i<np-1; i++) {
+      const b=i*3;
+      slPos.push(sl.pts[b],sl.pts[b+1],sl.pts[b+2], sl.pts[b+3],sl.pts[b+4],sl.pts[b+5]);
+      const t=(sl.speeds[i]-smin)/(smax-smin+1e-10);
+      const [r,g,b2]=speed2rgb(t);
+      slCol.push(r,g,b2,r,g,b2);
+    }
+  }
+
+  if (slPos.length > 0) {
+    const slGeo = new THREE.BufferGeometry();
+    slGeo.setAttribute('position', new THREE.Float32BufferAttribute(slPos, 3));
+    slGeo.setAttribute('color',    new THREE.Float32BufferAttribute(slCol, 3));
+    const slMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.7 });
+    simGroup.add(new THREE.LineSegments(slGeo, slMat));
+  }
+
+  // 3. Flow direction arrow
+  const aDirV = new THREE.Vector3(...dir);
+  const aOrig = new THREE.Vector3(...dir).negate().multiplyScalar(2.2);
+  simGroup.add(new THREE.ArrowHelper(aDirV, aOrig, 1.1, 0x60a5fa, 0.28, 0.16));
+
+  // 4. Seed plane indicator (subtle)
+  const seedPlaneNorm = new THREE.Vector3(...dir);
+  const spGeo = new THREE.PlaneGeometry(3.0, 3.0);
+  const spMat = new THREE.MeshBasicMaterial({ color: 0x1a3a6a, transparent: true, opacity: 0.08, side: THREE.DoubleSide });
+  const spMesh = new THREE.Mesh(spGeo, spMat);
+  spMesh.position.copy(aOrig);
+  spMesh.lookAt(aOrig.clone().add(new THREE.Vector3(...dir)));
+  simGroup.add(spMesh);
+}
+
+// ── Show model preview (no streamlines) ───────────────────────────
+function previewMesh(meshData) {
+  clearSim();
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(meshData.vertices, 3));
+  geo.setAttribute('normal',   new THREE.Float32BufferAttribute(meshData.normals, 3));
+  simGroup.add(new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+    color: 0x5a6a7e, specular: 0x182030, shininess: 40, side: THREE.DoubleSide
+  })));
+  // Arrow for current flow dir
+  const dir = effectiveFlowDir();
+  const aDirV = new THREE.Vector3(...dir);
+  const aOrig = new THREE.Vector3(...dir).negate().multiplyScalar(2.2);
+  simGroup.add(new THREE.ArrowHelper(aDirV, aOrig, 1.1, 0x60a5fa, 0.28, 0.16));
+}
+
+// ── Main simulation pipeline ───────────────────────────────────────
+async function runSimulation() {
+  if (!S.mesh) return;
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  showLoading('Calculando campo de velocidades...', 0);
+
+  const dir = effectiveFlowDir();
+  const V_inf = S.V, rho = S.rho;
+
+  // Phase 1: velocity field
+  const field = await computeVelocityField(S.mesh, dir, V_inf, 22, 1.5, p => {
+    setLoadProgress(p * 0.7);
+    document.getElementById('load-msg').textContent =
+      `Campo de velocidades... ${(p*100).toFixed(0)}%`;
+  });
+
+  // Phase 2: streamlines
+  document.getElementById('load-msg').textContent = 'Trazando streamlines...';
+  await sleep(10);
+
+  const seeds = makeSeeds(dir, S.nSeeds, 1.35);
+  const streamlines = [];
+  let smin = Infinity, smax = -Infinity;
+  for (const seed of seeds) {
+    const sl = traceStreamline(...seed, field, 240, 0.075);
+    if (sl.pts.length >= 6) {
+      streamlines.push(sl);
+      for (const sp of sl.speeds) { if(sp<smin)smin=sp; if(sp>smax)smax=sp; }
+    }
+  }
+  setLoadProgress(0.9);
+  await sleep(10);
+
+  // Phase 3: build scene
+  document.getElementById('load-msg').textContent = 'Renderizando...';
+  await sleep(10);
+  buildScene(S.mesh, streamlines, dir, [smin, smax]);
+
+  // Phase 4: coefficients
+  const coeffs = aeroCoeffs(S.mesh, dir, V_inf, rho, S.mu);
+  S.lastCoeffs = coeffs;
+  updateCoeffPanel(coeffs, smin, smax);
+
+  setLoadProgress(1.0);
+  await sleep(80);
+  hideLoading();
+  btn.disabled = false;
+
+  document.getElementById('c-status').textContent =
+    `${streamlines.length} streamlines · V∞=${V_inf} m/s · ρ=${rho.toFixed(3)} kg/m³ · dir=[${dir.map(x=>x.toFixed(2)).join(',')}]`;
+}
+
+// ── Update coefficient panel ───────────────────────────────────────
+function updateCoeffPanel(c, smin, smax) {
+  const fmt = (n, d=4) => isFinite(n) ? n.toFixed(d) : '—';
+  const sci = n => isFinite(n) ? n.toExponential(3) : '—';
+
+  document.getElementById('coeff-panel').innerHTML = `
+    <div class="coeff-row"><span class="coeff-name">Área proy. A</span><span class="coeff-val">${fmt(c.A_proj,4)} m²</span></div>
+    <div class="coeff-row"><span class="coeff-name">L<sub>car</sub></span><span class="coeff-val">${fmt(c.Lc,4)} m*</span></div>
+    <div class="coeff-row"><span class="coeff-name">Reynolds Re</span><span class="coeff-val">${sci(c.Re)}</span></div>
+    <div class="coeff-row"><span class="coeff-name">C<sub>f</sub> fricción</span><span class="coeff-val">${fmt(c.Cf,5)}</span></div>
+    <div class="coeff-row"><span class="coeff-name">Pres. dinámica q</span><span class="coeff-val">${fmt(c.q,1)} Pa</span></div>
+    <div class="coeff-row"><span class="coeff-name">Arrastre D</span><span class="coeff-val green">${fmt(c.D,2)} N</span></div>
+    <div class="coeff-row"><span class="coeff-name">Sustentación L</span><span class="coeff-val">${fmt(c.L,2)} N</span></div>
+    <div class="coeff-row"><span class="coeff-name">Potencia W</span><span class="coeff-val amber">${fmt(c.W,1)} W</span></div>
+    <div class="coeff-row"><span class="coeff-name">C<sub>d</sub></span><span class="coeff-val teal">${fmt(c.Cd,4)}</span></div>
+    <div class="coeff-row"><span class="coeff-name">C<sub>l</sub></span><span class="coeff-val">${fmt(c.Cl,4)}</span></div>
+  `;
+
+  // Colorscale
+  document.getElementById('cs-min').textContent = smin.toFixed(1);
+  document.getElementById('cs-max').textContent = smax.toFixed(1);
+  document.getElementById('cs-section').style.display = 'block';
+
+  // Chart
+  document.getElementById('chart-section').style.display = 'block';
+  drawDragChart(c);
+}
+
+function drawDragChart(baseC) {
+  const cv = document.getElementById('drag-chart');
+  cv.width = cv.parentElement.clientWidth || 180;
+  cv.height = 90;
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height, padL=28, padB=16, padR=6, padT=8;
+
+  const angles = [];
+  const drags  = [];
+  for (let a=0; a<=90; a+=3) {
+    angles.push(a);
+    // Approximate: bluff body drag increases with frontal area projection
+    const factor = Math.cos(a*Math.PI/180)*0.55 + 0.45 + 0.3*Math.sin(2*a*Math.PI/180);
+    drags.push(baseC.D * factor);
+  }
+  const maxD = Math.max(...drags), minD = 0;
+  const W2=W-padL-padR, H2=H-padB-padT;
+
+  ctx.fillStyle='#1a1c24'; ctx.fillRect(0,0,W,H);
+
+  // Grid lines
+  ctx.strokeStyle='#2a2d3a'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++) {
+    const y=padT+H2*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='#52566a'; ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText((maxD*i/4).toFixed(0), 0, y+3);
+  }
+
+  // Current angle marker
+  ctx.strokeStyle='rgba(245,158,11,0.3)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  const curA = S.alpha;
+  const cx = padL + (curA+0)/(90)*W2;
+  ctx.beginPath(); ctx.moveTo(cx,padT); ctx.lineTo(cx,H-padB); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Drag curve
+  const grad = ctx.createLinearGradient(padL, 0, W-padR, 0);
+  grad.addColorStop(0, '#60a5fa');
+  grad.addColorStop(0.5, '#4ade80');
+  grad.addColorStop(1, '#f59e0b');
+  ctx.strokeStyle=grad; ctx.lineWidth=2;
+  ctx.beginPath();
+  for (let i=0;i<angles.length;i++) {
+    const x=padL+(angles[i]/90)*W2;
+    const y=padT+H2*(1-(drags[i]-minD)/(maxD-minD+1e-10));
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle='#52566a'; ctx.font='8px JetBrains Mono,monospace';
+  ctx.fillText('0°',padL-3,H-1); ctx.fillText('90°',W-padR-10,H-1);
+  ctx.fillText('D(N)',1,padT+6);
+}
+
+// ── Loading UI ─────────────────────────────────────────────────────
+function showLoading(msg, p=0) {
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('load-msg').textContent = msg;
+  setLoadProgress(p);
+}
+function hideLoading() { document.getElementById('loading').classList.remove('active'); }
+function setLoadProgress(p) {
+  document.getElementById('load-bar').style.width = (p*100).toFixed(0)+'%';
+}
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ── Set mesh and preview ───────────────────────────────────────────
+function setMesh(rawMesh, label) {
+  S.mesh = normalizeMesh(rawMesh);
+  document.getElementById('model-tag').style.display = 'block';
+  document.getElementById('model-tag').textContent = label;
+  document.getElementById('run-btn').disabled = false;
+  document.getElementById('c-status').textContent = label + ' · Listo para simular';
+  previewMesh(S.mesh);
+}
+
+// ── UI Events ──────────────────────────────────────────────────────
+document.getElementById('stl-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    try {
+      const m = parseSTL(ev.target.result);
+      setMesh(m, `${file.name} · ${m.numTris.toLocaleString()} tris`);
+    } catch(err) { alert('Error leyendo STL: '+err.message); }
+  };
+  fr.readAsArrayBuffer(file);
+});
+
+document.getElementById('demo-btn').addEventListener('click', () => {
+  const m = buildDemoRocket();
+  setMesh(m, `Demo Cohete · ${m.numTris} tris`);
+});
+
+document.querySelectorAll('.flow-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    S.flowDir = btn.dataset.d.split(',').map(Number);
+    // Reset angles
+    S.alpha=0; S.beta=0;
+    document.getElementById('r-alpha').value=0; document.getElementById('v-alpha').textContent='0°';
+    document.getElementById('r-beta').value=0;  document.getElementById('v-beta').textContent='0°';
+    if (S.mesh) previewMesh(S.mesh);
+  });
+});
+
+document.getElementById('r-alpha').addEventListener('input', function() {
+  S.alpha = parseInt(this.value);
+  document.getElementById('v-alpha').textContent = this.value+'°';
+  if (S.mesh) previewMesh(S.mesh);
+});
+document.getElementById('r-beta').addEventListener('input', function() {
+  S.beta = parseInt(this.value);
+  document.getElementById('v-beta').textContent = this.value+'°';
+  if (S.mesh) previewMesh(S.mesh);
+});
+document.getElementById('inp-vel').addEventListener('input', function() { S.V = parseFloat(this.value)||30; });
+document.getElementById('r-alt').addEventListener('input', function() {
+  const h = parseFloat(this.value);
+  S.rho = 1.225 * Math.exp(-h/8.5);
+  document.getElementById('v-alt').textContent = h+' km';
+  document.getElementById('rho-val').textContent = S.rho.toFixed(4);
+});
+document.getElementById('r-seeds').addEventListener('input', function() {
+  S.nSeeds = parseInt(this.value);
+  document.getElementById('v-seeds').textContent = this.value;
+});
+document.getElementById('run-btn').addEventListener('click', runSimulation);
+
+// ── Modal ──────────────────────────────────────────────────────────
+const modalBackdrop = document.getElementById('cfd-modal');
+
+document.getElementById('cfd-badge-btn').addEventListener('click', () => {
+  modalBackdrop.classList.add('open');
+});
+document.getElementById('modal-close-btn').addEventListener('click', () => {
+  modalBackdrop.classList.remove('open');
+});
+modalBackdrop.addEventListener('click', e => {
+  if (e.target === modalBackdrop) modalBackdrop.classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') modalBackdrop.classList.remove('open');
+});
+
+// Tabs
+document.querySelectorAll('.modal-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const id = tab.dataset.tab;
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
