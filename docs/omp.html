@@ -2,1570 +2,1282 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OMP-IV · Sistema de Planificación de Mecánica Orbital</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>OMP-VI · Orbital Mission Planner</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Familjen+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
-
-:root {
-  --bg:     #070810;
-  --s0:     #0c0d16;
-  --s1:     #111320;
-  --s2:     #191c2e;
-  --s3:     #222540;
-  --border: #1e2238;
-  --border2:#2a2e4a;
-  --txt:    #d8daf0;
-  --txt2:   #7a82a8;
-  --txt3:   #3e4460;
-  --cyan:   #22d3ee;
-  --amber:  #f59e0b;
-  --red:    #f87171;
-  --green:  #4ade80;
-  --purple: #a78bfa;
-  --blue:   #60a5fa;
-  --teal:   #2dd4bf;
-  --panel-w: 258px;
-}
-*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-html, body { height:100%; overflow:hidden; }
-
-body {
-  background: var(--bg); color: var(--txt);
-  font-family: 'Familjen Grotesk', sans-serif;
-  display: flex; flex-direction: column;
-}
-/* CRT scanline overlay */
-body::after {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
-  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.035) 2px,rgba(0,0,0,.035) 4px);
-}
-
-/* ═══════════════════ HEADER ═══════════════════ */
-.hdr {
-  display:flex; align-items:center; gap:0;
-  height:42px; flex-shrink:0; border-bottom:1px solid var(--border);
-  background: var(--s0); z-index:50; overflow:hidden;
-}
-.hdr-logo {
-  display:flex; align-items:center; gap:10px;
-  padding:0 18px; border-right:1px solid var(--border); height:100%; flex-shrink:0;
-}
-.hdr-logo-glyph {
-  font-size:16px; width:28px; height:28px; border-radius:50%;
-  border:1px solid rgba(34,211,238,.3); display:flex; align-items:center; justify-content:center;
-  color:var(--cyan); font-family:'JetBrains Mono',monospace;
-  box-shadow:0 0 8px rgba(34,211,238,.2);
-}
-.hdr-title {
-  font-family:'Instrument Serif',serif; font-size:1.05rem; font-weight:400;
-  background:linear-gradient(135deg,#d8daf0 30%,#3e4460 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-}
-.hdr-sub {
-  font-family:'JetBrains Mono',monospace; font-size:8px;
-  letter-spacing:.2em; text-transform:uppercase; color:var(--txt3);
-}
-
-.hdr-tabs {
-  display:flex; height:100%; border-right:1px solid var(--border);
-}
-.hdr-tab {
-  display:flex; align-items:center; padding:0 16px;
-  font-family:'JetBrains Mono',monospace; font-size:9px;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--txt3);
-  cursor:pointer; border-bottom:2px solid transparent;
-  transition:color .15s, border-color .15s; user-select:none;
-}
-.hdr-tab:hover { color:var(--txt2); }
-.hdr-tab.active { color:var(--cyan); border-bottom-color:var(--cyan); }
-
-.hdr-status {
-  display:flex; align-items:center; gap:14px;
-  padding:0 16px; margin-left:auto; flex-shrink:0;
-}
-.hdr-status-item {
-  font-family:'JetBrains Mono',monospace; font-size:9px;
-  letter-spacing:.08em; color:var(--txt3); display:flex; align-items:center; gap:5px;
-}
-.hdr-dot {
-  width:5px; height:5px; border-radius:50%; background:var(--green);
-  box-shadow:0 0 6px var(--green); animation:pulse-dot 2s ease-in-out infinite;
-}
-@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
-.hdr-dot.amber { background:var(--amber); box-shadow:0 0 6px var(--amber); }
-
-/* ═══════════════════ MAIN AREA ═══════════════════ */
-.app-main { display:flex; flex:1; min-height:0; }
-
-/* ═══════════════════ PANELS ═══════════════════ */
-.panel {
-  width:var(--panel-w); flex-shrink:0; background:var(--s0);
-  display:flex; flex-direction:column; overflow:hidden;
-}
-.panel-left  { border-right:1px solid var(--border); }
-.panel-right { border-left:1px solid var(--border); }
-.panel-scroll {
-  flex:1; overflow-y:auto; padding:14px 13px;
-  scrollbar-width:thin; scrollbar-color:var(--border2) transparent;
-}
-.panel-scroll::-webkit-scrollbar { width:3px; }
-.panel-scroll::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
-
-/* Section label */
-.sec-lbl {
-  font-family:'JetBrains Mono',monospace; font-size:7.5px;
-  letter-spacing:.24em; text-transform:uppercase; color:var(--txt3);
-  display:flex; align-items:center; gap:8px; margin-bottom:9px; margin-top:16px;
-}
-.sec-lbl:first-child { margin-top:0; }
-.sec-lbl::after { content:''; flex:1; height:1px; background:var(--border); }
-.sec-lbl.cyan::after  { background:rgba(34,211,238,.2); }
-.sec-lbl.amber::after { background:rgba(245,158,11,.2); }
-.sec-lbl.purple::after{ background:rgba(167,139,250,.2); }
-.sec-lbl.cyan  { color:var(--cyan); }
-.sec-lbl.amber { color:var(--amber); }
-.sec-lbl.purple{ color:var(--purple); }
-
-/* Form */
-.fg { margin-bottom:8px; }
-.fl { font-size:10.5px; color:var(--txt2); margin-bottom:3px; display:block; }
-.fi {
-  width:100%; background:var(--s2); border:1px solid var(--border);
-  border-radius:5px; padding:5px 8px; color:var(--txt);
-  font-family:'JetBrains Mono',monospace; font-size:11.5px; outline:none;
-  transition:border-color .15s;
-}
-.fi:focus { border-color:rgba(34,211,238,.4); }
-select.fi { cursor:pointer; }
-.range-row { display:flex; align-items:center; gap:7px; }
-.range-row input[type="range"] { flex:1; accent-color:var(--cyan); cursor:pointer; height:2px; }
-.rv {
-  font-family:'JetBrains Mono',monospace; font-size:11px;
-  color:var(--cyan); min-width:52px; text-align:right; white-space:nowrap;
-}
-
-/* Toggle */
-.toggle-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.toggle-label { font-size:11px; color:var(--txt2); }
-.toggle {
-  width:34px; height:18px; border-radius:9px; border:1px solid var(--border2);
-  background:var(--s2); position:relative; cursor:pointer; transition:all .2s; flex-shrink:0;
-}
-.toggle::after {
-  content:''; position:absolute; top:2px; left:2px; width:12px; height:12px;
-  border-radius:50%; background:var(--txt3); transition:all .2s;
-}
-.toggle.on { background:rgba(34,211,238,.15); border-color:rgba(34,211,238,.4); }
-.toggle.on::after { transform:translateX(16px); background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
-
-/* Data rows */
-.dr {
-  display:flex; justify-content:space-between; align-items:baseline;
-  padding:4px 0; border-bottom:1px solid var(--border); gap:8px;
-}
-.dr:last-child { border-bottom:none; }
-.dk { font-size:11px; color:var(--txt2); flex-shrink:0; }
-.dv { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cyan); text-align:right; }
-.dv.amber  { color:var(--amber); }
-.dv.red    { color:var(--red); }
-.dv.green  { color:var(--green); }
-.dv.purple { color:var(--purple); }
-.dv.blue   { color:var(--blue); }
-
-/* Phase block */
-.phase-block {
-  background:var(--s1); border:1px solid var(--border);
-  border-radius:7px; padding:9px 11px; margin-bottom:7px; position:relative; overflow:hidden;
-}
-.phase-block::before {
-  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
-}
-.phase-block.depart::before { background:var(--cyan); }
-.phase-block.cruise::before { background:var(--amber); }
-.phase-block.arrive::before { background:var(--purple); }
-.phase-block-hdr {
-  font-family:'JetBrains Mono',monospace; font-size:8px;
-  letter-spacing:.16em; text-transform:uppercase; margin-bottom:6px;
-}
-.phase-block.depart .phase-block-hdr { color:var(--cyan); }
-.phase-block.cruise .phase-block-hdr { color:var(--amber); }
-.phase-block.arrive .phase-block-hdr { color:var(--purple); }
-
-/* Formula chip */
-.f-chip {
-  background:var(--s2); border:1px solid var(--border);
-  border-radius:4px; padding:3px 7px; margin-bottom:5px;
-  font-family:'JetBrains Mono',monospace; font-size:10px;
-  color:var(--txt3); line-height:1.6;
-}
-.f-chip .fv { color:var(--txt2); }
-.f-chip .fn { color:var(--cyan); }
-.f-chip .fa { color:var(--amber); }
-
-/* Sail section (hidden by default) */
-.sail-section { display:none; }
-.sail-section.visible { display:block; }
-
-/* Energy bar */
-.ebar-wrap { margin:6px 0; }
-.ebar-track { height:4px; background:var(--s2); border-radius:2px; overflow:hidden; }
-.ebar-fill  { height:100%; border-radius:2px; transition:width .3s ease; }
-.ebar-lbl   { display:flex; justify-content:space-between; margin-top:3px; }
-.ebar-lbl span { font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--txt3); }
-
-/* ═══════════════════ CANVAS AREA ═══════════════════ */
-.canvas-wrap { flex:1; min-width:0; position:relative; background:#060709; overflow:hidden; }
-#oc { width:100%; height:100%; display:block; }
-
-/* Label layer */
-.lyr {
-  position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:5;
-}
-.lbl3d {
-  position:absolute; transform:translate(-50%,-50%);
-  white-space:nowrap; pointer-events:none;
-  font-family:'JetBrains Mono',monospace; letter-spacing:.06em;
-  text-shadow:0 0 10px currentColor;
-  transition:opacity .2s;
-}
-.lbl3d.planet  { font-size:9.5px; color:rgba(216,218,240,.6); }
-.lbl3d.dv      { font-size:10px;  color:rgba(248,113,113,.9); font-weight:500; }
-.lbl3d.node    { font-size:11px;  color:rgba(245,158,11,.95);  font-weight:600; }
-.lbl3d.soi     { font-size:8.5px; color:rgba(96,165,250,.55); }
-.lbl3d.sail    { font-size:9px;   color:rgba(167,139,250,.8); }
-.lbl3d.launch  { font-size:9px;   color:rgba(74,222,128,.8); }
-.lbl3d.arc     { font-size:9px;   color:rgba(245,158,11,.7); }
-
-/* Compass overlay */
-.compass {
-  position:absolute; bottom:54px; right:12px;
-  width:52px; height:52px; border-radius:50%;
-  border:1px solid rgba(34,211,238,.15);
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(7,8,16,.7);
-}
-.compass-inner {
-  font-family:'JetBrains Mono',monospace; font-size:8px;
-  color:var(--txt3); text-align:center; line-height:1.6;
-}
-
-/* Formula strip at bottom */
-.formula-strip {
-  position:absolute; bottom:0; left:0; right:0; height:42px;
-  background:rgba(7,8,16,.92); border-top:1px solid var(--border);
-  display:flex; align-items:center; gap:0; overflow:hidden; z-index:6;
-}
-.formula-item {
-  display:flex; align-items:center; gap:0;
-  padding:0 14px; border-right:1px solid var(--border); flex-shrink:0; height:100%;
-}
-.formula-item:last-child { border-right:none; }
-.f-name {
-  font-family:'JetBrains Mono',monospace; font-size:7.5px;
-  letter-spacing:.16em; text-transform:uppercase; color:var(--txt3);
-  margin-right:8px; flex-shrink:0;
-}
-.f-expr {
-  font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2);
-  white-space:nowrap;
-}
-.f-expr .fh  { color:var(--cyan); }
-.f-expr .fhb { color:var(--amber); }
-.f-expr .fhp { color:var(--purple); }
-
-/* Status bar */
-.status-bar {
-  height:22px; border-top:1px solid var(--border);
-  background:var(--s0); display:flex; align-items:center;
-  padding:0 14px; gap:20px; flex-shrink:0;
-}
-.sb-item {
-  font-family:'JetBrains Mono',monospace; font-size:9px;
-  color:var(--txt3); letter-spacing:.06em; display:flex; align-items:center; gap:5px;
-}
-.sb-item span { color:var(--txt2); }
-
-/* Controls hint */
-.ctrl-hint {
-  position:absolute; top:10px; right:10px;
-  font-family:'JetBrains Mono',monospace; font-size:8.5px; color:var(--txt3);
-  text-align:right; line-height:1.9; pointer-events:none; z-index:6;
-}
-.ctrl-hint kbd {
-  background:var(--s2); border:1px solid var(--border); border-radius:2px;
-  padding:1px 4px; font-family:'JetBrains Mono',monospace; font-size:8px;
-  color:var(--txt2);
-}
-
-/* Sim speed control */
-.simspeed-wrap {
-  display:flex; align-items:center; gap:8px;
-  padding:0 14px; border-left:1px solid var(--border);
-}
-.ss-btn {
-  width:20px; height:20px; border-radius:4px;
-  border:1px solid var(--border); background:var(--s2);
-  color:var(--txt2); font-size:11px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .15s; font-family:'JetBrains Mono',monospace;
-}
-.ss-btn:hover { border-color:var(--border2); color:var(--txt); }
-
-/* ═══ Launch window warning ═══ */
-.window-badge {
-  display:flex; align-items:center; gap:5px; padding:5px 8px;
-  background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.2);
-  border-radius:5px; margin-top:7px;
-}
-.window-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--amber); flex-shrink:0; }
-.window-badge-txt { font-size:10.5px; color:var(--txt2); }
-.window-badge-val { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--amber); }
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Familjen+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+:root{--bg:#04050a;--s0:#070910;--s1:#0c0f1a;--s2:#10141f;--bd:#141826;--bd2:#1c2236;
+  --txt:#c0c4dc;--txt2:#525a78;--txt3:#2a2e42;
+  --cy:#17d4e8;--am:#e8a017;--rd:#e84a3a;--gn:#3ae882;--pu:#8b6ef5;--bl:#4a90e8;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--txt);font-family:'Familjen Grotesk',sans-serif;font-size:12px;display:flex;flex-direction:column}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px)}
+/* HEADER */
+.hdr{height:36px;display:flex;align-items:stretch;border-bottom:1px solid var(--bd);background:var(--s0);flex-shrink:0}
+.hbrand{display:flex;align-items:center;gap:9px;padding:0 14px;border-right:1px solid var(--bd)}
+.hmark{width:22px;height:22px;border-radius:50%;border:1px solid rgba(23,212,232,.3);display:flex;align-items:center;justify-content:center;color:var(--cy);font-size:10px;box-shadow:0 0 7px rgba(23,212,232,.15)}
+.htitle{font-family:'Instrument Serif',serif;font-size:.95rem}.hsub{font-family:'JetBrains Mono',monospace;font-size:6.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--txt3)}
+.htabs{display:flex;border-right:1px solid var(--bd)}
+.htab{display:flex;align-items:center;padding:0 13px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);cursor:pointer;border-bottom:2px solid transparent;transition:.12s;user-select:none}
+.htab:hover{color:var(--txt2)}.htab.on{color:var(--cy);border-bottom-color:var(--cy)}
+.hright{margin-left:auto;display:flex;align-items:stretch}
+.hind{display:flex;align-items:center;gap:4px;padding:0 12px;border-left:1px solid var(--bd);font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--txt3)}
+.hdot{width:4px;height:4px;border-radius:50%}
+.hdot-g{background:var(--gn);box-shadow:0 0 4px var(--gn);animation:blink 2.5s ease-in-out infinite}
+.hdot-a{background:var(--am);box-shadow:0 0 4px var(--am);animation:blink 1.9s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+/* BODY */
+.app-body{display:flex;flex:1;min-height:0;overflow:hidden}
+/* PANELS */
+.panel{width:212px;flex-shrink:0;background:var(--s0);display:flex;flex-direction:column;overflow:hidden}
+.panel.r{width:256px;border-left:1px solid var(--bd)}.panel.l{border-right:1px solid var(--bd)}
+.ps{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+.ps::-webkit-scrollbar{width:3px}.ps::-webkit-scrollbar-thumb{background:var(--bd2)}
+/* SECTION LABEL */
+.sl{font-family:'JetBrains Mono',monospace;font-size:6.5px;letter-spacing:.22em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin:12px 0 6px;color:var(--txt3)}
+.sl::after{content:'';flex:1;height:1px;background:var(--bd)}.sl:first-child{margin-top:0}
+.sl.cy{color:var(--cy)}.sl.cy::after{background:rgba(23,212,232,.18)}
+.sl.am{color:var(--am)}.sl.am::after{background:rgba(232,160,23,.18)}
+.sl.pu{color:var(--pu)}.sl.pu::after{background:rgba(139,110,245,.18)}
+.sl.gn{color:var(--gn)}.sl.gn::after{background:rgba(58,232,130,.18)}
+.sl.rd{color:var(--rd)}.sl.rd::after{background:rgba(232,74,58,.18)}
+/* FORM */
+.fg{margin-bottom:6px}
+.fl{font-size:9.5px;color:var(--txt2);margin-bottom:2px;display:block;font-family:'JetBrains Mono',monospace}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:10.5px;outline:none;transition:.12s;appearance:none}
+.fi:focus{border-color:rgba(23,212,232,.4)}select.fi{cursor:pointer}
+.rrow{display:flex;align-items:center;gap:5px}
+.rrow input[type=range]{flex:1;accent-color:var(--cy);cursor:pointer;height:2px}
+.rv{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cy);min-width:46px;text-align:right;white-space:nowrap}
+/* DATA ROWS */
+.dr{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid var(--bd)}
+.dr:last-child{border-bottom:none}
+.dk{font-size:10px;color:var(--txt2)}.dv{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cy);text-align:right}
+.dv.am{color:var(--am)}.dv.rd{color:var(--rd)}.dv.gn{color:var(--gn)}.dv.pu{color:var(--pu)}.dv.bl{color:var(--bl)}.dv.wh{color:var(--txt)}
+/* PHASE BOX */
+.phase{background:var(--s1);border:1px solid var(--bd);border-radius:5px;padding:7px 9px;margin-bottom:6px;position:relative;overflow:hidden}
+.phase::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
+.phase.s1::before{background:var(--am)}.phase.s2::before{background:var(--pu)}.phase.orb::before{background:var(--cy)}.phase.los::before{background:var(--rd)}.phase.dep::before{background:var(--cy)}.phase.crs::before{background:var(--am)}.phase.arr::before{background:var(--pu)}
+.ph{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+.phase.s1 .ph{color:var(--am)}.phase.s2 .ph{color:var(--pu)}.phase.orb .ph{color:var(--cy)}.phase.los .ph{color:var(--rd)}
+.phase.dep .ph{color:var(--cy)}.phase.crs .ph{color:var(--am)}.phase.arr .ph{color:var(--pu)}
+/* CHIP */
+.fchip{background:var(--s2);border:1px solid var(--bd);border-radius:3px;padding:3px 6px;margin-bottom:5px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);line-height:1.7}
+.fchip .fc{color:var(--cy)}.fchip .fa{color:var(--am)}.fchip .fp{color:var(--pu)}.fchip .fg_{color:var(--gn)}
+/* ENERGY BAR */
+.ebar{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin:4px 0 2px}
+.efill{height:100%;border-radius:2px;transition:width .35s}
+/* BUTTON */
+.btn{display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 9px;border-radius:4px;border:1px solid;font-family:'JetBrains Mono',monospace;font-size:9.5px;cursor:pointer;transition:.12s;width:100%;margin-bottom:4px}
+.btn-s{background:var(--s2);border-color:var(--bd);color:var(--txt2)}.btn-s:hover{border-color:var(--bd2);color:var(--txt)}
+.btn-cy{background:rgba(23,212,232,.07);border-color:rgba(23,212,232,.3);color:var(--cy)}.btn-cy:hover{background:rgba(23,212,232,.14)}
+/* VIEWPORTS */
+.vpa{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;background:var(--bd);overflow:hidden}
+.vpa.solo .vp{display:none}.vpa.solo .vp.active{display:block;grid-column:1/3;grid-row:1/3}
+.vp{background:var(--bg);position:relative;overflow:hidden;min-height:0}
+.vp canvas{width:100%;height:100%;display:block}
+.vpbar{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;background:rgba(4,5,10,.85);border-bottom:1px solid var(--bd);z-index:5}
+.vpbar-l{display:flex;align-items:center;gap:7px;pointer-events:none}
+.vpname{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt3)}
+.vpbadge{font-family:'JetBrains Mono',monospace;font-size:6.5px;padding:1px 4px;border-radius:2px;background:rgba(23,212,232,.08);border:1px solid rgba(23,212,232,.2);color:var(--cy)}
+.vpbadge.am{background:rgba(232,160,23,.08);border-color:rgba(232,160,23,.2);color:var(--am)}
+.vpbadge.gn{background:rgba(58,232,130,.08);border-color:rgba(58,232,130,.2);color:var(--gn)}
+.vpbadge.pu{background:rgba(139,110,245,.08);border-color:rgba(139,110,245,.2);color:var(--pu)}
+.vpbtn{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);cursor:pointer;padding:1px 5px;border-radius:2px;transition:.1s;user-select:none;border:1px solid transparent}
+.vpbtn:hover{color:var(--txt2);border-color:var(--bd2)}
+/* PROGRESS */
+.pgov{position:absolute;inset:0;background:rgba(4,5,10,.78);display:none;flex-direction:column;align-items:center;justify-content:center;gap:9px;z-index:20}
+.pgov.vis{display:flex}
+.pgring{width:26px;height:26px;border:2px solid var(--bd2);border-top-color:var(--cy);border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pgmsg{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:var(--txt2)}
+.pgbar-w{width:150px;height:2px;background:var(--bd2);border-radius:1px}
+.pgbar{height:100%;background:var(--cy);border-radius:1px;width:0;transition:width .08s}
+/* COLORBAR */
+.cbar{position:absolute;right:8px;bottom:26px;width:14px;pointer-events:none;z-index:5}
+.cbar canvas{display:block;border-radius:2px}
+.cbar-lbls{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt2);margin-top:2px;line-height:2.1}
+.cbar-unit{font-family:'JetBrains Mono',monospace;font-size:6.5px;color:var(--txt3);text-align:center;margin-top:2px}
+/* TOOLTIP */
+.tip{position:fixed;background:rgba(7,9,16,.94);border:1px solid var(--bd2);border-radius:4px;padding:5px 8px;pointer-events:none;z-index:100;display:none}
+.tip.vis{display:block}
+.tip-row{font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.75;color:var(--txt2)}
+.tip-row b{color:var(--cy)}
+/* SELECTED POINT */
+.selpt{position:absolute;width:8px;height:8px;border:1.5px solid var(--am);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:6;display:none}
+.selpt.vis{display:block}
+/* PK CONTROLS */
+.pkctrl{position:absolute;bottom:26px;left:8px;background:rgba(7,9,16,.88);border:1px solid var(--bd);border-radius:4px;padding:6px 8px;z-index:5;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt2)}
+.pkctrl input{background:var(--s2);border:1px solid var(--bd);border-radius:3px;padding:2px 5px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:9px;outline:none;width:52px}
+/* STATUS BAR */
+.sbar{height:19px;border-top:1px solid var(--bd);background:var(--s0);display:flex;align-items:center;padding:0 11px;gap:16px;flex-shrink:0}
+.si{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--txt3);display:flex;align-items:center;gap:3px}
+.si span{color:var(--txt2)}
+/* Staging section */
+.stage-box{background:var(--s1);border:1px solid var(--bd);border-radius:4px;padding:6px 8px;margin-bottom:6px;position:relative}
+.stage-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;border-radius:2px 0 0 2px}
+.stage-box.sb1::before{background:var(--am)}.stage-box.sb2::before{background:var(--pu)}.stage-box.sb3::before{background:var(--bl)}
+.sb-hd{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px}
+.stage-box.sb1 .sb-hd{color:var(--am)}.stage-box.sb2 .sb-hd{color:var(--pu)}.stage-box.sb3 .sb-hd{color:var(--bl)}
+.ri{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:3px;padding:3px 6px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;margin-bottom:3px}
+.ri:focus{border-color:rgba(23,212,232,.4)}
+/* dv stacked bar */
+.dvbar-wrap{height:14px;border-radius:3px;overflow:hidden;display:flex;margin:3px 0;background:var(--s2)}
+.dvbar-seg{height:100%;transition:width .4s;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:7px;white-space:nowrap;overflow:hidden}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
 <header class="hdr">
-  <div class="hdr-logo">
-    <div class="hdr-logo-glyph">⊙</div>
-    <div>
-      <div class="hdr-title"><em>OMP-IV</em></div>
-      <div class="hdr-sub">Orbital Mission Planner · Rev 4</div>
-    </div>
+  <div class="hbrand">
+    <div class="hmark">⊙</div>
+    <div><div class="htitle"><em>OMP-VI</em></div><div class="hsub">Orbital Mission Planner</div></div>
   </div>
-  <div class="hdr-tabs">
-    <div class="hdr-tab active" data-mode="hohmann">Hohmann</div>
-    <div class="hdr-tab" data-mode="bielliptic">Bi-Elíptica</div>
-    <div class="hdr-tab" data-mode="sail">Vela Solar</div>
-    <div class="hdr-tab" data-mode="centrifuge">Centrífugo</div>
+  <div class="htabs">
+    <div class="htab on" data-mode="hohmann">Hohmann · Lambert</div>
+    <div class="htab" data-mode="ascent">Ascenso Orbital</div>
   </div>
-  <div class="hdr-status">
-    <div class="hdr-status-item"><div class="hdr-dot"></div>SISTEMA ACTIVO</div>
-    <div class="hdr-status-item"><div class="hdr-dot amber"></div>SIMULACIÓN</div>
-    <div class="simspeed-wrap">
-      <div class="sb-item">Vel. sim:</div>
-      <div class="ss-btn" id="ss-down">−</div>
-      <div class="sb-item"><span id="ss-val">×1</span></div>
-      <div class="ss-btn" id="ss-up">+</div>
-      <div class="ss-btn" id="ss-pause" title="Pausar/Reanudar">⏸</div>
+  <div class="hright">
+    <div class="hind"><div class="hdot hdot-g"></div>SOLVER ACTIVO</div>
+    <div class="hind"><div class="hdot hdot-a"></div>T₀:
+      <input type="date" id="inp-epoch" value="2026-01-01" style="background:transparent;border:none;color:var(--am);font-family:'JetBrains Mono',monospace;font-size:7.5px;outline:none;cursor:pointer;margin-left:4px">
     </div>
   </div>
 </header>
 
-<div class="app-main">
+<div class="app-body">
+<!-- ════ LEFT PANEL ════ -->
+<div class="panel l"><div class="ps">
 
-  <!-- ══ LEFT PANEL ══ -->
-  <div class="panel panel-left">
-    <div class="panel-scroll">
-
-      <div class="sec-lbl cyan">Misión</div>
-      <div class="fg">
-        <label class="fl">Origen</label>
-        <select class="fi" id="sel-origin">
-          <option value="earth">Tierra (LEO 200 km)</option>
-          <option value="earth_surf">Tierra (Lanzador Centrífugo)</option>
-          <option value="moon">Luna</option>
-          <option value="mars">Marte</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label class="fl">Destino</label>
-        <select class="fi" id="sel-target">
-          <option value="mars" selected>Marte</option>
-          <option value="venus">Venus</option>
-          <option value="jupiter">Júpiter</option>
-          <option value="mercury">Mercurio</option>
-          <option value="moon">Luna</option>
-        </select>
-      </div>
-
-      <div class="window-badge" id="window-badge">
-        <div class="window-badge-dot"></div>
-        <span class="window-badge-txt">Próxima ventana en&nbsp;</span>
-        <span class="window-badge-val" id="window-days">—</span>
-      </div>
-
-      <div class="sec-lbl amber">Nave Espacial</div>
-      <div class="fg">
-        <label class="fl">Masa seca (kg)</label>
-        <input type="number" class="fi" id="inp-dry" value="4500" min="100" max="500000">
-      </div>
-      <div class="fg">
-        <label class="fl">Fracción de propelente</label>
-        <div class="range-row">
-          <input type="range" id="r-prop" min="0.1" max="0.92" step="0.01" value="0.65">
-          <span class="rv" id="v-prop">65%</span>
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">Isp (s) — Impulso específico</label>
-        <div class="range-row">
-          <input type="range" id="r-isp" min="200" max="10000" step="10" value="450">
-          <span class="rv" id="v-isp">450 s</span>
-        </div>
-      </div>
-
-      <div class="sec-lbl">Capacidad Δv</div>
-      <div class="dr"><span class="dk">Masa total (m₀)</span><span class="dv" id="d-m0">—</span></div>
-      <div class="dr"><span class="dk">Masa propelente</span><span class="dv amber" id="d-mp">—</span></div>
-      <div class="dr"><span class="dk">Δv disponible</span><span class="dv green" id="d-dv-cap">—</span></div>
-
-      <div class="sec-lbl purple">Propulsión Avanzada</div>
-      <div class="toggle-row">
-        <span class="toggle-label">☀ Vela Solar</span>
-        <div class="toggle" id="tgl-sail"></div>
-      </div>
-      <div class="sail-section" id="sail-section">
-        <div class="fg">
-          <label class="fl">Área vela (m²)</label>
-          <div class="range-row">
-            <input type="range" id="r-sail-a" min="100" max="10000" step="100" value="2500">
-            <span class="rv" id="v-sail-a">2500</span>
-          </div>
-        </div>
-        <div class="fg">
-          <label class="fl">Eficiencia reflectiva η</label>
-          <div class="range-row">
-            <input type="range" id="r-sail-e" min="0.5" max="0.99" step="0.01" value="0.85">
-            <span class="rv" id="v-sail-e">0.85</span>
-          </div>
-        </div>
-        <div class="fg">
-          <label class="fl">Masa vela estructural (kg)</label>
-          <input type="number" class="fi" id="inp-sail-m" value="800" min="10" max="5000">
-        </div>
-        <div class="f-chip">
-          <span class="fn">a</span><span class="fv"> = P·A·η / (m·c)</span>
-        </div>
-        <div class="dr"><span class="dk">Aceleración @ 1 AU</span><span class="dv purple" id="d-sail-acc">—</span></div>
-        <div class="dr"><span class="dk">Aceleración @ target</span><span class="dv purple" id="d-sail-acc2">—</span></div>
-      </div>
-
-      <div class="toggle-row" style="margin-top:4px">
-        <span class="toggle-label">⚙ Lanzador Centrífugo</span>
-        <div class="toggle" id="tgl-cent"></div>
-      </div>
-
-    </div><!-- /panel-scroll -->
-  </div><!-- /left panel -->
-
-  <!-- ══ CANVAS ══ -->
-  <div class="canvas-wrap">
-    <canvas id="oc"></canvas>
-
-    <!-- 3D Label layer -->
-    <div class="lyr" id="lyr"></div>
-
-    <!-- Controls hint -->
-    <div class="ctrl-hint">
-      <kbd>drag</kbd> rotar · <kbd>shift</kbd>+drag pan<br>
-      <kbd>scroll</kbd> zoom · <kbd>R</kbd> reset
-    </div>
-
-    <!-- Compass -->
-    <div class="compass">
-      <div class="compass-inner" id="compass-txt">N↑<br>E→</div>
-    </div>
-
-    <!-- Formula strip -->
-    <div class="formula-strip">
-      <div class="formula-item">
-        <span class="f-name">vis-viva</span>
-        <span class="f-expr">v² = <span class="fh">GM</span>(2/r − 1/a)</span>
-      </div>
-      <div class="formula-item">
-        <span class="f-name">tsiolkovsky</span>
-        <span class="f-expr">Δv = <span class="fh">Isp·g₀</span>·ln(<span class="fhb">m₀/mf</span>)</span>
-      </div>
-      <div class="formula-item" id="fi-dv1">
-        <span class="f-name">Δv₁</span>
-        <span class="f-expr" id="fv-dv1">—</span>
-      </div>
-      <div class="formula-item" id="fi-dv2">
-        <span class="f-name">Δv₂</span>
-        <span class="f-expr" id="fv-dv2">—</span>
-      </div>
-      <div class="formula-item" id="fi-tof">
-        <span class="f-name">T<sub>trans</sub></span>
-        <span class="f-expr" id="fv-tof">—</span>
-      </div>
-      <div class="formula-item" id="fi-mr">
-        <span class="f-name">m₀/mf</span>
-        <span class="f-expr" id="fv-mr">—</span>
-      </div>
-      <div class="formula-item" id="fi-c3" style="display:none">
-        <span class="f-name">C₃</span>
-        <span class="f-expr" id="fv-c3">—</span>
-      </div>
-    </div>
-  </div><!-- /canvas -->
-
-  <!-- ══ RIGHT PANEL ══ -->
-  <div class="panel panel-right">
-    <div class="panel-scroll">
-
-      <div class="sec-lbl cyan">Fases de Misión</div>
-
-      <div class="phase-block depart">
-        <div class="phase-block-hdr">01 · Partida</div>
-        <div class="dr"><span class="dk">Δv₁ (maniobra)</span><span class="dv" id="r-dv1">—</span></div>
-        <div class="dr"><span class="dk">Δv LEO→C3</span><span class="dv blue" id="r-dv-leo">—</span></div>
-        <div class="dr"><span class="dk">C₃ (energía)</span><span class="dv blue" id="r-c3">—</span></div>
-        <div class="dr"><span class="dk">v∞ (exceso)</span><span class="dv blue" id="r-vinf">—</span></div>
-      </div>
-
-      <div class="phase-block cruise">
-        <div class="phase-block-hdr">02 · Crucero</div>
-        <div class="dr"><span class="dk">Semi-eje a</span><span class="dv amber" id="r-at">—</span></div>
-        <div class="dr"><span class="dk">Excentricidad e</span><span class="dv amber" id="r-et">—</span></div>
-        <div class="dr"><span class="dk">Tiempo transferencia</span><span class="dv amber" id="r-tof">—</span></div>
-        <div class="dr"><span class="dk">Vel. media aprox.</span><span class="dv amber" id="r-vmean">—</span></div>
-        <div class="dr"><span class="dk">Ángulo de fase req.</span><span class="dv amber" id="r-phase">—</span></div>
-      </div>
-
-      <div class="phase-block arrive">
-        <div class="phase-block-hdr">03 · Llegada</div>
-        <div class="dr"><span class="dk">Δv₂ (maniobra)</span><span class="dv purple" id="r-dv2">—</span></div>
-        <div class="dr"><span class="dk">Δv total heliocéntrico</span><span class="dv purple" id="r-dvtot">—</span></div>
-        <div class="dr"><span class="dk">Velocidad rel. llegada</span><span class="dv purple" id="r-varr">—</span></div>
-      </div>
-
-      <div class="sec-lbl amber">Balance Energético</div>
-      <div class="dr"><span class="dk">Masa inicial m₀</span><span class="dv" id="r-m0">—</span></div>
-      <div class="dr"><span class="dk">Propelente gastado</span><span class="dv red" id="r-mfuel">—</span></div>
-      <div class="dr"><span class="dk">Masa final mf</span><span class="dv green" id="r-mf">—</span></div>
-      <div class="dr"><span class="dk">Relación m₀/mf</span><span class="dv amber" id="r-mr">—</span></div>
-      <div class="dr"><span class="dk">Energía específica ε</span><span class="dv" id="r-eps">—</span></div>
-      <div class="dr"><span class="dk">Potencia propulsora</span><span class="dv" id="r-pw">—</span></div>
-
-      <div class="ebar-wrap" id="fuel-bar-wrap">
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3)">MASA PROPELENTE / TOTAL</span>
-        </div>
-        <div class="ebar-track">
-          <div class="ebar-fill" id="fuel-bar" style="width:0%;background:linear-gradient(90deg,var(--amber),var(--red))"></div>
-        </div>
-        <div class="ebar-lbl">
-          <span id="ebar-prop">0%</span>
-          <span id="ebar-struct">Estructura</span>
-        </div>
-      </div>
-
-      <div class="sec-lbl">Elementos Orbitales</div>
-      <div class="dr"><span class="dk">a (perihelio)</span><span class="dv blue" id="r-rp">—</span></div>
-      <div class="dr"><span class="dk">a (afelio)</span><span class="dv blue" id="r-ra">—</span></div>
-      <div class="dr"><span class="dk">Período orbital T</span><span class="dv blue" id="r-period">—</span></div>
-      <div class="dr"><span class="dk">ΔE específica (J/kg)</span><span class="dv" id="r-de">—</span></div>
-
-      <div class="sec-lbl purple" id="sail-results-lbl" style="display:none">Vela Solar</div>
-      <div id="sail-results" style="display:none">
-        <div class="dr"><span class="dk">Accel. inicial</span><span class="dv purple" id="rs-a0">—</span></div>
-        <div class="dr"><span class="dk">Tiempo espiral (est.)</span><span class="dv purple" id="rs-t">—</span></div>
-        <div class="dr"><span class="dk">Relación A/m</span><span class="dv purple" id="rs-am">—</span></div>
-      </div>
-
-    </div><!-- /panel-scroll -->
-  </div><!-- /right panel -->
-
-</div><!-- /app-main -->
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="sb-item">T_sim: <span id="sb-time">0.000 yr</span></div>
-  <div class="sb-item">Escala: <span id="sb-scale">1 u = 1 AU</span></div>
-  <div class="sb-item">Origen: <span id="sb-origin">Tierra</span></div>
-  <div class="sb-item">Target: <span id="sb-target">Marte</span></div>
-  <div class="sb-item" id="sb-fps">FPS: <span>60</span></div>
-  <div class="sb-item" style="margin-left:auto">
-    Scroll: zoom · Arrastrar: orbitar · Shift+drag: pan · R: reset vista
+  <!-- HOHMANN LEFT -->
+  <div id="lp-hoh">
+    <div class="sl cy">Misión</div>
+    <div class="fg"><label class="fl">Origen</label>
+      <select class="fi" id="sel-orig"><option value="earth">Tierra</option><option value="mars">Marte</option><option value="venus">Venus</option></select></div>
+    <div class="fg"><label class="fl">Destino</label>
+      <select class="fi" id="sel-dest"><option value="mars" selected>Marte</option><option value="venus">Venus</option><option value="jupiter">Júpiter</option><option value="mercury">Mercurio</option></select></div>
+    <div class="sl am">Maniobras</div>
+    <div class="fg"><label class="fl">Órbita parkeo (km)</label>
+      <div class="rrow"><input type="range" id="r-hp" min="160" max="5000" step="10" value="400"><span class="rv" id="v-hp">400 km</span></div></div>
+    <div class="fg"><label class="fl">Captura destino (km)</label>
+      <div class="rrow"><input type="range" id="r-hc" min="100" max="50000" step="100" value="400"><span class="rv" id="v-hc">400 km</span></div></div>
+    <div class="fchip">Δv_esc = √(<span class="fc">v∞²+2μ/r_p</span>) − √(<span class="fa">μ/r_p</span>)</div>
+    <div class="sl">Nave</div>
+    <div class="fg"><label class="fl">Masa seca m_f (kg)</label><input type="number" class="fi" id="inp-mf" value="5000" min="10"></div>
+    <div class="fg"><label class="fl">Isp (s)</label>
+      <div class="rrow"><input type="range" id="r-isp" min="250" max="10000" step="10" value="450"><span class="rv" id="v-isp">450 s</span></div></div>
+    <div class="fg"><label class="fl">Fracción propelente</label>
+      <div class="rrow"><input type="range" id="r-fp" min="0.05" max="0.93" step="0.01" value="0.65"><span class="rv" id="v-fp">65%</span></div></div>
+    <div class="dr"><span class="dk">m₀ disponible</span><span class="dv" id="d-m0">—</span></div>
+    <div class="dr"><span class="dk">Δv disponible</span><span class="dv gn" id="d-dvcap">—</span></div>
+    <div class="sl">Simulación</div>
+    <div class="fg"><label class="fl">Velocidad</label>
+      <select class="fi" id="sel-spd"><option value="0">⏸ Pausado</option><option value="1">×1 día/s</option><option value="7" selected>×1 sem/s</option><option value="30">×1 mes/s</option><option value="365">×1 año/s</option></select></div>
+    <button class="btn btn-s" id="btn-reset-hoh">↺ Reset cámaras</button>
   </div>
+
+  <!-- ASCENT LEFT -->
+  <div id="lp-asc" style="display:none">
+    <div class="sl cy">Sitio de lanzamiento</div>
+    <div class="fg"><label class="fl">Sitio</label>
+      <select class="fi" id="asc-site">
+        <option value="28.5">Cape Canaveral (28.5°N)</option>
+        <option value="5.2">Kourou, Guyana (5.2°N)</option>
+        <option value="-8.7">Alcântara, Brasil (2.3°S)</option>
+        <option value="63.0">Plesetsk, Rusia (63°N)</option>
+        <option value="31.2">Jiuquan, China (40.6°N)</option>
+      </select></div>
+    <div class="fg"><label class="fl">Azimut (°)</label>
+      <div class="rrow"><input type="range" id="asc-az" min="0" max="360" step="1" value="90"><span class="rv" id="v-az">90°</span></div></div>
+
+    <div class="sl am">Órbita objetivo</div>
+    <div class="fg"><label class="fl">Altitud (km)</label>
+      <div class="rrow"><input type="range" id="asc-htgt" min="200" max="2000" step="10" value="400"><span class="rv" id="v-htgt">400 km</span></div></div>
+    <div class="fg"><label class="fl">Tipo</label>
+      <select class="fi" id="asc-type">
+        <option value="leo">LEO circular</option>
+        <option value="sso">SSO (hel.-síncrona)</option>
+        <option value="gto">GTO (transferencia GEO)</option>
+      </select></div>
+    <div class="dr"><span class="dk">v_circ objetivo</span><span class="dv cy" id="a-vcirc">—</span></div>
+    <div class="dr"><span class="dk">Δv_orbital ref.</span><span class="dv am" id="a-dvref">—</span></div>
+
+    <div class="sl pu">Etapa 1</div>
+    <div class="stage-box sb1">
+      <div class="sb-hd">ETAPA 1</div>
+      <div class="fg"><label class="fl">Masa estructural (kg)</label><input type="number" class="ri fi" id="s1-ms" value="8500" min="100"></div>
+      <div class="fg"><label class="fl">Masa propelente (kg)</label><input type="number" class="ri fi" id="s1-mp" value="95000" min="100"></div>
+      <div class="fg"><label class="fl">Isp (s)</label><div class="rrow"><input type="range" id="s1-isp" min="220" max="380" step="5" value="280"><span class="rv" id="v-s1isp">280 s</span></div></div>
+      <div class="fg"><label class="fl">Empuje (kN)</label><input type="number" class="ri fi" id="s1-thr" value="1500" min="10"></div>
+    </div>
+    <div class="sl">Etapa 2</div>
+    <div class="stage-box sb2">
+      <div class="sb-hd">ETAPA 2</div>
+      <div class="fg"><label class="fl">Masa estructural (kg)</label><input type="number" class="ri fi" id="s2-ms" value="1800" min="100"></div>
+      <div class="fg"><label class="fl">Masa propelente (kg)</label><input type="number" class="ri fi" id="s2-mp" value="18000" min="100"></div>
+      <div class="fg"><label class="fl">Isp (s)</label><div class="rrow"><input type="range" id="s2-isp" min="280" max="500" step="5" value="350"><span class="rv" id="v-s2isp">350 s</span></div></div>
+      <div class="fg"><label class="fl">Empuje (kN)</label><input type="number" class="ri fi" id="s2-thr" value="180" min="1"></div>
+    </div>
+
+    <div class="sl gn">Carga útil</div>
+    <div class="fg"><label class="fl">Masa payload (kg)</label><input type="number" class="fi" id="asc-pay" value="3000" min="1"></div>
+
+    <div class="sl">Aerodinámica</div>
+    <div class="fg"><label class="fl">Cd (coef. arrastre)</label>
+      <div class="rrow"><input type="range" id="asc-cd" min="0.1" max="1.0" step="0.05" value="0.3"><span class="rv" id="v-cd">0.30</span></div></div>
+    <div class="fg"><label class="fl">Área de referencia (m²)</label>
+      <div class="rrow"><input type="range" id="asc-ar" min="1" max="80" step="1" value="12"><span class="rv" id="v-ar">12 m²</span></div></div>
+    <div class="fg"><label class="fl">Ángulo de pitch (°)</label>
+      <div class="rrow"><input type="range" id="asc-kick" min="1" max="20" step="0.5" value="5"><span class="rv" id="v-kick">5°</span></div></div>
+
+    <button class="btn btn-cy" id="btn-sim">▶ Simular trayectoria</button>
+    <button class="btn btn-s" id="btn-reset-asc">↺ Reset cámaras</button>
+  </div>
+
+</div></div>
+
+<!-- ════ VIEWPORTS ════ -->
+<div class="vpa" id="vpa">
+
+  <div class="vp" id="vp0">
+    <div class="vpbar">
+      <div class="vpbar-l">
+        <span class="vpname" id="vp0-name">Sistema Solar · Eclíptica</span>
+        <span class="vpbadge" id="vp0-badge">Kepler real</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <span class="vpbtn" data-vi="0" data-a="solo">⤢</span>
+        <span class="vpbtn" data-vi="0" data-a="reset">⟳</span>
+      </div>
+    </div>
+    <canvas id="c0" style="cursor:grab"></canvas>
+    <div class="tip" id="tip0"></div>
+  </div>
+
+  <div class="vp" id="vp1">
+    <div class="vpbar">
+      <div class="vpbar-l">
+        <span class="vpname" id="vp1-name">Porkchop Plot</span>
+        <span class="vpbadge" id="vp1-badge">C₃ km²/s²</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <span class="vpbtn" id="vp1-extra-btn" style="display:none"></span>
+        <span class="vpbtn" data-vi="1" data-a="solo">⤢</span>
+        <span class="vpbtn" id="vp1-calc-btn">⟳ Calcular</span>
+      </div>
+    </div>
+    <canvas id="c1" style="cursor:crosshair"></canvas>
+    <div class="pgov" id="v1-prog"><div class="pgring"></div><div class="pgmsg" id="v1-msg">Calculando...</div><div class="pgbar-w"><div class="pgbar" id="v1-bar"></div></div></div>
+    <div class="cbar" id="cbar-wrap"><canvas id="cbar-cv" width="14" height="120"></canvas><div class="cbar-lbls" id="cbar-lbls"></div><div class="cbar-unit" id="cbar-unit"></div></div>
+    <div class="selpt" id="selpt"></div>
+    <!-- HOH pk controls -->
+    <div class="pkctrl" id="pk-ctrl-hoh">
+      <div style="margin-bottom:3px">Rango salida / TOF máx.</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <input id="pk-span" type="number" value="780" min="60" max="2000"><span>d /</span>
+        <input id="pk-tof" type="number" value="400" min="30" max="900"><span>d</span>
+      </div>
+    </div>
+    <div class="tip" id="tip1"></div>
+  </div>
+
+  <div class="vp" id="vp2">
+    <div class="vpbar">
+      <div class="vpbar-l">
+        <span class="vpname" id="vp2-name">Salida · Tierra</span>
+        <span class="vpbadge" id="vp2-badge">Hipérbola escape · km</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <span class="vpbtn" data-vi="2" data-a="solo">⤢</span>
+        <span class="vpbtn" data-vi="2" data-a="reset">⟳</span>
+      </div>
+    </div>
+    <canvas id="c2" style="cursor:grab"></canvas>
+    <div class="tip" id="tip2"></div>
+  </div>
+
+  <div class="vp" id="vp3">
+    <div class="vpbar">
+      <div class="vpbar-l">
+        <span class="vpname" id="vp3-name">Llegada · Marte</span>
+        <span class="vpbadge" id="vp3-badge">Hipérbola captura · km</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <span class="vpbtn" data-vi="3" data-a="solo">⤢</span>
+        <span class="vpbtn" data-vi="3" data-a="reset">⟳</span>
+      </div>
+    </div>
+    <canvas id="c3" style="cursor:grab"></canvas>
+    <div class="tip" id="tip3"></div>
+  </div>
+
+</div><!-- /vpa -->
+
+<!-- ════ RIGHT PANEL ════ -->
+<div class="panel r"><div class="ps">
+
+  <!-- HOHMANN RIGHT -->
+  <div id="rp-hoh">
+    <div class="sl cy">Misión seleccionada</div>
+    <div class="dr"><span class="dk">Fecha salida</span><span class="dv" id="r-dep">—</span></div>
+    <div class="dr"><span class="dk">Fecha llegada</span><span class="dv" id="r-arr">—</span></div>
+    <div class="dr"><span class="dk">TOF</span><span class="dv am" id="r-tof">—</span></div>
+    <div class="phase dep">
+      <div class="ph">01 · Partida</div>
+      <div class="dr"><span class="dk">v∞</span><span class="dv" id="r-vinf1">—</span></div>
+      <div class="dr"><span class="dk">C₃</span><span class="dv bl" id="r-c3">—</span></div>
+      <div class="dr"><span class="dk">Δv escape</span><span class="dv" id="r-dvesc">—</span></div>
+      <div class="dr"><span class="dk">v_circ parkeo</span><span class="dv" id="r-vpark">—</span></div>
+      <div class="dr"><span class="dk">e hipérbola</span><span class="dv" id="r-ehyp1">—</span></div>
+    </div>
+    <div class="phase crs">
+      <div class="ph">02 · Crucero</div>
+      <div class="dr"><span class="dk">a_t</span><span class="dv am" id="r-at">—</span></div>
+      <div class="dr"><span class="dk">e_t</span><span class="dv am" id="r-et">—</span></div>
+      <div class="dr"><span class="dk">v @ perihelio</span><span class="dv am" id="r-vper">—</span></div>
+      <div class="dr"><span class="dk">v @ afelio</span><span class="dv am" id="r-vapo">—</span></div>
+      <div class="dr"><span class="dk">Ángulo fase req.</span><span class="dv am" id="r-phase">—</span></div>
+    </div>
+    <div class="phase arr">
+      <div class="ph">03 · Llegada</div>
+      <div class="dr"><span class="dk">v∞</span><span class="dv pu" id="r-vinf2">—</span></div>
+      <div class="dr"><span class="dk">Δv captura</span><span class="dv pu" id="r-dvcap2">—</span></div>
+      <div class="dr"><span class="dk">Δv total</span><span class="dv rd" id="r-dvtot">—</span></div>
+    </div>
+    <div class="sl am">Balance de masa</div>
+    <div class="dr"><span class="dk">m₀ requerida</span><span class="dv" id="r-m0r">—</span></div>
+    <div class="dr"><span class="dk">Propelente</span><span class="dv rd" id="r-mpr">—</span></div>
+    <div class="dr"><span class="dk">m₀ disponible</span><span class="dv wh" id="r-m0a">—</span></div>
+    <div class="dr"><span class="dk">Margen Δv</span><span class="dv" id="r-margin">—</span></div>
+    <div class="ebar"><div class="efill" id="efill" style="background:linear-gradient(90deg,var(--am),var(--rd))"></div></div>
+    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--txt3);margin-bottom:4px"><span id="el">—</span><span id="er">—</span></div>
+    <div class="sl">Energía orbital</div>
+    <div class="dr"><span class="dk">ε específica</span><span class="dv" id="r-eps">—</span></div>
+    <div class="dr"><span class="dk">TOF Hohm. (ref.)</span><span class="dv" id="r-period">—</span></div>
+    <div class="dr"><span class="dk">r perihelio / afelio</span><span class="dv am" id="r-rpera">—</span></div>
+  </div>
+
+  <!-- ASCENT RIGHT -->
+  <div id="rp-asc" style="display:none">
+    <div class="sl cy">Resultado simulación</div>
+    <div class="dr"><span class="dk">Estado</span><span class="dv gn" id="a-status">Sin simular</span></div>
+    <div class="dr"><span class="dk">Tiempo total</span><span class="dv" id="a-ttime">—</span></div>
+    <div class="dr"><span class="dk">Downrange final</span><span class="dv am" id="a-range">—</span></div>
+    <div class="dr"><span class="dk">Altitud máx.</span><span class="dv cy" id="a-hmax">—</span></div>
+
+    <div class="phase s1">
+      <div class="ph">Etapa 1</div>
+      <div class="dr"><span class="dk">Δv producida</span><span class="dv am" id="a-dv1">—</span></div>
+      <div class="dr"><span class="dk">T/W (inicial)</span><span class="dv am" id="a-tw1">—</span></div>
+      <div class="dr"><span class="dk">Δv disponible</span><span class="dv am" id="a-dvcap1">—</span></div>
+      <div class="dr"><span class="dk">Max-Q (altitud)</span><span class="dv am" id="a-maxqh">—</span></div>
+      <div class="dr"><span class="dk">q max</span><span class="dv rd" id="a-maxq">—</span></div>
+    </div>
+    <div class="phase s2">
+      <div class="ph">Etapa 2</div>
+      <div class="dr"><span class="dk">Δv producida</span><span class="dv pu" id="a-dv2">—</span></div>
+      <div class="dr"><span class="dk">T/W (en separación)</span><span class="dv pu" id="a-tw2">—</span></div>
+      <div class="dr"><span class="dk">Δv disponible</span><span class="dv pu" id="a-dvcap2">—</span></div>
+    </div>
+    <div class="phase orb">
+      <div class="ph">Órbita conseguida</div>
+      <div class="dr"><span class="dk">v horizontal</span><span class="dv cy" id="a-vfx">—</span></div>
+      <div class="dr"><span class="dk">v vertical</span><span class="dv cy" id="a-vfy">—</span></div>
+      <div class="dr"><span class="dk">v total</span><span class="dv cy" id="a-vtot">—</span></div>
+      <div class="dr"><span class="dk">v_circ requerida</span><span class="dv" id="a-vcreq">—</span></div>
+      <div class="dr"><span class="dk">Δv defecto/exceso</span><span class="dv" id="a-vdef">—</span></div>
+    </div>
+    <div class="phase los">
+      <div class="ph">Pérdidas</div>
+      <div class="dr"><span class="dk">Pérdida gravedad</span><span class="dv rd" id="a-gloss">—</span></div>
+      <div class="dr"><span class="dk">Pérdida arrastre</span><span class="dv rd" id="a-dloss">—</span></div>
+      <div class="dr"><span class="dk">Total pérdidas</span><span class="dv rd" id="a-tloss">—</span></div>
+      <div class="dr"><span class="dk">Eficiencia (ΔvOrb/ΔvTot)</span><span class="dv gn" id="a-eff">—</span></div>
+    </div>
+
+    <div class="sl am">Balance de masa</div>
+    <div class="dr"><span class="dk">Masa inicial total</span><span class="dv" id="a-m0">—</span></div>
+    <div class="dr"><span class="dk">Masa en órbita</span><span class="dv gn" id="a-morb">—</span></div>
+    <div class="dr"><span class="dk">Payload fraction</span><span class="dv cy" id="a-lambda">—</span></div>
+    <div class="dr"><span class="dk">Fracción estructural 1</span><span class="dv am" id="a-eps1">—</span></div>
+    <div class="dr"><span class="dk">Fracción estructural 2</span><span class="dv pu" id="a-eps2">—</span></div>
+
+    <div class="sl">Balance Δv</div>
+    <div class="fchip">Δv_total = <span class="fc">Δv_orb</span> + <span class="fa">Δv_grav</span> + <span class="fg_">Δv_drag</span></div>
+    <div id="dvbar-outer" style="margin:4px 0">
+      <div class="dvbar-wrap">
+        <div class="dvbar-seg" id="dvb-orb" style="background:rgba(23,212,232,.7)"></div>
+        <div class="dvbar-seg" id="dvb-grav" style="background:rgba(232,160,23,.7)"></div>
+        <div class="dvbar-seg" id="dvb-drag" style="background:rgba(232,74,58,.7)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt3);margin-top:2px">
+        <span style="color:var(--cy)" id="dvb-orb-l">—</span>
+        <span style="color:var(--am)" id="dvb-grav-l">—</span>
+        <span style="color:var(--rd)" id="dvb-drag-l">—</span>
+      </div>
+    </div>
+    <div class="dr"><span class="dk">Δv total misión</span><span class="dv rd" id="a-dvtot">—</span></div>
+  </div>
+
+</div></div>
+</div><!-- /app-body -->
+
+<div class="sbar">
+  <div class="si">Modo: <span id="sb-mode">Hohmann</span></div>
+  <div class="si" id="sb-info1">Origen: <span id="sb-or">Tierra</span></div>
+  <div class="si" id="sb-info2">Destino: <span id="sb-de">Marte</span></div>
+  <div class="si">Época: <span id="sb-ep">2026-01-01</span></div>
+  <div class="si" id="sb-fps">FPS: <span>—</span></div>
+  <div class="si" style="margin-left:auto">Drag: pan · Scroll: zoom · R: reset</div>
 </div>
-
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-//  OMP-IV · Sistema de Planificación de Mecánica Orbital
-//  Física real: vis-viva, Hohmann, Tsiolkovsky, Kepler, vela solar
-// ═══════════════════════════════════════════════════════════════════════
+'use strict';
+// ══ CONSTANTS ══════════════════════════════════════════════════
+const TAU=2*Math.PI, G0=9.80665;
+// Heliocentric
+const AU=1.495978707e11, YR=365.25*86400, DAY=86400;
+const MU_S=1.32712440018e20, MU_S_AU=4*Math.PI*Math.PI, AUyr=AU/YR;
+// Geocentric
+const R_E=6371e3, MU_E=3.986004418e14;
 
-// ── CONSTANTES FÍSICAS ──────────────────────────────────────────────
-const PI2  = Math.PI * 2;
-const DEG  = Math.PI / 180;
-const MU_SUN = 4 * Math.PI * Math.PI;  // AU³/yr²  (G·M_sun)
-const G0     = 9.80665;                 // m/s²
-const AU_M   = 1.496e11;                // m/AU
-const YR_S   = 365.25 * 86400;         // s/yr
-const C_LIGHT= 2.998e8;                 // m/s
-const L_SUN  = 3.828e26;               // W
-const MU_EARTH = 3.986e14;             // m³/s²
-const R_EARTH= 6.371e6;                // m
-const AUyr_ms = AU_M / YR_S;           // 4740.3 m/s per AU/yr
-
-// SCALE: 1 AU = SCALE Three.js units
-const SCALE = 10;
-
-// ── DATOS PLANETARIOS ──────────────────────────────────────────────
-const PLANET_DATA = {
-  mercury: { a:0.387, e:0.205, T:0.2408, inc:7.00*DEG, color:0x8ca0b4, r_vis:0.055, soi_au:0.000451, mu:2.203e13, name:'Mercurio', r_orb:0.387 },
-  venus:   { a:0.723, e:0.007, T:0.6152, inc:3.39*DEG, color:0xd4aa60, r_vis:0.095, soi_au:0.006138, mu:3.249e14, name:'Venus',    r_orb:0.723 },
-  earth:   { a:1.000, e:0.017, T:1.0000, inc:0.00*DEG, color:0x2a6fcc, r_vis:0.10,  soi_au:0.006177, mu:3.986e14, name:'Tierra',   r_orb:1.000 },
-  moon:    { a:0.00257, e:0.055, T:0.0748, inc:5.14*DEG, color:0x909090, r_vis:0.04, soi_au:0.00241,  mu:4.903e12, name:'Luna',     r_orb:1.000 },
-  mars:    { a:1.524, e:0.093, T:1.8809, inc:1.85*DEG, color:0xc84828, r_vis:0.075, soi_au:0.003896, mu:4.283e13, name:'Marte',    r_orb:1.524 },
-  jupiter: { a:5.203, e:0.049, T:11.862, inc:1.30*DEG, color:0xc8a070, r_vis:0.24,  soi_au:0.3221,   mu:1.267e17, name:'Júpiter',  r_orb:5.203 },
+// ══ PLANET DATA ════════════════════════════════════════════════
+const PL={
+  mercury:{name:'Mercurio',a:.3871,e:.2056,T:87.97,  R:2.440e6,mu:2.203e13,soi:1.120e8,color:'#7898a8',L0:252.25*Math.PI/180},
+  venus:  {name:'Venus',   a:.7233,e:.0068,T:224.70, R:6.052e6,mu:3.249e14,soi:6.162e8,color:'#c8a050',L0:181.98*Math.PI/180},
+  earth:  {name:'Tierra',  a:1.000,e:.0167,T:365.25, R:6.371e6,mu:3.986e14,soi:9.244e8,color:'#2a6ac8',L0:100.46*Math.PI/180},
+  mars:   {name:'Marte',   a:1.524,e:.0934,T:686.97, R:3.390e6,mu:4.283e13,soi:5.772e8,color:'#c04820',L0:355.45*Math.PI/180},
+  jupiter:{name:'Júpiter', a:5.203,e:.0484,T:4332.6, R:6.991e7,mu:1.267e17,soi:4.822e10,color:'#c09858',L0:34.40*Math.PI/180},
 };
 
-// ── ORBITAL MATH ────────────────────────────────────────────────────
+// ══ KEPLER + PLANET STATE ══════════════════════════════════════
+function kepler(M,e){M=((M%TAU)+TAU)%TAU;let E=M+e*Math.sin(M);for(let i=0;i<64;i++){const d=(M-E+e*Math.sin(E))/(1-e*Math.cos(E));E+=d;if(Math.abs(d)<1e-12)break;}return E;}
+function planetState(key,t_yr){
+  const p=PL[key],n=TAU/(p.T/365.25),M=p.L0+n*t_yr,E=kepler(M,p.e);
+  const nu=2*Math.atan2(Math.sqrt(1+p.e)*Math.sin(E/2),Math.sqrt(1-p.e)*Math.cos(E/2));
+  const r=p.a*(1-p.e*Math.cos(E)),pp=p.a*(1-p.e*p.e),sq=Math.sqrt(MU_S_AU/pp);
+  return{x:r*Math.cos(nu),y:r*Math.sin(nu),vx:-sq*Math.sin(nu),vy:sq*(p.e+Math.cos(nu)),r};
+}
+function stC(z){if(Math.abs(z)<1e-8)return.5-z/24;const s=Math.sqrt(Math.abs(z));return z>0?(1-Math.cos(s))/z:(Math.cosh(s)-1)/(-z);}
+function stS(z){if(Math.abs(z)<1e-8)return 1/6-z/120;const s=Math.sqrt(Math.abs(z));return z>0?(s-Math.sin(s))/(s*s*s):(Math.sinh(s)-s)/(s*s*s);}
 
-// Solve Kepler's equation M = E - e·sin(E) → E
-function solveKepler(M, e, tol=1e-9) {
-  let E = M;
-  for (let i=0; i<64; i++) {
-    const dE = (M - E + e*Math.sin(E)) / (1 - e*Math.cos(E));
-    E += dE;
-    if (Math.abs(dE) < tol) break;
+// ══ LAMBERT SOLVER (universal variables, bisection-guaranteed) ═
+function lambert(r1v,r2v,tof_d){
+  const tof=tof_d/365.25;if(tof<1e-6)return null;
+  const r1=Math.sqrt(r1v.x**2+r1v.y**2),r2=Math.sqrt(r2v.x**2+r2v.y**2);
+  if(r1<1e-12||r2<1e-12)return null;
+  const cnu=Math.max(-1,Math.min(1,(r1v.x*r2v.x+r1v.y*r2v.y)/(r1*r2)));
+  const dnu=Math.acos(cnu);if(Math.sin(dnu)<0.003)return null;
+  const A=Math.sin(dnu)*Math.sqrt(r1*r2/(1-cnu));
+  function yFn(z){const C=stC(z);if(C<=0)return null;const v=r1+r2+A*(z*stS(z)-1)/Math.sqrt(C);return v>1e-12?v:null;}
+  function F(z){const y=yFn(z);if(!y)return null;const C=stC(z);if(C<=0)return null;const chi=Math.sqrt(y/C);return(chi**3*stS(z)+A*Math.sqrt(y))/Math.sqrt(MU_S_AU)-tof;}
+  const ZB=4*Math.PI**2-0.02;
+  let za=-0.5;for(let d=0.5;d<60;d+=0.5){if(yFn(-d)===null){za=-(d-0.5);break;}za=-d;}
+  const Fa=F(za),Fb=F(ZB);if(!Fa||!Fb)return null;
+  if(Math.sign(Fa)===Math.sign(Fb)){const F0=F(0.01);if(!F0||Math.sign(F0)===Math.sign(Fb))return null;za=0.01;}
+  let lo=za,hi=ZB,z=(za+ZB)*.5;
+  for(let i=0;i<100;i++){const fz=F(z);if(!fz){z=(lo+hi)*.5;continue;}if(Math.abs(fz)<1e-10)break;
+    const h=1e-5,fp=F(z+h),fm=F(z-h);
+    if(fp&&fm){const df=(fp-fm)/(2*h);if(Math.abs(df)>1e-14){const zn=z-fz/df;if(zn>lo&&zn<hi){z=zn;continue;}}}
+    if(fz>0)lo=z;else hi=z;z=(lo+hi)*.5;if(hi-lo<1e-11)break;}
+  const y=yFn(z);if(!y)return null;
+  const g=A*Math.sqrt(y/MU_S_AU);if(Math.abs(g)<1e-14)return null;
+  const fc=1-y/r1,gd=1-y/r2;
+  if(Math.abs(F(z)||1)>0.5)return null;
+  return{v1:{x:(r2v.x-fc*r1v.x)/g,y:(r2v.y-fc*r1v.y)/g},v2:{x:(gd*r2v.x-r1v.x)/g,y:(gd*r2v.y-r1v.y)/g}};
+}
+function hyperbola(vi,mu,rp){
+  if(vi<1||rp<=0)return null;
+  const a=mu/(vi*vi),e=1+rp/a,vh=Math.sqrt(vi*vi+2*mu/rp),vc=Math.sqrt(mu/rp);
+  return{a,e,dv:vh-vc,v_hyp:vh,v_circ:vc,r_p:rp,th_inf:Math.acos(-1/e)};
+}
+function rocketM0(dv,isp,mf){const mr=Math.exp(dv/(isp*G0));return{m0:mf*mr,mp:mf*(mr-1),mr};}
+function rocketDv(m0,mf,isp){return isp*G0*Math.log(m0/mf);}
+function epochYr(s){return(new Date(s+'T12:00:00Z')-new Date('2000-01-01T12:00:00Z'))/(365.25*DAY*1000);}
+function yrToDate(yr){return new Date(new Date('2000-01-01T12:00:00Z').getTime()+yr*365.25*DAY*1000).toISOString().slice(0,10);}
+
+// ══ ATMOSPHERE (ISA + exponential upper) ══════════════════════
+function isaDensity(h){
+  h=Math.max(0,h);if(h>500e3)return 0;
+  const L=[[0,1.225,8434],[11e3,.3639,6341],[20e3,.0880,6882],[32e3,.0132,9070],[47e3,.00143,7922],[51e3,.000860,5800],[71e3,.0000640,5684],[86e3,.00000640,7500]];
+  let l=L[0];for(let i=L.length-1;i>=0;i--){if(h>=L[i][0]){l=L[i];break;}}
+  return l[1]*Math.exp(-(h-l[0])/l[2]);
+}
+
+// ══ ASCENT TRAJECTORY SIMULATION ══════════════════════════════
+// Flat-Earth 2D: x=downrange [m], h=altitude [m], vx=horiz, vh=vert
+// Gravity turn: pitch over follows velocity vector after kick
+function simAscent(cfg){
+  const{stages,m_pay,Cd,A_ref,kick_deg,h_tgt}=cfg;
+
+  // Total initial mass
+  let m0=m_pay;stages.forEach(s=>m0+=s.ms+s.mp);
+  let m=m0, x=0, h=0, vx=0, vh=0.1;
+  let t=0;
+  const DT=0.5; // s
+  const REC=[], EVENTS=[];
+  let grav_loss=0, drag_loss=0;
+  let si=0; // current stage
+  let mp_left=stages[0].mp; // propellant left in current stage
+  let kicked=false, kick_speed=50; // m/s at which kick occurs (after vertical rise)
+  let hmax=0, maxQ=0, maxQ_h=0, dv_stage=[0,0,0];
+  let thrust_total_ms=0;
+
+  for(let iter=0;iter<8000&&si<=stages.length;iter++){
+    const r=R_E+h, grav=MU_E/(r*r);
+    const rho=isaDensity(h);
+    const v=Math.sqrt(vx*vx+vh*vh);
+    const v_circ_here=Math.sqrt(MU_E/r);
+
+    // Check orbit achieved
+    if(h>=h_tgt&&vx>v_circ_here*0.95){
+      EVENTS.push({t,x,h,vx,vh,type:'orbit'});break;
+    }
+    if(h<-100&&t>5)break; // crashed
+
+    // Thrust & staging
+    let Tx=0,Tvh=0,mdot_=0;
+    if(si<stages.length){
+      const st=stages[si];
+      const Thr=st.thrust;
+      // Direction: vertical until kick_speed reached, then gravity turn
+      let dirx,dirh;
+      if(!kicked){
+        if(vx<1e-4){dirx=0;dirh=1;} // pure vertical
+        else{kicked=true;}
+      }
+      if(kicked){
+        // Gravity turn: thrust along velocity vector
+        // Add initial kick: tilt by kick_deg at start of gravity turn
+        if(v>1){
+          // Compute flight path angle from vertical
+          const ang_v=Math.atan2(vx,vh); // angle from vertical
+          // Drive toward gravity turn naturally
+          dirx=vx/v; dirh=vh/v;
+        } else {dirx=Math.sin(kick_deg*Math.PI/180);dirh=Math.cos(kick_deg*Math.PI/180);}
+      }
+      if(!kicked){dirx=0;dirh=1;}
+      // Apply kick impulse at vh>kick_speed
+      if(!kicked&&vh>kick_speed){
+        kicked=true;
+        // Initial kick: add horizontal velocity
+        const krad=kick_deg*Math.PI/180;
+        // Redistribute some vertical velocity to horizontal
+        vx+=Math.sin(krad)*vh; vh*=Math.cos(krad);
+        dirx=vx/Math.sqrt(vx*vx+vh*vh);dirh=vh/Math.sqrt(vx*vx+vh*vh);
+      }
+
+      mdot_=Thr/(st.isp*G0);
+      if(mp_left>0){
+        Tx=Thr*dirx; Tvh=Thr*dirh;
+        mp_left-=mdot_*DT; m-=mdot_*DT;
+        dv_stage[si]+=(Thr/m)*DT;
+      }else{
+        // Stage separation
+        EVENTS.push({t,x,h,vx,vh,type:'sep',si});
+        m-=stages[si].ms; // drop struct mass
+        si++;
+        if(si<stages.length)mp_left=stages[si].mp;
+      }
+    }
+
+    // Drag (opposing velocity)
+    const q=0.5*rho*v*v;
+    const D=q*Cd*A_ref;
+    if(v>0.01){
+      const Dx=-D*vx/v, Dvh=-D*vh/v;
+      if(Tvh>0||Tx>0) drag_loss+=D/m*DT;
+      Tx+=Dx; Tvh+=Dvh;
+    }
+
+    // Gravity loss (component of gravity along thrust direction)
+    if(Tvh>0||Tx>0) grav_loss+=grav*Math.abs(vh/Math.max(v,1))*DT;
+
+    // Equations of motion
+    const ax=Tx/m;
+    const avh=Tvh/m - grav;
+    vx+=ax*DT; vh+=avh*DT;
+    x+=vx*DT; h+=vh*DT;
+    t+=DT;
+    if(h>hmax)hmax=h;
+    if(q>maxQ){maxQ=q;maxQ_h=h;}
+
+    // Record
+    if(iter%4===0) REC.push({t,x,h:Math.max(0,h),vx,vh,m,q,si,kicked});
   }
-  return E;
+
+  const v_fin=Math.sqrt(vx*vx+vh*vh);
+  const v_circ_tgt=Math.sqrt(MU_E/(R_E+h_tgt));
+  return{traj:REC,events:EVENTS,grav_loss,drag_loss,m0,m_pay,
+    m_fin:m,hmax,maxQ,maxQ_h,vfx:vx,vfy:vh,v_fin,v_circ_tgt,
+    t_total:t,x_final:x,dv1:dv_stage[0],dv2:dv_stage[1]||0};
 }
 
-// True anomaly from eccentric anomaly
-function trueAnomaly(E, e) {
-  return 2 * Math.atan2(Math.sqrt(1+e)*Math.sin(E/2), Math.sqrt(1-e)*Math.cos(E/2));
+// ══ ASCENT CARPET (payload fraction map) ══════════════════════
+// X: target altitude (200–2000 km)
+// Y: Stage 1 Isp (220–420 s)
+// Z: Payload fraction λ (analytical, 2-stage)
+const CARPET_RX=80, CARPET_RY=60;
+let carpetData=null, carpetBusy=false;
+const ALT_MIN=200, ALT_MAX=2000; // km
+const ISP1_MIN=200, ISP1_MAX=450; // s
+
+// Δv to orbit estimate (gravity + drag losses empirical)
+function dvOrbit(h_km){
+  const h=h_km*1e3;
+  const vcirc=Math.sqrt(MU_E/(R_E+h));
+  // Gravity loss ≈ 1200–1550 m/s for near-vertical launches (higher alt → slightly more)
+  const grav=1250+h_km*0.05;
+  // Drag loss ≈ 100–180 m/s
+  const drag=150;
+  return{vcirc, grav, drag, total:vcirc+grav+drag};
 }
 
-// Planet 3D position at time t (years), applying inclination
-function planetPos3D(p, t_yr, offset_rad=0) {
-  const n = PI2 / p.T;
-  const M = n * t_yr + offset_rad;
-  const E = solveKepler(M, p.e);
-  const nu = trueAnomaly(E, p.e);
-  const r  = p.a * (1 - p.e * Math.cos(E));
-  const x  = r * Math.cos(nu);
-  const y  = r * Math.sin(nu);
-  // Inclination: tilt around X axis (simplified, RAAN=0)
-  return new THREE.Vector3(x * SCALE, y * Math.sin(p.inc) * SCALE, y * Math.cos(p.inc) * SCALE);
-}
-
-// Generate orbit ellipse points (N segments, in 3D with inclination)
-function orbitPoints(p, N=256) {
-  const pts = [];
-  for (let i=0; i<=N; i++) {
-    const nu = (i/N) * PI2;
-    const r  = p.a * (1-p.e*p.e) / (1 + p.e*Math.cos(nu));
-    const x  = r * Math.cos(nu);
-    const y  = r * Math.sin(nu);
-    pts.push(new THREE.Vector3(x*SCALE, y*Math.sin(p.inc)*SCALE, y*Math.cos(p.inc)*SCALE));
+async function computeCarpet(s2_isp, eps1, eps2){
+  if(carpetBusy)return; carpetBusy=true;
+  const pg=document.getElementById('v1-prog'),bar=document.getElementById('v1-bar'),msg=document.getElementById('v1-msg');
+  pg.classList.add('vis');
+  const grid=new Float32Array(CARPET_RX*CARPET_RY).fill(NaN);
+  for(let yi=0;yi<CARPET_RY;yi++){
+    for(let xi=0;xi<CARPET_RX;xi++){
+      const h_km=ALT_MIN+(xi/(CARPET_RX-1))*(ALT_MAX-ALT_MIN);
+      const isp1=ISP1_MIN+(yi/(CARPET_RY-1))*(ISP1_MAX-ISP1_MIN);
+      const{total:dvT,vcirc,grav,drag}=dvOrbit(h_km);
+      // Optimal 2-stage Δv split (Lagrange): approximately equal per stage (simplification)
+      // More accurate: weighted by Isp
+      const w1=isp1/(isp1+s2_isp), w2=s2_isp/(isp1+s2_isp);
+      const dv1=dvT*w1, dv2=dvT*w2;
+      // Payload fraction per stage: λ_i = (1-εi)·exp(-Δvi/(Ispi·g0))
+      const l1=(1-eps1)*Math.exp(-dv1/(isp1*G0));
+      const l2=(1-eps2)*Math.exp(-dv2/(s2_isp*G0));
+      const lambda=l1*l2*100; // percentage
+      grid[yi*CARPET_RX+xi]=lambda>0&&lambda<100?lambda:NaN;
+    }
+    if(yi%5===0){bar.style.width=((yi/CARPET_RY)*100).toFixed(0)+'%';msg.textContent=`Carpet solver ${((yi/CARPET_RY)*100).toFixed(0)}%`;await new Promise(r=>setTimeout(r,0));}
   }
-  return pts;
+  carpetData={grid,RX:CARPET_RX,RY:CARPET_RY};
+  bar.style.width='100%';
+  await new Promise(r=>setTimeout(r,30));
+  pg.classList.remove('vis');carpetBusy=false;
+  vpCarpet.draw();
 }
-
-// Hohmann transfer between two circular-ish orbits
-function hohmann(r1, r2) {
-  // r1, r2 in AU, returns heliocentric Δv in m/s
-  const a_t = (r1 + r2) / 2;
-  const e_t = (r2 - r1) / (r1 + r2);
-  const v1c = Math.sqrt(MU_SUN / r1);                 // AU/yr circular at r1
-  const v2c = Math.sqrt(MU_SUN / r2);                 // AU/yr circular at r2
-  const v1t = Math.sqrt(MU_SUN * (2/r1 - 1/a_t));    // AU/yr transfer at periapsis
-  const v2t = Math.sqrt(MU_SUN * (2/r2 - 1/a_t));    // AU/yr transfer at apoapsis
-  const dv1 = (v1t - v1c) * AUyr_ms;                  // m/s (+ = prograde)
-  const dv2 = (v2c - v2t) * AUyr_ms;                  // m/s (+ = prograde)
-  const tof  = Math.PI * Math.sqrt(a_t*a_t*a_t / MU_SUN) * 365.25; // days
-  // Phase angle target planet must have at departure
-  const phase = Math.PI - (PI2 / PLANET_DATA.mars.T) * (tof/365.25);
-  // Hyperbolic excess velocity at Earth departure
-  const v_excess_ms = (v1t - v1c) * AUyr_ms;  // heliocentric Δv
-  const C3 = v_excess_ms * v_excess_ms;         // m²/s²
-  return { dv1: Math.abs(dv1), dv2: Math.abs(dv2), dv_total: Math.abs(dv1)+Math.abs(dv2),
-           tof, a_t, e_t, v1c_ms: v1c*AUyr_ms, v2c_ms: v2c*AUyr_ms,
-           v1t_ms: v1t*AUyr_ms, v2t_ms: v2t*AUyr_ms, C3, v_excess_ms };
-}
-
-// Bi-elliptic transfer (when r2/r1 > 11.94, more efficient)
-function biElliptic(r1, r2, rb) {
-  const a1 = (r1 + rb) / 2;
-  const a2 = (rb + r2) / 2;
-  const v1c = Math.sqrt(MU_SUN/r1)*AUyr_ms;
-  const v2c = Math.sqrt(MU_SUN/r2)*AUyr_ms;
-  const va1 = Math.sqrt(MU_SUN*(2/r1-1/a1))*AUyr_ms;
-  const vb1 = Math.sqrt(MU_SUN*(2/rb-1/a1))*AUyr_ms;
-  const vb2 = Math.sqrt(MU_SUN*(2/rb-1/a2))*AUyr_ms;
-  const va2 = Math.sqrt(MU_SUN*(2/r2-1/a2))*AUyr_ms;
-  const dv1 = Math.abs(va1-v1c), dv2 = Math.abs(vb2-vb1), dv3 = Math.abs(v2c-va2);
-  const tof = (Math.PI*Math.sqrt(a1*a1*a1/MU_SUN) + Math.PI*Math.sqrt(a2*a2*a2/MU_SUN)) * 365.25;
-  return { dv1, dv2, dv3, dv_total:dv1+dv2+dv3, tof, a1, a2, rb };
-}
-
-// Tsiolkovsky rocket equation
-function rocketMass(dv_ms, isp, m_dry) {
-  const mr = Math.exp(dv_ms / (isp * G0));
-  const m0 = m_dry * mr;
-  const mp = m0 - m_dry;
-  return { m0, mp, mr };
-}
-
-// Tsiolkovsky: given m0 and dry mass
-function rocketDv(m0, m_dry, isp) {
-  return isp * G0 * Math.log(m0 / m_dry);
-}
-
-// Solar sail acceleration at radius r_au
-function sailAccel(area_m2, mass_kg, eta, r_au) {
-  const P = L_SUN / (4 * Math.PI * (r_au * AU_M) * (r_au * AU_M)); // W/m²
-  return P * area_m2 * 2 * eta / (mass_kg * C_LIGHT); // m/s²
-}
-
-// Departure burn from Earth LEO (200 km) given hyperbolic excess v∞
-function departureBurnLEO(v_inf_ms, h_km=200) {
-  const r_park = R_EARTH + h_km * 1000;
-  const v_circ = Math.sqrt(MU_EARTH / r_park);
-  const v_depart = Math.sqrt(v_inf_ms*v_inf_ms + 2*MU_EARTH/r_park);
-  return v_depart - v_circ; // Δv from parking orbit
-}
-
-// Current solar system time (simulation state)
-let SIM_T = 0.0;       // years
-let SIM_SPEED = 1.0;   // real years per second of real time (×1 means very slow, use ×365=1 day/s)
-let SIM_PAUSED = false;
-let SIM_SCALE = 365;   // days per second
-
-// App state
-const ST = {
-  origin: 'earth',
-  target: 'mars',
-  dryMass: 4500,
-  propFrac: 0.65,
-  isp: 450,
-  sailOn: false,
-  sailArea: 2500,
-  sailEff: 0.85,
-  sailMass: 800,
-  centrifuge: false,
-  mode: 'hohmann',
-  result: null,
+// ══ APP STATE ══════════════════════════════════════════════════
+const ST={
+  mode:'hohmann', // 'hohmann' | 'ascent'
+  // Hohmann
+  orig:'earth',dest:'mars',h_park:400e3,h_cap:400e3,
+  m_dry:5000,isp:450,fp:0.65,
+  epochYr:epochYr('2026-01-01'),simT:0,simSpd:7/365.25,sel:null,
+  // Ascent
+  asc_result:null, asc_sel_t:null, // selected time on trajectory
 };
 
-// ── THREE.JS SETUP ─────────────────────────────────────────────────
-const canvas3d = document.getElementById('oc');
-const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, alpha: false });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2.5));
-renderer.setClearColor(0x060709, 1);
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 500);
-camera.position.set(12, 18, 20);
-camera.lookAt(0, 0, 0);
-
-// Lights
-scene.add(new THREE.AmbientLight(0x0a1020, 1.0));
-const sunLight = new THREE.PointLight(0xfff4e0, 2.5, 200);
-scene.add(sunLight);
-const fillLight = new THREE.DirectionalLight(0x0a1540, 0.4);
-fillLight.position.set(-10, -5, -10);
-scene.add(fillLight);
-
-// ── ORBIT CONTROLS (manual) ────────────────────────────────────────
-const orbit = { dragging:false, shift:false, lx:0, ly:0, theta:0.6, phi:0.42, r:22, px:0, py:0 };
-
-function updateCamera() {
-  const x = orbit.r * Math.sin(orbit.phi) * Math.sin(orbit.theta);
-  const y = orbit.r * Math.cos(orbit.phi);
-  const z = orbit.r * Math.sin(orbit.phi) * Math.cos(orbit.theta);
-  camera.position.set(x + orbit.px, y + orbit.py, z);
-  camera.lookAt(orbit.px, orbit.py, 0);
-}
-updateCamera();
-
-canvas3d.addEventListener('mousedown', e => { orbit.dragging=true; orbit.shift=e.shiftKey; orbit.lx=e.clientX; orbit.ly=e.clientY; });
-window.addEventListener('mouseup', () => orbit.dragging=false);
-window.addEventListener('mousemove', e => {
-  if (!orbit.dragging) return;
-  const dx=e.clientX-orbit.lx, dy=e.clientY-orbit.ly;
-  orbit.lx=e.clientX; orbit.ly=e.clientY;
-  if (orbit.shift) { orbit.px -= dx*0.008*orbit.r*0.1; orbit.py += dy*0.008*orbit.r*0.1; }
-  else { orbit.theta -= dx*0.009; orbit.phi = Math.max(0.04, Math.min(Math.PI-0.04, orbit.phi+dy*0.009)); }
-  updateCamera();
-});
-canvas3d.addEventListener('wheel', e => {
-  e.preventDefault();
-  orbit.r = Math.max(2, Math.min(120, orbit.r*(1+e.deltaY*0.0008)));
-  updateCamera();
-}, { passive:false });
-// Touch
-let _tp=null;
-canvas3d.addEventListener('touchstart', e=>{_tp=[e.touches[0].clientX,e.touches[0].clientY];},{passive:true});
-canvas3d.addEventListener('touchend', ()=>_tp=null,{passive:true});
-canvas3d.addEventListener('touchmove', e=>{
-  if(!_tp||e.touches.length!==1)return;
-  const dx=e.touches[0].clientX-_tp[0],dy=e.touches[0].clientY-_tp[1];
-  _tp=[e.touches[0].clientX,e.touches[0].clientY];
-  orbit.theta-=dx*0.009; orbit.phi=Math.max(0.04,Math.min(Math.PI-0.04,orbit.phi+dy*0.009));
-  updateCamera();
-},{passive:true});
-document.addEventListener('keydown', e=>{
-  if(e.key==='r'||e.key==='R'){ orbit.theta=0.6;orbit.phi=0.42;orbit.r=22;orbit.px=0;orbit.py=0;updateCamera(); }
-});
-
-// Resize
-function onResize() {
-  const w=canvas3d.parentElement.clientWidth, h=canvas3d.parentElement.clientHeight;
-  renderer.setSize(w,h); camera.aspect=w/h; camera.updateProjectionMatrix();
-}
-window.addEventListener('resize', onResize); onResize();
-
-// ── SCENE OBJECTS ─────────────────────────────────────────────────
-// Groups for easy replace
-let G_transfers = new THREE.Group(); scene.add(G_transfers);
-let G_planets   = new THREE.Group(); scene.add(G_planets);
-let G_orbits    = new THREE.Group(); scene.add(G_orbits);
-let G_static    = new THREE.Group(); scene.add(G_static);
-
-// ─ Stars ─
-(function buildStars() {
-  const N = 2200;
-  const pos = new Float32Array(N*3);
-  const col = new Float32Array(N*3);
-  for (let i=0; i<N; i++) {
-    const r = 80 + Math.random()*120;
-    const th = Math.random()*PI2, ph = Math.acos(2*Math.random()-1);
-    pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
-    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
-    pos[i*3+2] = r*Math.cos(ph);
-    const br = 0.3 + Math.random()*0.7;
-    const hue = Math.random();
-    // Slight blue/white bias
-    col[i*3]   = br * (0.7 + 0.3*(1-hue));
-    col[i*3+1] = br * (0.75 + 0.25*hue);
-    col[i*3+2] = br;
+// ══ VIEWPORT BASE CLASS ════════════════════════════════════════
+// Coordinate system: canvas_x = cx + wx*zoom + pan.x
+//                    canvas_y = cy - wy*zoom + pan.y  (Y flipped, pan.y same direction as drag)
+class VP{
+  constructor(id,defZoom){
+    this.cv=document.getElementById(id);this.ctx=this.cv.getContext('2d');
+    this.DPR=Math.min(devicePixelRatio||1,2);this.W=1;this.H=1;this.cx=0;this.cy=0;
+    this.zoom=defZoom;this.defZoom=defZoom;this.pan={x:0,y:0};
+    this._drag=false;this._bind();
+    new ResizeObserver(()=>this._resize()).observe(this.cv.parentElement);this._resize();
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-  geo.setAttribute('color',    new THREE.BufferAttribute(col,3));
-  const mat = new THREE.PointsMaterial({ size:0.18, vertexColors:true, transparent:true, opacity:0.8, sizeAttenuation:true });
-  G_static.add(new THREE.Points(geo, mat));
-})();
-
-// ─ Ecliptic grid ─
-(function buildGrid() {
-  const S=40, step=SCALE;
-  const pts=[], cnt=Math.floor(S/step)*2+1;
-  for(let i=-Math.floor(S/step);i<=Math.floor(S/step);i++){
-    pts.push(-S,0,i*step, S,0,i*step);
-    pts.push(i*step,0,-S, i*step,0,S);
+  _resize(){const el=this.cv.parentElement;this.cv.width=el.clientWidth*this.DPR;this.cv.height=el.clientHeight*this.DPR;this.W=this.cv.width;this.H=this.cv.height;this.cx=this.W/2;this.cy=this.H/2;this.draw();}
+  reset(){this.zoom=this.defZoom;this.pan={x:0,y:0};this.draw();}
+  w2c(wx,wy){return{x:this.cx+wx*this.zoom+this.pan.x,y:this.cy-wy*this.zoom+this.pan.y};}
+  c2w(sx,sy){return{x:(sx-this.cx-this.pan.x)/this.zoom,y:(this.cy+this.pan.y-sy)/this.zoom};}
+  _bind(){
+    const cv=this.cv;
+    cv.addEventListener('mousedown',e=>{this._drag=true;});
+    window.addEventListener('mouseup',()=>this._drag=false);
+    window.addEventListener('mousemove',e=>{
+      if(!this._drag||!cv.matches(':hover'))return;
+      this.pan.x+=e.movementX*this.DPR;this.pan.y+=e.movementY*this.DPR;this.draw();
+    });
+    cv.addEventListener('wheel',e=>{
+      e.preventDefault();const f=e.deltaY>0?0.9:1/0.9;
+      const rect=cv.getBoundingClientRect();const mx=(e.clientX-rect.left)*this.DPR,my=(e.clientY-rect.top)*this.DPR;
+      const wp=this.c2w(mx,my);this.zoom*=f;const np=this.w2c(wp.x,wp.y);this.pan.x+=mx-np.x;this.pan.y+=my-np.y;this.draw();
+    },{passive:false});
+    cv.addEventListener('mousemove',e=>{const rect=cv.getBoundingClientRect();this.onHover((e.clientX-rect.left)*this.DPR,(e.clientY-rect.top)*this.DPR,e.clientX,e.clientY);});
+    cv.addEventListener('click',e=>{const rect=cv.getBoundingClientRect();this.onClick((e.clientX-rect.left)*this.DPR,(e.clientY-rect.top)*this.DPR,e.clientX,e.clientY);});
+    document.addEventListener('keydown',e=>{if((e.key==='r'||e.key==='R')&&cv.matches(':hover'))this.reset();});
   }
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
-  const mat=new THREE.LineBasicMaterial({color:0x0a1828,transparent:true,opacity:0.4,depthWrite:false});
-  G_static.add(new THREE.LineSegments(geo,mat));
-})();
-
-// ─ Sun ─
-(function buildSun() {
-  // Core
-  const coreGeo = new THREE.SphereGeometry(0.28,32,32);
-  const coreMat = new THREE.MeshBasicMaterial({ color:0xfff0a0 });
-  const core = new THREE.Mesh(coreGeo, coreMat);
-  G_static.add(core);
-  // Corona 1
-  const c1 = new THREE.Mesh(new THREE.SphereGeometry(0.52,32,32),
-    new THREE.MeshBasicMaterial({color:0xffe060,transparent:true,opacity:0.14,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide}));
-  G_static.add(c1);
-  // Corona 2
-  const c2 = new THREE.Mesh(new THREE.SphereGeometry(0.9,32,32),
-    new THREE.MeshBasicMaterial({color:0xff8820,transparent:true,opacity:0.06,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide}));
-  G_static.add(c2);
-})();
-
-// ─ Build orbit ring ─
-function makeOrbitRing(p, opacity=0.32) {
-  const pts = orbitPoints(p, 300);
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
-  const mat = new THREE.LineBasicMaterial({
-    color: p.color, transparent:true, opacity,
-    blending:THREE.AdditiveBlending, depthWrite:false
-  });
-  return new THREE.Line(geo, mat);
+  onHover(){}onClick(){}draw(){}
+  bg(c='#04050a'){this.ctx.fillStyle=c;this.ctx.fillRect(0,0,this.W,this.H);}
+  ln(x1,y1,x2,y2,col,lw=1,a=1,d=[]){const{ctx}=this;ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.lineWidth=lw;if(d.length)ctx.setLineDash(d);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();}
+  circ(x,y,r,sc,fc,lw=1,a=1,d=[]){const{ctx}=this;ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(x,y,r,0,TAU);if(fc){ctx.fillStyle=fc;ctx.fill();}if(sc){ctx.strokeStyle=sc;ctx.lineWidth=lw;if(d.length)ctx.setLineDash(d);ctx.stroke();}ctx.restore();}
+  arr(x1,y1,x2,y2,col,lw=1.5,hs=7){const{ctx}=this,dx=x2-x1,dy=y2-y1,a=Math.atan2(dy,dx);ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-hs*Math.cos(a-.42),y2-hs*Math.sin(a-.42));ctx.lineTo(x2-hs*Math.cos(a+.42),y2-hs*Math.sin(a+.42));ctx.closePath();ctx.fill();ctx.restore();}
+  txt(s,x,y,col='#c0c4dc',sz=9,bg=true){const{ctx}=this;ctx.save();ctx.font=`${sz}px 'JetBrains Mono',monospace`;const m=ctx.measureText(s);if(bg){ctx.fillStyle='rgba(4,5,10,.78)';ctx.fillRect(x-1,y-sz,m.width+3,sz+3);}ctx.fillStyle=col;ctx.fillText(s,x,y);ctx.restore();}
+  poly(pts,col,lw=1,a=1,d=[]){if(pts.length<2)return;const{ctx}=this;ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=col;ctx.lineWidth=lw;if(d.length)ctx.setLineDash(d);ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke();ctx.restore();}
+  gradLine(pts,c0,c1,lw=1.5,a=1){if(pts.length<2)return;const{ctx}=this,p0=pts[0],p1=pts[pts.length-1];const g=ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);g.addColorStop(0,c0);g.addColorStop(1,c1);ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=g;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(p0.x,p0.y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke();ctx.restore();}
 }
 
-// ─ Planet sphere ─
-function makePlanetSphere(p) {
-  const grp = new THREE.Group();
-  // Main sphere
-  const geo = new THREE.SphereGeometry(p.r_vis, 24, 24);
-  const mat = new THREE.MeshPhongMaterial({
-    color: p.color, emissive: new THREE.Color(p.color).multiplyScalar(0.25),
-    shininess: 60, transparent:false
-  });
-  const mesh = new THREE.Mesh(geo, mat);
-  grp.add(mesh);
-  // Glow halo
-  const halo = new THREE.Mesh(
-    new THREE.SphereGeometry(p.r_vis*1.8, 16, 16),
-    new THREE.MeshBasicMaterial({
-      color: p.color, transparent:true, opacity:0.06,
-      blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.BackSide
-    })
-  );
-  grp.add(halo);
-  return grp;
-}
-
-// ─ SOI sphere ─
-function makeSOI(radius_scene, color) {
-  const geo = new THREE.SphereGeometry(radius_scene, 24, 24);
-  const mat = new THREE.MeshBasicMaterial({
-    color, transparent:true, opacity:0.06,
-    blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.BackSide, wireframe:false
-  });
-  const edges = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.SphereGeometry(radius_scene,16,12)),
-    new THREE.LineBasicMaterial({color,transparent:true,opacity:0.22,blending:THREE.AdditiveBlending,depthWrite:false})
-  );
-  const g = new THREE.Group();
-  g.add(new THREE.Mesh(geo,mat)); g.add(edges);
-  return g;
-}
-
-// ─ Maneuver node ─
-function makeManeuverNode(color) {
-  const g = new THREE.Group();
-  const core = new THREE.Mesh(new THREE.SphereGeometry(0.09,16,16),
-    new THREE.MeshBasicMaterial({color}));
-  const ring = new THREE.Mesh(new THREE.SphereGeometry(0.22,16,16),
-    new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.18,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide}));
-  const ring2= new THREE.Mesh(new THREE.SphereGeometry(0.38,16,16),
-    new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.07,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide}));
-  g.add(core); g.add(ring); g.add(ring2);
-  g._pulse = 0;
-  return g;
-}
-
-// ─ Build orbit rings for all planets ─
-function buildOrbitRings() {
-  while(G_orbits.children.length) G_orbits.remove(G_orbits.children[0]);
-  for (const [k,p] of Object.entries(PLANET_DATA)) {
-    if (k==='moon') continue; // Moon orbit around Earth not shown in solar view
-    G_orbits.add(makeOrbitRing(p, k==='earth'||k===ST.target?0.50:0.22));
+// ══════════════════════════════════════════════════════════════
+// HOHMANN VPs (unchanged from omp-v)
+// ══════════════════════════════════════════════════════════════
+class SolarVP extends VP{
+  constructor(){super('c0',48);}
+  draw(){if(ST.mode!=='hohmann'){return;}this.bg();this._grid();this._orbits();this._transfer();this._planets();this._sun();this._hud();}
+  _grid(){const{ctx,W,H,zoom}=this,O=this.w2c(0,0);ctx.save();ctx.setLineDash([2,7]);ctx.strokeStyle='rgba(20,24,38,.9)';ctx.lineWidth=.5;[.5,1,1.5,2,3,5,8].forEach(d=>{ctx.beginPath();ctx.arc(O.x,O.y,d*zoom,0,TAU);ctx.stroke();});ctx.restore();this.ln(0,O.y,W,O.y,'rgba(20,24,38,.6)',.4);this.ln(O.x,0,O.x,H,'rgba(20,24,38,.6)',.4);ctx.save();ctx.font='7.5px JetBrains Mono,monospace';ctx.fillStyle='rgba(42,46,66,.8)';[1,2,3,5].forEach(d=>{const p=this.w2c(d,0);if(p.x>0&&p.x<W)ctx.fillText(d+' AU',p.x+2,O.y-4);});ctx.restore();}
+  _orbits(){Object.entries(PL).forEach(([k,p])=>{const isKey=k===ST.orig||k===ST.dest,N=300,pts=[];for(let i=0;i<=N;i++){const nu=i/N*TAU,r=p.a*(1-p.e*p.e)/(1+p.e*Math.cos(nu));pts.push(this.w2c(r*Math.cos(nu),r*Math.sin(nu)));}this.poly(pts,p.color,isKey?.9:.35,isKey?.7:.22);});}
+  _transfer(){
+    if(!ST.sel)return;const sel=ST.sel;
+    const s1=planetState(ST.orig,ST.epochYr+sel.t_dep_d/365.25),s2=planetState(ST.dest,ST.epochYr+sel.t_arr_d/365.25);
+    const lam=lambert({x:s1.x,y:s1.y},{x:s2.x,y:s2.y},sel.tof_d);if(!lam)return;
+    const N=200,dt=sel.tof_d/365.25/N;let rx=s1.x,ry=s1.y,vx=lam.v1.x,vy=lam.v1.y;
+    const pts=[this.w2c(rx,ry)];
+    for(let i=0;i<N;i++){const r2=rx*rx+ry*ry,r3=r2**1.5,ax=-MU_S_AU*rx/r3,ay=-MU_S_AU*ry/r3;vx+=ax*dt;vy+=ay*dt;rx+=vx*dt;ry+=vy*dt;pts.push(this.w2c(rx,ry));}
+    this.gradLine(pts,'rgba(23,212,232,.9)','rgba(139,110,245,.9)',1.6);this.gradLine(pts,'rgba(23,212,232,.12)','rgba(139,110,245,.12)',6);
+    const p1=this.w2c(s1.x,s1.y),p2=this.w2c(s2.x,s2.y),t_=performance.now()/1000,pulse=1+.14*Math.sin(t_*2.8);
+    this.circ(p1.x,p1.y,4,'#e8a017',null,1.5);this.circ(p1.x,p1.y,10*pulse,'#e8a017',null,.7,.15);
+    this.circ(p2.x,p2.y,4,'#8b6ef5',null,1.5);this.circ(p2.x,p2.y,10*pulse,'#8b6ef5',null,.7,.15);
+    const v1m=Math.sqrt(lam.v1.x**2+lam.v1.y**2)+1e-12,u1x=lam.v1.x/v1m,u1y=lam.v1.y/v1m;
+    const L1=Math.min(35,Math.max(12,(sel.dv_esc||0)/250));
+    this.arr(p1.x,p1.y,p1.x+u1x*L1,p1.y-u1y*L1,'#e84a3a',1.5,5);
+    this.txt('Δv₁='+(sel.dv_esc/1e3).toFixed(3)+'km/s',p1.x+u1x*L1+3,p1.y-u1y*L1,'#e84a3a',8);
+    const soi1=(PL[ST.orig].soi/AU)*this.zoom*20,soi2=(PL[ST.dest].soi/AU)*this.zoom*20;
+    this.circ(p1.x,p1.y,soi1,'rgba(42,106,200,.45)',null,.7,1,[5,8]);this.circ(p2.x,p2.y,soi2,'rgba(192,72,32,.45)',null,.7,1,[5,8]);
+    const mid=pts[Math.floor(pts.length/2)];this.txt('TOF: '+sel.tof_d.toFixed(0)+'d',mid.x+4,mid.y-5,'rgba(23,212,232,.8)',8);
   }
+  _planets(){const t=ST.epochYr+ST.simT;Object.entries(PL).forEach(([k,p])=>{const s=planetState(k,t),pos=this.w2c(s.x,s.y);const R=Math.max(3,Math.min(11,Math.log10(p.R/1e5)*4+2)),isKey=k===ST.orig||k===ST.dest;this.circ(pos.x,pos.y,R+2,null,'rgba(0,0,0,.5)');this.circ(pos.x,pos.y,R,p.color,p.color,isKey?2:1,isKey?1:.8);if(isKey)this.circ(pos.x,pos.y,R*3,p.color,null,.5,.12);const va=Math.atan2(s.vy,s.vx);this.ln(pos.x,pos.y,pos.x+Math.cos(va)*(R+9),pos.y-Math.sin(va)*(R+9),p.color,.8,.5);this.txt(p.name,pos.x+R+3,pos.y,p.color,8);});}
+  _sun(){const S=this.w2c(0,0),t=performance.now()/1000;[[22,.022,'#ff7010'],[13,.06,'#ffb030'],[6,.25,'#fff0a0']].forEach(([r,a,c])=>this.circ(S.x,S.y,r*(1+.03*Math.sin(t*1.2)),null,c,0,a));this.circ(S.x,S.y,5,'#fff8d0','#fffcb0',1);}
+  _hud(){const{W,H,zoom}=this,bAU=zoom>80?.5:zoom>40?1:2,bpx=bAU*zoom,bx=14,by=H-16;this.ln(bx,by,bx+bpx,by,'rgba(82,90,120,.7)',1.5);this.ln(bx,by-4,bx,by+4,'rgba(82,90,120,.7)',1.5);this.ln(bx+bpx,by-4,bx+bpx,by+4,'rgba(82,90,120,.7)',1.5);this.txt(bAU+' AU',bx+bpx/2-10,by-7,'rgba(82,90,120,.8)',7.5,false);}
 }
 
-// ─ Planet spheres ─
-let PLANET_MESHES = {};
-function buildPlanetMeshes() {
-  while(G_planets.children.length) G_planets.remove(G_planets.children[0]);
-  PLANET_MESHES = {};
-  for (const [k,p] of Object.entries(PLANET_DATA)) {
-    if (k==='moon') continue;
-    const m = makePlanetSphere(p);
-    G_planets.add(m);
-    PLANET_MESHES[k] = m;
+// Porkchop and Planet VPs (Hohmann mode)
+let pkD=null,pkMetric='c3',pkBusy=false;
+const PK_RX=96,PK_RY=64;
+function pkColor(v,vmin,vmax){let t=Math.max(0,Math.min(1,(v-vmin)/(vmax-vmin)));t=Math.pow(t,.42);const S=[[0,[4,20,64]],[.2,[4,128,176]],[.45,[16,208,128]],[.65,[216,192,16]],[.82,[224,80,8]],[1,[176,4,4]]];for(let i=0;i<S.length-1;i++){if(t>=S[i][0]&&t<=S[i+1][0]){const f=(t-S[i][0])/(S[i+1][0]-S[i][0]);return S[i][1].map((c,j)=>(c+(S[i+1][1][j]-c)*f)|0);}}return S[S.length-1][1];}
+async function computePK(){
+  if(pkBusy)return;pkBusy=true;const pg=document.getElementById('v1-prog'),bar=document.getElementById('v1-bar'),msg=document.getElementById('v1-msg');pg.classList.add('vis');
+  const span=parseInt(document.getElementById('pk-span').value)||780,tofMax=parseInt(document.getElementById('pk-tof').value)||400,tofMin=30;
+  const gc3=new Float32Array(PK_RX*PK_RY).fill(NaN),gdv=new Float32Array(PK_RX*PK_RY).fill(NaN);
+  for(let yi=0;yi<PK_RY;yi++){for(let xi=0;xi<PK_RX;xi++){
+    const td_d=xi/(PK_RX-1)*span,tof_d=tofMin+yi/(PK_RY-1)*(tofMax-tofMin);
+    const td_yr=ST.epochYr+td_d/365.25,ta_yr=ST.epochYr+(td_d+tof_d)/365.25;
+    const s1=planetState(ST.orig,td_yr),s2=planetState(ST.dest,ta_yr);
+    const lam=lambert({x:s1.x,y:s1.y},{x:s2.x,y:s2.y},tof_d);if(!lam)continue;
+    const vi1=Math.sqrt((lam.v1.x-s1.vx)**2+(lam.v1.y-s1.vy)**2)*AUyr;
+    const vi2=Math.sqrt((lam.v2.x-s2.vx)**2+(lam.v2.y-s2.vy)**2)*AUyr;
+    const h1=hyperbola(vi1,PL[ST.orig].mu,PL[ST.orig].R+ST.h_park);
+    const h2=hyperbola(vi2,PL[ST.dest].mu,PL[ST.dest].R+ST.h_cap);
+    gc3[yi*PK_RX+xi]=vi1*vi1/1e6;gdv[yi*PK_RX+xi]=h1&&h2?(h1.dv+h2.dv)/1e3:NaN;
+  }if(yi%4===0){bar.style.width=((yi/PK_RY)*100).toFixed(0)+'%';msg.textContent=`Lambert ${((yi/PK_RY)*100).toFixed(0)}%`;await new Promise(r=>setTimeout(r,0));}}
+  pkD={gc3,gdv,PK_RX,PK_RY,span,tofMax,tofMin};bar.style.width='100%';await new Promise(r=>setTimeout(r,30));pg.classList.remove('vis');pkBusy=false;vpPK.draw();
+}
+class PorkchopVP{
+  constructor(){this.cv=document.getElementById('c1');this.ctx=this.cv.getContext('2d');this.DPR=Math.min(devicePixelRatio||1,2);this.W=1;this.H=1;this._bind();new ResizeObserver(()=>this._resize()).observe(this.cv.parentElement);this._resize();}
+  _resize(){const el=this.cv.parentElement;this.cv.width=el.clientWidth*this.DPR;this.cv.height=el.clientHeight*this.DPR;this.W=this.cv.width;this.H=this.cv.height;this.draw();}
+  get pad(){return{l:44*this.DPR,r:18*this.DPR,t:22*this.DPR,b:38*this.DPR};}
+  get pw(){return this.W-this.pad.l-this.pad.r;}get ph(){return this.H-this.pad.t-this.pad.b;}
+  g2s(xi,yi,RX,RY){return{x:this.pad.l+(xi/(RX-1))*this.pw,y:this.H-this.pad.b-(yi/(RY-1))*this.ph};}
+  s2g(sx,sy,RX,RY){return{xi:Math.round((sx-this.pad.l)/this.pw*(RX-1)),yi:Math.round((this.H-this.pad.b-sy)/this.ph*(RY-1))};}
+  _bind(){
+    this.cv.addEventListener('mousemove',e=>{
+      const rect=this.cv.getBoundingClientRect();const sx=(e.clientX-rect.left)*this.DPR,sy=(e.clientY-rect.top)*this.DPR;
+      if(ST.mode==='hohmann')this._hoverHoh(sx,sy,e.clientX,e.clientY);
+      else this._hoverCarpet(sx,sy,e.clientX,e.clientY);
+    });
+    this.cv.addEventListener('click',e=>{
+      const rect=this.cv.getBoundingClientRect();const sx=(e.clientX-rect.left)*this.DPR,sy=(e.clientY-rect.top)*this.DPR;
+      if(ST.mode==='hohmann')this._selectHoh(sx,sy);
+      else this._selectCarpet(sx,sy);
+    });
   }
-}
-
-// ─ Transfer arc points ─
-function transferArcPoints(r1, r2, N=220) {
-  const a_t = (r1+r2)/2, e_t = (r2-r1)/(r1+r2);
-  const pts=[];
-  for (let i=0; i<=N; i++) {
-    const nu = (i/N)*Math.PI; // 0 → π (periapsis → apoapsis)
-    const r  = a_t*(1-e_t*e_t)/(1+e_t*Math.cos(nu));
-    pts.push(new THREE.Vector3(r*Math.cos(nu)*SCALE, 0, r*Math.sin(nu)*SCALE));
+  _hoverHoh(sx,sy,cx,cy){if(!pkD)return;const{xi,yi}=this.s2g(sx,sy,pkD.PK_RX,pkD.PK_RY);if(xi<0||xi>=pkD.PK_RX||yi<0||yi>=pkD.PK_RY){hideTip('tip1');return;}const idx=yi*pkD.PK_RX+xi;const c3=pkD.gc3[idx],dv=pkD.gdv[idx];if(isNaN(c3)){hideTip('tip1');return;}const td=xi/(pkD.PK_RX-1)*pkD.span,tof=pkD.tofMin+yi/(pkD.PK_RY-1)*(pkD.tofMax-pkD.tofMin);showTip('tip1',cx+12,cy-34,`Salida: ${yrToDate(ST.epochYr+td/365.25)}`,`TOF: ${tof.toFixed(0)} d`,`C₃: ${c3.toFixed(2)} km²/s²`,`Δv_tot: ${isNaN(dv)?'n/a':dv.toFixed(3)+' km/s'}`);}
+  _hoverCarpet(sx,sy,cx,cy){if(!carpetData)return;const{xi,yi}=this.s2g(sx,sy,carpetData.RX,carpetData.RY);if(xi<0||xi>=carpetData.RX||yi<0||yi>=carpetData.RY){hideTip('tip1');return;}const idx=yi*carpetData.RX+xi;const v=carpetData.grid[idx];if(isNaN(v)){hideTip('tip1');return;}const h_km=ALT_MIN+(xi/(carpetData.RX-1))*(ALT_MAX-ALT_MIN);const isp1=ISP1_MIN+(yi/(carpetData.RY-1))*(ISP1_MAX-ISP1_MIN);const{vcirc,grav,drag,total}=dvOrbit(h_km);showTip('tip1',cx+12,cy-50,`Alt. objetivo: ${h_km.toFixed(0)} km`,`Isp₁: ${isp1.toFixed(0)} s`,`λ payload: ${v.toFixed(2)} %`,`Δv_total: ${(total/1e3).toFixed(2)} km/s`,`Δv_orb: ${(vcirc/1e3).toFixed(2)} · g: ${(grav/1e3).toFixed(2)} · d: ${(drag/1e3).toFixed(2)}`);}
+  _selectHoh(sx,sy){if(!pkD)return;const{xi,yi}=this.s2g(sx,sy,pkD.PK_RX,pkD.PK_RY);if(xi<0||xi>=pkD.PK_RX||yi<0||yi>=pkD.PK_RY)return;const idx=yi*pkD.PK_RX+xi;if(isNaN(pkD.gc3[idx]))return;
+    const td_d=xi/(pkD.PK_RX-1)*pkD.span,tof_d=pkD.tofMin+yi/(pkD.PK_RY-1)*(pkD.tofMax-pkD.tofMin);
+    const ta_d=td_d+tof_d,td_yr=ST.epochYr+td_d/365.25,ta_yr=ST.epochYr+ta_d/365.25;
+    const s1=planetState(ST.orig,td_yr),s2=planetState(ST.dest,ta_yr);
+    const lam=lambert({x:s1.x,y:s1.y},{x:s2.x,y:s2.y},tof_d);if(!lam)return;
+    const vi1=Math.sqrt((lam.v1.x-s1.vx)**2+(lam.v1.y-s1.vy)**2)*AUyr;
+    const vi2=Math.sqrt((lam.v2.x-s2.vx)**2+(lam.v2.y-s2.vy)**2)*AUyr;
+    const h1=hyperbola(vi1,PL[ST.orig].mu,PL[ST.orig].R+ST.h_park);
+    const h2=hyperbola(vi2,PL[ST.dest].mu,PL[ST.dest].R+ST.h_cap);
+    ST.sel={t_dep_d:td_d,t_arr_d:ta_d,tof_d,c3:pkD.gc3[idx],vi1,vi2,dv_esc:h1?h1.dv:0,dv_cap:h2?h2.dv:0,h1,h2,lam,s1,s2,xi,yi};
+    const sp=this.g2s(xi,yi,pkD.PK_RX,pkD.PK_RY);const el=document.getElementById('selpt');el.classList.add('vis');el.style.left=(sp.x/this.DPR)+'px';el.style.top=(sp.y/this.DPR)+'px';
+    updateHohRight();vpSS.draw();vpDep.draw();vpArr.draw();}
+  _selectCarpet(sx,sy){if(!carpetData)return;const{xi,yi}=this.s2g(sx,sy,carpetData.RX,carpetData.RY);if(xi<0||xi>=carpetData.RX||yi<0||yi>=carpetData.RY)return;const idx=yi*carpetData.RX+xi;if(isNaN(carpetData.grid[idx]))return;const h_km=ALT_MIN+(xi/(carpetData.RX-1))*(ALT_MAX-ALT_MIN);document.getElementById('asc-htgt').value=Math.round(h_km);document.getElementById('v-htgt').textContent=Math.round(h_km)+' km';updateAscLeft();}
+  draw(){
+    const{ctx,W,H}=this;ctx.fillStyle='#04050a';ctx.fillRect(0,0,W,H);
+    if(ST.mode==='hohmann') this._drawHoh();
+    else this._drawCarpet();
   }
-  return pts;
-}
-
-// ─ Solar sail spiral ─
-function sailSpiralPoints(r0_au, r_target_au, area_m2, mass_kg, eta, N=600) {
-  // Simple numerical integration (Euler) in heliocentric 2D
-  let x=r0_au, y=0;
-  let vx=0, vy=Math.sqrt(MU_SUN/r0_au);
-  const dt=0.01; // years
-  const pts=[new THREE.Vector3(x*SCALE, 0, y*SCALE)];
-  const auyr2_to_ms2 = AU_M / (YR_S*YR_S);
-
-  for(let i=0;i<N;i++){
-    const r=Math.sqrt(x*x+y*y);
-    if(r>r_target_au*1.05) break;
-    // Gravity
-    const ag=-MU_SUN/(r*r);
-    const agx=ag*x/r, agy=ag*y/r;
-    // Sail (tangential thrust)
-    const a_ms2=sailAccel(area_m2,mass_kg,eta,r);
-    const a_auyr2=a_ms2/auyr2_to_ms2;
-    const v=Math.sqrt(vx*vx+vy*vy);
-    const tx=-y/r, ty=x/r; // prograde tangent
-    vx+=(agx+a_auyr2*tx)*dt; vy+=(agy+a_auyr2*ty)*dt;
-    x+=vx*dt; y+=vy*dt;
-    pts.push(new THREE.Vector3(x*SCALE, 0, y*SCALE));
+  _drawHoh(){
+    const{W,H}=this;
+    if(!pkD){const{ctx}=this;ctx.fillStyle='rgba(82,90,120,.6)';ctx.font=`${10*this.DPR}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.fillText('⟳ Calcular para generar el Porkchop Plot',W/2,H/2);ctx.textAlign='start';return;}
+    this._heatmap(pkMetric==='c3'?pkD.gc3:pkD.gdv,pkD.PK_RX,pkD.PK_RY);
+    this._axes('Fecha salida →','TOF →',pkD.PK_RX,pkD.PK_RY,(xi)=>yrToDate(ST.epochYr+(xi/(pkD.PK_RX-1))*pkD.span/365.25).slice(0,7),(yi)=>(pkD.tofMin+yi/(pkD.PK_RY-1)*(pkD.tofMax-pkD.tofMin)).toFixed(0)+'d');
+    this._minimum(pkMetric==='c3'?pkD.gc3:pkD.gdv,pkD.PK_RX,pkD.PK_RY,pkMetric==='c3'?1:2);
+    this._selMarker(pkD.PK_RX,pkD.PK_RY);this._colorbar();
   }
-  return pts;
-}
-
-// ─ Centrifugal launcher ─
-function buildCentrifugalLauncher(earthPos3) {
-  const g = new THREE.Group();
-  // Point on Earth's surface
-  const pt = new THREE.Mesh(
-    new THREE.SphereGeometry(0.04,8,8),
-    new THREE.MeshBasicMaterial({color:0x4ade80,blending:THREE.AdditiveBlending})
-  );
-  pt.position.copy(earthPos3);
-  const ep = earthPos3.clone().normalize();
-  pt.position.addScaledVector(ep, PLANET_DATA.earth.r_vis);
-  g.add(pt);
-  // Launch rail (line tangent to orbit direction)
-  const tangent = new THREE.Vector3(-ep.z, 0, ep.x).normalize();
-  const railEnd = pt.position.clone().addScaledVector(tangent, 0.6);
-  const railGeo = new THREE.BufferGeometry().setFromPoints([pt.position.clone(), railEnd]);
-  g.add(new THREE.Line(railGeo, new THREE.LineBasicMaterial({color:0x4ade80,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending})));
-  // Launch arc (departure hyperbola, simplified as short parabola)
-  const arcPts=[];
-  for(let i=0;i<=60;i++){
-    const t=i/60;
-    const fwd=pt.position.clone().addScaledVector(tangent,t*2.5);
-    fwd.y += t*t*0.4;
-    arcPts.push(fwd);
+  _drawCarpet(){
+    if(!carpetData){const{ctx,W,H}=this;ctx.fillStyle='rgba(82,90,120,.6)';ctx.font=`${10*this.DPR}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.fillText('⟳ Calcular carpet plot',W/2,H/2);ctx.textAlign='start';return;}
+    this._heatmap(carpetData.grid,carpetData.RX,carpetData.RY);
+    this._axes('Alt. objetivo (km) →','Isp₁ (s) →',carpetData.RX,carpetData.RY,
+      (xi)=>Math.round(ALT_MIN+(xi/(carpetData.RX-1))*(ALT_MAX-ALT_MIN))+'km',
+      (yi)=>Math.round(ISP1_MIN+(yi/(carpetData.RY-1))*(ISP1_MAX-ISP1_MIN))+'s');
+    this._minimum(carpetData.grid,carpetData.RX,carpetData.RY,2);
+    this._colorbar(true);
   }
-  const arcGeo=new THREE.BufferGeometry().setFromPoints(arcPts);
-  g.add(new THREE.Line(arcGeo,new THREE.LineBasicMaterial({color:0x4ade80,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false})));
-  return g;
-}
-
-// ── LABEL SYSTEM ──────────────────────────────────────────────────
-const lyrDiv = document.getElementById('lyr');
-const labels = {};
-
-function getLabel(id, cls) {
-  if (!labels[id]) {
-    const d = document.createElement('div');
-    d.className = 'lbl3d ' + (cls||'planet');
-    d.id = 'lbl_'+id;
-    lyrDiv.appendChild(d);
-    labels[id] = d;
+  _heatmap(grid,RX,RY){
+    const{ctx,pad,pw,ph,W,H}=this;
+    const vals=[...grid].filter(v=>isFinite(v)&&!isNaN(v)).sort((a,b)=>a-b);if(!vals.length)return;
+    const vmin=vals[0],vmax=vals[Math.floor(vals.length*.95)];this._vmin=vmin;this._vmax=vmax;
+    const ipw=Math.round(pw),iph=Math.round(ph);if(ipw<=0||iph<=0)return;
+    const img=ctx.createImageData(ipw,iph);
+    for(let py=0;py<iph;py++){for(let px=0;px<ipw;px++){
+      const xi=Math.min(RX-1,Math.max(0,Math.round(px/ipw*(RX-1))));
+      const yi=Math.min(RY-1,Math.max(0,Math.round((1-py/iph)*(RY-1))));
+      const v=grid[yi*RX+xi];const o=(py*ipw+px)*4;
+      if(isNaN(v)||!isFinite(v)){img.data[o]=8;img.data[o+1]=9;img.data[o+2]=16;img.data[o+3]=255;}
+      else{const[r,g,b]=pkColor(v,vmin,vmax);img.data[o]=r;img.data[o+1]=g;img.data[o+2]=b;img.data[o+3]=255;}
+    }}
+    ctx.putImageData(img,pad.l,pad.t);
   }
-  return labels[id];
-}
-
-function updateLabel(id, cls, pos3, text, extra='') {
-  const d = getLabel(id, cls);
-  const v = pos3.clone().project(camera);
-  const W = canvas3d.clientWidth, H = canvas3d.clientHeight;
-  if (v.z > 1) { d.style.opacity='0'; return; }
-  const sx = (v.x*0.5+0.5)*W;
-  const sy = (-v.y*0.5+0.5)*H;
-  d.style.left = sx+'px';
-  d.style.top  = sy+'px';
-  d.style.opacity='1';
-  d.innerHTML = text + (extra?'<br><span style="opacity:.6;font-size:8.5px">'+extra+'</span>':'');
-}
-
-function hideLabel(id) {
-  if (labels[id]) labels[id].style.opacity='0';
-}
-
-// ── COMPUTE & BUILD TRANSFER SCENE ────────────────────────────────
-let NODES = { n1:null, n2:null, dv1Arrow:null, dv2Arrow:null, sailPath:null, centLauncher:null };
-
-function clearTransfers() {
-  while(G_transfers.children.length) G_transfers.remove(G_transfers.children[0]);
-  NODES = { n1:null, n2:null, dv1Arrow:null, dv2Arrow:null, sailPath:null, centLauncher:null };
-}
-
-function computeMission() {
-  const originKey = ST.origin === 'earth_surf' ? 'earth' : (ST.origin === 'moon' ? 'earth' : ST.origin);
-  const targetKey = ST.target;
-  const origin = PLANET_DATA[originKey];
-  const target = PLANET_DATA[targetKey];
-  const r1 = origin.a, r2 = target.a;
-
-  let result;
-  if (ST.mode === 'bielliptic' && r2/r1 > 5) {
-    const rb = r2 * 2.5;
-    result = biElliptic(r1, r2, rb);
-    result.type = 'bielliptic';
-  } else {
-    result = hohmann(r1, r2);
-    result.type = 'hohmann';
+  _axes(xlbl,ylbl,RX,RY,xfmt,yfmt){
+    const{ctx,pad,pw,ph,W,H,DPR}=this;
+    ctx.save();ctx.strokeStyle='rgba(28,34,54,.9)';ctx.lineWidth=.8;ctx.strokeRect(pad.l,pad.t,pw,ph);
+    ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;
+    for(let i=0;i<=8;i++){const f=i/8,sx=pad.l+f*pw;ctx.strokeStyle='rgba(20,24,38,.5)';ctx.lineWidth=.5;ctx.setLineDash([2,5]);ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,H-pad.b);ctx.stroke();ctx.setLineDash([]);ctx.save();ctx.translate(sx,H-pad.b+4);ctx.rotate(-Math.PI/4);ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText(xfmt(Math.round(i/8*(RX-1))),0,0);ctx.restore();}
+    for(let i=0;i<=5;i++){const f=i/5,sy=H-pad.b-f*ph;ctx.strokeStyle='rgba(20,24,38,.5)';ctx.lineWidth=.5;ctx.setLineDash([2,5]);ctx.beginPath();ctx.moveTo(pad.l,sy);ctx.lineTo(W-pad.r,sy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText(yfmt(Math.round(f*(RY-1))),2,sy+3);}
+    ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText(xlbl,pad.l+pw/2-40,H-4);
+    ctx.save();ctx.translate(10,pad.t+ph/2+20);ctx.rotate(-Math.PI/2);ctx.fillText(ylbl,0,0);ctx.restore();ctx.restore();
   }
-
-  // Phase angle
-  const t_tof_yr = result.tof / 365.25;
-  const n_target = PI2 / target.T;
-  result.phase_req = Math.PI - n_target * t_tof_yr;
-
-  // Mass calculations
-  const totalDv = result.dv_total;
-  const m_dry = parseFloat(document.getElementById('inp-dry').value) || 4500;
-  const propFrac = ST.propFrac;
-  const m_total = m_dry / (1 - propFrac);
-  const m_prop  = m_total - m_dry;
-  const dv_cap  = rocketDv(m_total, m_dry, ST.isp);
-
-  // Departure burn from LEO
-  const dv_leo = departureBurnLEO(result.v_excess_ms||result.dv1, 200);
-  result.dv_leo = dv_leo;
-
-  // Mass ratio for total Δv
-  const { m0, mp, mr } = rocketMass(totalDv, ST.isp, m_dry);
-
-  result.m_dry = m_dry; result.m_total = m_total; result.m_prop = m_prop;
-  result.dv_cap = dv_cap; result.mr = mr; result.m0 = m0; result.mp_needed = mp;
-
-  // Energy
-  const a_t = result.a_t;
-  const eps_transfer = -MU_SUN / (2*a_t) * (AUyr_ms*AUyr_ms); // J/kg (convert AU/yr² to SI)
-  result.eps = eps_transfer;
-
-  // Sail
-  if (ST.sailOn) {
-    const sail_m = m_dry + (parseFloat(document.getElementById('inp-sail-m').value)||800);
-    result.sail_a0 = sailAccel(ST.sailArea, sail_m, ST.sailEff, r1);
-    result.sail_a_target = sailAccel(ST.sailArea, sail_m, ST.sailEff, r2);
-    result.sail_m = sail_m;
-    // Approximate spiral time: Δv ÷ average acceleration (rough)
-    const a_avg = (result.sail_a0 + result.sail_a_target)/2;
-    result.sail_t_days = (totalDv / a_avg) / 86400;
-  }
-
-  ST.result = result;
-  return result;
+  _minimum(grid,RX,RY,decimals){let mV=Infinity,mXi=0,mYi=0;for(let yi=0;yi<RY;yi++)for(let xi=0;xi<RX;xi++){const v=grid[yi*RX+xi];if(!isNaN(v)&&v<mV){mV=v;mXi=xi;mYi=yi;}}const pos=this.g2s(mXi,mYi,RX,RY),d=7*this.DPR;const{ctx}=this;ctx.save();ctx.strokeStyle='#3ae882';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pos.x-d,pos.y);ctx.lineTo(pos.x+d,pos.y);ctx.moveTo(pos.x,pos.y-d);ctx.lineTo(pos.x,pos.y+d);ctx.stroke();ctx.font=`${7.5*this.DPR}px JetBrains Mono,monospace`;ctx.fillStyle='#3ae882';ctx.fillText('min='+mV.toFixed(decimals),pos.x+d+2,pos.y-2);ctx.restore();}
+  _selMarker(RX,RY){if(!ST.sel)return;const pos=this.g2s(ST.sel.xi,ST.sel.yi,RX,RY),t=performance.now()/900,R=(4+1.5*Math.sin(t))*this.DPR;const{ctx}=this;ctx.save();ctx.strokeStyle='#e8a017';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(pos.x,pos.y,R,0,TAU);ctx.stroke();ctx.strokeStyle='rgba(232,160,23,.25)';ctx.lineWidth=.8;ctx.setLineDash([3,5]);ctx.beginPath();ctx.moveTo(this.pad.l,pos.y);ctx.lineTo(pos.x-R-2,pos.y);ctx.moveTo(pos.x+R+2,pos.y);ctx.lineTo(this.W-this.pad.r,pos.y);ctx.moveTo(pos.x,this.pad.t);ctx.lineTo(pos.x,pos.y-R-2);ctx.moveTo(pos.x,pos.y+R+2);ctx.lineTo(pos.x,this.H-this.pad.b);ctx.stroke();ctx.restore();}
+  _colorbar(isPayload=false){const cv=document.getElementById('cbar-cv'),ctx=cv.getContext('2d');if(this._vmin===undefined)return;const{_vmin:vmin,_vmax:vmax}=this;for(let py=0;py<120;py++){const t=1-py/120;const[r,g,b]=pkColor(vmin+(vmax-vmin)*Math.pow(t,1/.42),vmin,vmax);ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.fillRect(0,py,14,1);}const lbl=document.getElementById('cbar-lbls');lbl.innerHTML='';[1,.75,.5,.25,0].forEach(f=>{const d=document.createElement('div');d.textContent=(vmin+(vmax-vmin)*f).toFixed(1);lbl.appendChild(d);});document.getElementById('cbar-unit').textContent=isPayload?'λ %':pkMetric==='c3'?'km²/s²':'km/s';}
 }
 
-function buildTransferScene(t_yr) {
-  clearTransfers();
-  const res = ST.result;
-  if (!res) return;
-
-  const originKey = ST.origin === 'earth_surf' ? 'earth' : ST.origin;
-  const origin = PLANET_DATA[originKey] || PLANET_DATA.earth;
-  const target = PLANET_DATA[ST.target];
-  const r1 = origin.a, r2 = target.a;
-
-  // Earth departure position at t_yr
-  const earthPos = planetPos3D(PLANET_DATA.earth, t_yr);
-  // Mars/target position at t_yr + tof
-  const targetPos = planetPos3D(target, t_yr + res.tof/365.25, 0);
-
-  // Transfer arc (aligned from earthPos to targetPos)
-  const angle_earth = Math.atan2(earthPos.z, earthPos.x);
-  const transferPts = transferArcPoints(r1, r2, 200);
-
-  // Rotate arc to start at Earth's current angular position
-  const cos_a = Math.cos(angle_earth), sin_a = Math.sin(angle_earth);
-  const rotatedPts = transferPts.map(p => new THREE.Vector3(
-    p.x * cos_a - p.z * sin_a,
-    p.y,
-    p.x * sin_a + p.z * cos_a
-  ));
-
-  // Vertex-colored gradient (cyan → amber along arc)
-  const N = rotatedPts.length;
-  const pos = new Float32Array(N*3), col = new Float32Array(N*3);
-  const cCyan  = new THREE.Color(0x22d3ee);
-  const cAmber = new THREE.Color(0xf59e0b);
-  for (let i=0; i<N; i++) {
-    const t = i/(N-1);
-    const c = cCyan.clone().lerp(cAmber, t);
-    pos[i*3]=rotatedPts[i].x; pos[i*3+1]=rotatedPts[i].y; pos[i*3+2]=rotatedPts[i].z;
-    col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
+class PlanetVP extends VP{
+  constructor(id,role){super(id,0.001);this.role=role;}
+  get _pk(){return this.role==='dep'?ST.orig:ST.dest;}
+  get _h(){return this.role==='dep'?ST.h_park:ST.h_cap;}
+  get _hyp(){return ST.sel?(this.role==='dep'?ST.sel.h1:ST.sel.h2):null;}
+  get _vi(){return ST.sel?(this.role==='dep'?ST.sel.vi1:ST.sel.vi2):null;}
+  get _col(){return this.role==='dep'?'#17d4e8':'#8b6ef5';}
+  autoFit(){const p=PL[this._pk],soi_km=p.soi/1e3;const minDim=Math.min(this.W,this.H)*.45;this.zoom=minDim/(soi_km/6);this.defZoom=this.zoom;this.pan={x:0,y:0};}
+  draw(){
+    if(ST.mode!=='hohmann'){this.bg();const{ctx,W,H}=this;ctx.fillStyle='rgba(82,90,120,.25)';ctx.font=`${9*this.DPR}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.fillText('Modo Ascenso activo',W/2,H/2);ctx.textAlign='start';return;}
+    this.bg();const p=PL[this._pk];if(!p)return;
+    const Rkm=p.R/1e3,O=this.w2c(0,0);const{ctx,W,H,zoom}=this;
+    ctx.save();ctx.setLineDash([2,8]);ctx.strokeStyle='rgba(20,24,38,.5)';ctx.lineWidth=.4;[1,2,4,8,16].forEach(f=>{ctx.beginPath();ctx.arc(O.x,O.y,f*Rkm*zoom,0,TAU);ctx.stroke();});ctx.restore();
+    this.ln(0,O.y,W,O.y,'rgba(20,24,38,.4)',.4);this.ln(O.x,0,O.x,H,'rgba(20,24,38,.4)',.4);
+    const soi_km=p.soi/1e3,soi_px=soi_km*zoom;this.circ(O.x,O.y,soi_px,p.color+'44',null,.7,1,[5,10]);
+    const atm_px=(Rkm*1.1)*zoom;const g=ctx.createRadialGradient(O.x,O.y,Rkm*zoom,O.x,O.y,atm_px);g.addColorStop(0,p.color+'50');g.addColorStop(1,'transparent');ctx.save();ctx.fillStyle=g;ctx.beginPath();ctx.arc(O.x,O.y,atm_px,0,TAU);ctx.fill();ctx.restore();
+    this.circ(O.x,O.y,Rkm*zoom,p.color,p.color+'22',1.5);this.txt(p.name+' R='+Rkm.toFixed(0)+'km',O.x+Rkm*zoom+4,O.y,p.color,9);
+    const rp_km=(p.R+this._h)/1e3,rp_px=rp_km*zoom;this.circ(O.x,O.y,rp_px,'rgba(23,212,232,.6)',null,1,1,[4,7]);const vc_kms=Math.sqrt(p.mu/(p.R+this._h))/1e3;this.txt('Parkeo '+rp_km.toFixed(0)+'km v_c='+vc_kms.toFixed(2)+'km/s',O.x+rp_px*.71+2,O.y-rp_px*.71,'rgba(23,212,232,.75)',7.5);
+    if(this._hyp)this._drawHyp(p,Rkm,this._hyp,this._col);
+    const lines=[this.role==='dep'?'HIPÉRBOLA ESCAPE':'HIPÉRBOLA CAPTURA',p.name+'  μ='+(p.mu/1e12).toFixed(2)+'×10¹² m³/s²',this._vi?'v∞ = '+(this._vi/1e3).toFixed(3)+' km/s':'← Seleccionar en Porkchop'];
+    const dp=this.DPR;ctx.save();ctx.font=`${8*dp}px JetBrains Mono,monospace`;lines.forEach((l,i)=>{ctx.fillStyle=i===0?this._col+'cc':'rgba(82,90,120,.75)';ctx.fillText(l,12,H-38+i*13*dp);});ctx.restore();
   }
-  const arcGeo = new THREE.BufferGeometry();
-  arcGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  arcGeo.setAttribute('color',   new THREE.BufferAttribute(col,3));
-  const arcMat = new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false, linewidth:2 });
-  G_transfers.add(new THREE.Line(arcGeo, arcMat));
+  _drawHyp(p,Rkm,hyp,col){const a=hyp.a/1e3,e=hyp.e,thInf=hyp.th_inf,N=200,eps=0.04,pts=[];for(let i=0;i<=N;i++){const nu=-thInf+eps+(2*thInf-2*eps)*i/N,r=a*(e*e-1)/(1+e*Math.cos(nu));if(r<0||r>1e7)continue;const ang=nu+Math.PI/2;pts.push(this.w2c(r*Math.cos(ang),r*Math.sin(ang)));}this.poly(pts,col,1.5,.9);this.poly(pts,col,5,.08);const O=this.w2c(0,0);for(const sign of[-1,1]){const ang=thInf*sign+Math.PI/2+Math.PI;const fp=this.w2c(1e6*Math.cos(ang),1e6*Math.sin(ang));this.ln(O.x,O.y,fp.x,fp.y,col,.6,.2,[3,8]);}const rp_km=hyp.r_p/1e3,peri=this.w2c(0,-rp_km);this.circ(peri.x,peri.y,5,col,col+'80',1.5);const dvL=Math.min(60,Math.max(15,hyp.dv/200))*this.DPR;this.arr(peri.x,peri.y,peri.x+dvL,peri.y,'#e84a3a',1.5,5);this.txt('Δv='+(hyp.dv/1e3).toFixed(3)+'km/s',peri.x+dvL+4,peri.y,'#e84a3a',8.5);this.txt('e='+e.toFixed(4),peri.x+dvL+4,peri.y+12,col,7.5);if(this._vi)this.txt('v∞='+(this._vi/1e3).toFixed(3)+'km/s',peri.x+dvL+4,peri.y+22,col,7.5);}
+}
+// ══════════════════════════════════════════════════════════════
+// ASCENT VPs
+// ══════════════════════════════════════════════════════════════
 
-  // Glow duplicate (slightly wider, more transparent)
-  const arcGeo2 = new THREE.BufferGeometry();
-  arcGeo2.setAttribute('position',new THREE.BufferAttribute(pos.slice(),3));
-  arcGeo2.setAttribute('color',   new THREE.BufferAttribute(col.slice(),3));
-  const arcMat2 = new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:0.25, blending:THREE.AdditiveBlending, depthWrite:false });
-  G_transfers.add(new THREE.Line(arcGeo2, arcMat2));
+// ── VP0 ASCENT: Earth cross-section + trajectory ──────────────
+class EarthVP extends VP{
+  constructor(){super('c0',1e-5);} // 1e-5 px/m default
+  autoFit(){this.zoom=Math.min(this.W,this.H)*0.35/R_E;this.defZoom=this.zoom;this.pan={x:0,y:0};}
+  draw(){
+    if(ST.mode!=='ascent'){return;}
+    this.bg();this._atmLayers();this._earth();this._orbit();this._traj();this._hud();
+  }
+  _atmLayers(){
+    const O=this.w2c(0,0),{ctx}=this;
+    // Atmosphere bands (altitude × zoom)
+    const bands=[{h:0,color:'rgba(10,30,80,.18)',label:''},{h:12e3,color:'rgba(10,60,30,.12)',label:'Estratosfera'},{h:50e3,color:'rgba(40,10,80,.10)',label:'Mesosfera'},{h:85e3,color:'rgba(10,10,60,.08)',label:'Termosfera'},{h:500e3,color:'rgba(0,0,20,.04)',label:''}];
+    for(let i=bands.length-1;i>=0;i--){const b=bands[i];const r=(R_E+b.h)*this.zoom;ctx.save();ctx.fillStyle=b.color;ctx.beginPath();ctx.arc(O.x,O.y,r,0,TAU);ctx.fill();ctx.restore();if(b.label&&r<this.W){ctx.save();ctx.fillStyle='rgba(82,90,120,.45)';ctx.font=`${7*this.DPR}px JetBrains Mono,monospace`;ctx.fillText(b.label,O.x+r*.7+2,O.y,'rgba(82,90,120,.45)');ctx.restore();}}
+  }
+  _earth(){
+    const O=this.w2c(0,0),R=R_E*this.zoom,{ctx}=this;
+    const grd=ctx.createRadialGradient(O.x,O.y,R*.6,O.x,O.y,R);
+    grd.addColorStop(0,'#0a2a50');grd.addColorStop(.7,'#0d3a28');grd.addColorStop(1,'#0a2010');
+    this.circ(O.x,O.y,R,null,null,0);ctx.save();ctx.fillStyle=grd;ctx.beginPath();ctx.arc(O.x,O.y,R,0,TAU);ctx.fill();ctx.restore();
+    this.circ(O.x,O.y,R,'rgba(23,212,232,.4)',null,1.5);
+    this.txt('Tierra  R=6371km',O.x+R+4,O.y,'rgba(42,106,200,.8)',8);
+  }
+  _orbit(){
+    const h_tgt=parseFloat(document.getElementById('asc-htgt').value)*1e3||400e3;
+    const R_orb=(R_E+h_tgt)*this.zoom,O=this.w2c(0,0);
+    this.circ(O.x,O.y,R_orb,'rgba(58,232,130,.45)',null,1,[6,9]);
+    this.txt('Órbita '+Math.round(h_tgt/1e3)+' km',O.x+R_orb*.71+2,O.y,'rgba(58,232,130,.7)',8);
+  }
+  _traj(){
+    const res=ST.asc_result;if(!res||!res.traj.length)return;
+    const O=this.w2c(0,0);
+    // Convert (x_downrange, h_altitude) to polar coords around Earth center
+    // Launch from (0, R_E), theta = x/R_E, r = R_E + h
+    const pts=res.traj.map(p=>{
+      const theta_rad=p.x/(R_E+p.h/2); // approximate downrange angle
+      const r=R_E+p.h;
+      const wx=r*Math.sin(theta_rad),wy=r*Math.cos(theta_rad);
+      return this.w2c(wx,wy);
+    });
+    // Color by phase (stage)
+    let pLast=pts[0];
+    for(let i=1;i<pts.length;i++){
+      const si_=res.traj[i].si;
+      const col=si_===0?'#e8a017':si_===1?'#8b6ef5':'#17d4e8';
+      this.ln(pLast.x,pLast.y,pts[i].x,pts[i].y,col,1.8,.8);
+      pLast=pts[i];
+    }
+    this.gradLine(pts,'rgba(232,160,23,.15)','rgba(23,212,232,.15)',6);
 
-  // SOI spheres
-  const soiScale_earth = Math.max(0.6, PLANET_DATA.earth.soi_au * SCALE * 40); // exaggerated
-  const soiScale_target= Math.max(0.5, target.soi_au * SCALE * 40);
-  const soiEarth = makeSOI(soiScale_earth, PLANET_DATA.earth.color);
-  soiEarth.position.copy(earthPos);
-  G_transfers.add(soiEarth);
-
-  const soiTarget = makeSOI(soiScale_target, target.color);
-  soiTarget.position.copy(targetPos);
-  G_transfers.add(soiTarget);
-
-  // Maneuver nodes
-  const n1 = makeManeuverNode(0xf59e0b);
-  n1.position.copy(rotatedPts[0]); // departure
-  G_transfers.add(n1); NODES.n1 = n1;
-
-  const n2 = makeManeuverNode(0xa78bfa);
-  n2.position.copy(rotatedPts[N-1]); // arrival
-  G_transfers.add(n2); NODES.n2 = n2;
-
-  // Delta-v arrows
-  const dv1Dir = new THREE.Vector3(-earthPos.z, 0, earthPos.x).normalize(); // prograde at Earth
-  const dv1Len = Math.min(1.5, Math.max(0.4, res.dv1/3000));
-  const arr1 = new THREE.ArrowHelper(dv1Dir, n1.position.clone(), dv1Len, 0xf87171, 0.22, 0.12);
-  G_transfers.add(arr1); NODES.dv1Arrow = arr1;
-
-  const targetDir = new THREE.Vector3(-targetPos.z, 0, targetPos.x).normalize(); // prograde at target
-  const dv2Len = Math.min(1.5, Math.max(0.4, res.dv2/3000));
-  const arr2 = new THREE.ArrowHelper(targetDir, n2.position.clone(), dv2Len, 0xa78bfa, 0.22, 0.12);
-  G_transfers.add(arr2); NODES.dv2Arrow = arr2;
-
-  // Solar sail trajectory
-  if (ST.sailOn) {
-    const sail_m = res.sail_m || 5000;
-    const pts = sailSpiralPoints(r1, r2, ST.sailArea, sail_m, ST.sailEff, 800);
-    if (pts.length > 2) {
-      // Rotate to match Earth departure angle
-      const rotPts = pts.map(p => new THREE.Vector3(
-        p.x*cos_a - p.z*sin_a, p.y, p.x*sin_a + p.z*cos_a
-      ));
-      const sailGeo = new THREE.BufferGeometry().setFromPoints(rotPts);
-      const sailMat = new THREE.LineBasicMaterial({ color:0xa78bfa, transparent:true, opacity:0.65, blending:THREE.AdditiveBlending, depthWrite:false });
-      const sailLine = new THREE.Line(sailGeo, sailMat);
-      G_transfers.add(sailLine); NODES.sailPath = sailLine;
+    // Events (staging, MaxQ, orbit)
+    res.events.forEach(ev=>{
+      const theta_rad=ev.x/(R_E+ev.h/2),r=R_E+ev.h;
+      const pp=this.w2c(r*Math.sin(theta_rad),r*Math.cos(theta_rad));
+      const t_=performance.now()/900,pulse=1+.2*Math.sin(t_*3);
+      if(ev.type==='sep'){this.circ(pp.x,pp.y,6*pulse,'#e8a017',null,1.5);this.txt(`Sep. E${ev.si+1}`,pp.x+8,pp.y,'#e8a017',8);}
+      if(ev.type==='orbit'){this.circ(pp.x,pp.y,7*pulse,'#3ae882','#3ae88240',1.5);this.txt('ÓRBITA',pp.x+9,pp.y,'#3ae882',9);}
+    });
+    // Launch point
+    const pLaunch=this.w2c(0,R_E);
+    this.circ(pLaunch.x,pLaunch.y,5,'#17d4e8','#17d4e840',1.5);this.txt('Launch',pLaunch.x+6,pLaunch.y,'#17d4e8',8);
+    // MaxQ marker
+    if(res.maxQ>0){
+      const theta_mq=0,r_mq=R_E+res.maxQ_h,pp=this.w2c(r_mq*Math.sin(theta_mq),r_mq*Math.cos(theta_mq));
+      this.circ(pp.x,pp.y,5,'#e84a3a',null,1.5,[3,4]);this.txt('MaxQ',pp.x+6,pp.y,'#e84a3a',7.5);
     }
   }
-
-  // Centrifugal launcher
-  if (ST.centrifuge || ST.origin === 'earth_surf') {
-    const cl = buildCentrifugalLauncher(earthPos);
-    G_transfers.add(cl); NODES.centLauncher = cl;
+  _hud(){
+    const{W,H,zoom}=this;
+    const barM=zoom*R_E>.4*W?1e6:zoom*R_E>0.1*W?5e6:R_E;
+    const bpx=barM*zoom,bx=14,by=H-16;
+    this.ln(bx,by,bx+bpx,by,'rgba(82,90,120,.7)',1.5);this.ln(bx,by-4,bx,by+4,'rgba(82,90,120,.7)',1.5);this.ln(bx+bpx,by-4,bx+bpx,by+4,'rgba(82,90,120,.7)',1.5);
+    this.txt((barM/1e3).toFixed(0)+' km',bx+bpx/2-12,by-7,'rgba(82,90,120,.8)',7.5,false);
   }
 }
 
-// ── UPDATE PLANET POSITIONS ────────────────────────────────────────
-function updatePlanetPositions(t_yr) {
-  for (const [k, p] of Object.entries(PLANET_DATA)) {
-    if (!PLANET_MESHES[k]) continue;
-    const pos = planetPos3D(p, t_yr);
-    PLANET_MESHES[k].position.copy(pos);
+// ── VP1 ASCENT: Carpet plot (uses PorkchopVP dynamically) ──────
+// (already handled in PorkchopVP via mode check)
+
+// ── VP2 ASCENT: Altitude vs Velocity profile ──────────────────
+class VelAltVP extends VP{
+  constructor(){super('c2',1);}
+  draw(){
+    if(ST.mode!=='ascent'){this.bg();return;}
+    this.bg();
+    const res=ST.asc_result;
+    const h_tgt=parseFloat(document.getElementById('asc-htgt').value)*1e3||400e3;
+    const{ctx,W,H,DPR}=this;
+    const PAD={l:55*DPR,r:20*DPR,t:22*DPR,b:35*DPR};
+    const pw=W-PAD.l-PAD.r,ph=H-PAD.t-PAD.b;
+
+    const H_MAX=(h_tgt+50e3)/1e3; // km
+    const V_MAX=Math.sqrt(MU_E/(R_E+h_tgt))/1e3*1.15; // km/s
+
+    // Coordinate helpers (not world2canvas, just plot coords)
+    const px=(v_kms)=>PAD.l+v_kms/V_MAX*pw;
+    const py=(h_km)=>H-PAD.b-h_km/H_MAX*ph;
+
+    // Grid
+    ctx.save();ctx.strokeStyle='rgba(20,24,38,.8)';ctx.lineWidth=.5;ctx.setLineDash([2,6]);
+    for(let v=0;v<=V_MAX;v+=0.5){const x=px(v);ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,H-PAD.b);ctx.stroke();}
+    for(let h=0;h<=H_MAX;h+=100){const y=py(h);ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(W-PAD.r,y);ctx.stroke();}
+    ctx.setLineDash([]);ctx.restore();
+
+    // Reference: circular velocity curve v_circ(h)
+    const cPts=[];for(let h=0;h<=H_MAX;h+=10){const v=Math.sqrt(MU_E/(R_E+h*1e3))/1e3;if(v<V_MAX)cPts.push({x:px(v),y:py(h)});}
+    ctx.save();ctx.strokeStyle='rgba(58,232,130,.5)';ctx.lineWidth=1.2;ctx.setLineDash([4,5]);ctx.beginPath();if(cPts.length){ctx.moveTo(cPts[0].x,cPts[0].y);cPts.forEach(p=>ctx.lineTo(p.x,p.y));}ctx.stroke();ctx.setLineDash([]);ctx.restore();
+    ctx.save();ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='rgba(58,232,130,.7)';ctx.fillText('v_circ(h)',px(V_MAX*.5),py(h_tgt/1e3/2)+10);ctx.restore();
+
+    // Trajectory v-h path
+    if(res&&res.traj.length){
+      const pts=res.traj.map(p=>({x:px(Math.sqrt(p.vx**2+p.vh**2)/1e3),y:py(p.h/1e3),si:p.si}));
+      for(let i=1;i<pts.length;i++){const col=pts[i].si===0?'#e8a017':pts[i].si===1?'#8b6ef5':'#17d4e8';ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pts[i-1].x,pts[i-1].y);ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke();ctx.restore();}
+      // MaxQ
+      if(res.maxQ>0){const mq_pt=res.traj.find(p=>p.h>=res.maxQ_h*0.99);if(mq_pt){const mx=px(Math.sqrt(mq_pt.vx**2+mq_pt.vh**2)/1e3),my=py(mq_pt.h/1e3);ctx.save();ctx.strokeStyle='#e84a3a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(mx,my,5,0,TAU);ctx.stroke();ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='#e84a3a';ctx.fillText('MaxQ q='+res.maxQ.toFixed(0)+' Pa',mx+7,my);ctx.restore();}}
+      // Final point
+      const lp=pts[pts.length-1];ctx.save();ctx.strokeStyle='#3ae882';ctx.fillStyle='#3ae882';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(lp.x,lp.y,5,0,TAU);ctx.stroke();ctx.font=`${8*DPR}px JetBrains Mono,monospace`;ctx.fillText('Fin',lp.x+7,lp.y);ctx.restore();
+    }else{ctx.save();ctx.fillStyle='rgba(82,90,120,.5)';ctx.font=`${9*DPR}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.fillText('▶ Simular trayectoria',W/2,H/2);ctx.textAlign='start';ctx.restore();}
+
+    // Axes labels
+    ctx.save();ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='rgba(82,90,120,.85)';
+    for(let v=0;v<=V_MAX;v+=0.5){const x=px(v);ctx.fillText(v.toFixed(1),x-8,H-PAD.b+12);}
+    for(let h=0;h<=H_MAX;h+=100){const y=py(h);ctx.fillText(h+'km',2,y+3);}
+    ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText('Velocidad (km/s) →',PAD.l+pw/2-40,H-4);
+    ctx.save();ctx.translate(11,PAD.t+ph/2+15);ctx.rotate(-Math.PI/2);ctx.fillText('Altitud →',0,0);ctx.restore();
+    ctx.restore();
+
+    // Legend
+    ctx.save();ctx.font=`${8*DPR}px JetBrains Mono,monospace`;
+    [{col:'#e8a017',lbl:'Etapa 1'},{col:'#8b6ef5',lbl:'Etapa 2'},{col:'#17d4e8',lbl:'Crucero'}].forEach(({col,lbl},i)=>{ctx.fillStyle=col;ctx.fillRect(W-PAD.r-60,PAD.t+5+i*13,8,8);ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText(lbl,W-PAD.r-48,PAD.t+12+i*13);});
+    ctx.restore();
   }
 }
 
-// ── UPDATE UI PANELS ──────────────────────────────────────────────
-function fmt_ms(v)   { return v!=null ? (v/1000).toFixed(3)+' km/s' : '—'; }
-function fmt_km2s(v) { return v!=null ? v.toFixed(1)+' m/s' : '—'; }
-function fmt_d(v)    { return v!=null ? v.toFixed(1)+' d' : '—'; }
-function fmt_au(v)   { return v!=null ? v.toFixed(4)+' AU' : '—'; }
-function fmt_kg(v)   { return v!=null ? (v>=1e6?(v/1e6).toFixed(2)+' t':(v>=1e3?(v/1e3).toFixed(2)+' t':v.toFixed(0)+' kg')) : '—'; }
-function fmt_n(v,d=4){ return v!=null ? v.toFixed(d) : '—'; }
+// ── VP3 ASCENT: Atmospheric density + dynamic pressure profile ──
+class AtmVP extends VP{
+  constructor(){super('c3',1);}
+  draw(){
+    if(ST.mode!=='ascent'){this.bg();return;}
+    this.bg();
+    const res=ST.asc_result;
+    const{ctx,W,H,DPR}=this;
+    const PAD={l:58*DPR,r:20*DPR,t:22*DPR,b:35*DPR};
+    const pw=W-PAD.l-PAD.r,ph=H-PAD.t-PAD.b;
+    const h_tgt=parseFloat(document.getElementById('asc-htgt').value)*1e3||400e3;
+    const H_MAX=Math.max(h_tgt+20e3,120e3)/1e3;
 
-function updateUI() {
-  const res = ST.result;
-  if (!res) return;
+    const py=(h_km)=>H-PAD.b-h_km/H_MAX*ph;
 
-  // Dry / prop masses
-  const m_dry = parseFloat(document.getElementById('inp-dry').value)||4500;
-  const propFrac = ST.propFrac;
-  const m_total = m_dry/(1-propFrac);
-  const m_prop  = m_total-m_dry;
-  const dv_cap  = rocketDv(m_total, m_dry, ST.isp);
+    // Atmosphere density profile (left axis) and dynamic pressure (right axis, if simulation exists)
+    const rhoMax=1.3,qMax=50000; // kg/m³, Pa
 
-  document.getElementById('d-m0').textContent = fmt_kg(m_total);
-  document.getElementById('d-mp').textContent = fmt_kg(m_prop);
-  document.getElementById('d-dv-cap').textContent = fmt_km2s(dv_cap);
+    // Density profile
+    const rhoPts=[];for(let h=0;h<=H_MAX;h+=1){const rho=isaDensity(h*1e3);if(rho>1e-10){const x=PAD.l+(Math.log10(rho)+7)/7*pw;rhoPts.push({x,y:py(h)});}}
+    ctx.save();ctx.strokeStyle='rgba(74,144,232,.7)';ctx.lineWidth=1.5;if(rhoPts.length){ctx.beginPath();ctx.moveTo(rhoPts[0].x,rhoPts[0].y);rhoPts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke();}ctx.restore();
 
-  // Departure phase
-  document.getElementById('r-dv1').textContent = fmt_ms(res.dv1);
-  document.getElementById('r-dv-leo').textContent = fmt_ms(res.dv_leo);
-  document.getElementById('r-c3').textContent = res.C3!=null ? (res.C3/1e6).toFixed(2)+' km²/s²' : '—';
-  document.getElementById('r-vinf').textContent = res.v_excess_ms!=null ? fmt_ms(res.v_excess_ms) : '—';
+    // Atmosphere layer fills
+    const layers=[{h0:0,h1:11,col:'rgba(10,40,100,.12)',name:'Troposfera'},{h0:11,h1:50,col:'rgba(10,80,20,.10)',name:'Estratosfera'},{h0:50,h1:85,col:'rgba(60,10,80,.08)',name:'Mesosfera'},{h0:85,h1:Math.min(H_MAX,600),col:'rgba(10,10,60,.06)',name:'Termosfera'}];
+    layers.forEach(l=>{
+      if(l.h0>=H_MAX)return;
+      const y0=py(l.h0),y1=py(Math.min(l.h1,H_MAX));
+      ctx.save();ctx.fillStyle=l.col;ctx.fillRect(PAD.l,y1,pw,y0-y1);ctx.restore();
+      ctx.save();ctx.font=`${7*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='rgba(82,90,120,.6)';ctx.fillText(l.name,PAD.l+3,py((l.h0+Math.min(l.h1,H_MAX))/2));ctx.restore();
+    });
 
-  // Cruise
-  document.getElementById('r-at').textContent = fmt_au(res.a_t);
-  document.getElementById('r-et').textContent = res.e_t!=null ? res.e_t.toFixed(5) : '—';
-  document.getElementById('r-tof').textContent = fmt_d(res.tof);
-  const v_mean_ms = (res.v1t_ms+res.v2t_ms)/2;
-  document.getElementById('r-vmean').textContent = fmt_ms(v_mean_ms||null);
-  document.getElementById('r-phase').textContent = res.phase_req!=null ? (res.phase_req/DEG).toFixed(2)+'°' : '—';
-
-  // Arrival
-  document.getElementById('r-dv2').textContent = fmt_ms(res.dv2);
-  document.getElementById('r-dvtot').textContent = fmt_ms(res.dv_total);
-  const v_arr = res.v2t_ms!=null ? Math.abs(res.v2t_ms - res.v2c_ms) : null;
-  document.getElementById('r-varr').textContent = fmt_ms(v_arr);
-
-  // Energy
-  document.getElementById('r-m0').textContent = fmt_kg(res.m0);
-  document.getElementById('r-mfuel').textContent = fmt_kg(res.mp_needed);
-  document.getElementById('r-mf').textContent = fmt_kg(res.m0-res.mp_needed);
-  document.getElementById('r-mr').textContent = res.mr!=null ? res.mr.toFixed(4) : '—';
-  const eps_kJ = res.eps / 1000;
-  document.getElementById('r-eps').textContent = res.eps!=null ? (res.eps/1000).toFixed(0)+' kJ/kg' : '—';
-
-  // Power (Isp × g0 × thrust)
-  const Thrust = 500; // N assumed
-  const power_W = Thrust * ST.isp * G0 / 2;
-  document.getElementById('r-pw').textContent = (power_W/1000).toFixed(0)+' kW (est.)';
-
-  // Fuel bar
-  const fp = Math.min(95, (res.mp_needed/res.m0)*100);
-  document.getElementById('fuel-bar').style.width = fp+'%';
-  document.getElementById('ebar-prop').textContent = fp.toFixed(1)+'% prop.';
-  document.getElementById('ebar-struct').textContent = (100-fp).toFixed(1)+'% struct.';
-
-  // Orbital elements
-  const origin = PLANET_DATA[ST.origin==='earth_surf'?'earth':ST.origin]||PLANET_DATA.earth;
-  document.getElementById('r-rp').textContent = fmt_au(origin.a);
-  document.getElementById('r-ra').textContent = fmt_au(PLANET_DATA[ST.target]?.a);
-  const T_trans = PI2*Math.sqrt(Math.pow(res.a_t,3)/MU_SUN)*365.25;
-  document.getElementById('r-period').textContent = fmt_d(T_trans);
-  document.getElementById('r-de').textContent = res.eps!=null ? (res.eps).toFixed(0)+' J/kg' : '—';
-
-  // Formula strip
-  const dv1_str = (res.dv1/1000).toFixed(3);
-  const dv2_str = (res.dv2/1000).toFixed(3);
-  document.getElementById('fv-dv1').innerHTML = `<span class="fh">${dv1_str} km/s</span> [√(μ/r₁)·(√(2r₂/(r₁+r₂))−1)]`;
-  document.getElementById('fv-dv2').innerHTML = `<span class="fhb">${dv2_str} km/s</span> [√(μ/r₂)·(1−√(2r₁/(r₁+r₂)))]`;
-  document.getElementById('fv-tof').innerHTML = `<span class="fhb">${res.tof.toFixed(1)} d</span>`;
-  document.getElementById('fv-mr').innerHTML = `<span class="fhp">${res.mr.toFixed(3)}</span> = exp(Δv/<span class="fh">Isp·g₀</span>)`;
-
-  // Sail
-  if (ST.sailOn && res.sail_a0) {
-    document.getElementById('d-sail-acc').textContent = (res.sail_a0*1e6).toFixed(2)+' μm/s²';
-    document.getElementById('d-sail-acc2').textContent = (res.sail_a_target*1e6).toFixed(2)+' μm/s²';
-    document.getElementById('sail-results-lbl').style.display='flex';
-    document.getElementById('sail-results').style.display='block';
-    document.getElementById('rs-a0').textContent = (res.sail_a0*1e6).toFixed(2)+' μm/s²';
-    document.getElementById('rs-t').textContent = res.sail_t_days!=null?fmt_d(res.sail_t_days):'—';
-    document.getElementById('rs-am').textContent = (ST.sailArea/(res.sail_m||5000)).toFixed(2)+' m²/kg';
-  }
-
-  // Status bar
-  document.getElementById('sb-origin').textContent = PLANET_DATA[ST.origin==='earth_surf'?'earth':ST.origin]?.name||'Tierra';
-  document.getElementById('sb-target').textContent = PLANET_DATA[ST.target]?.name||'Marte';
-
-  // Launch window
-  const target_p = PLANET_DATA[ST.target];
-  const earth_p  = PLANET_DATA.earth;
-  if (target_p && earth_p) {
-    // Current phase angle
-    const earthPos = planetPos3D(earth_p, SIM_T);
-    const targetPosNow = planetPos3D(target_p, SIM_T);
-    const curPhase = Math.atan2(targetPosNow.z, targetPosNow.x) - Math.atan2(earthPos.z, earthPos.x);
-    const reqPhase = res.phase_req;
-    // Time until phase matches
-    const dn = PI2/earth_p.T - PI2/target_p.T; // relative angular velocity
-    let deltaAngle = ((reqPhase - curPhase) % PI2 + PI2) % PI2;
-    if (deltaAngle > Math.PI) deltaAngle -= PI2;
-    const t_window_yr = Math.abs(deltaAngle / dn);
-    const t_window_d = t_window_yr * 365.25;
-    document.getElementById('window-days').textContent = t_window_d.toFixed(0)+' días';
-  }
-}
-
-// ── LABELS UPDATE ─────────────────────────────────────────────────
-function updateLabels() {
-  // Planet labels
-  for (const [k, m] of Object.entries(PLANET_MESHES)) {
-    const p = PLANET_DATA[k];
-    updateLabel('pl_'+k, 'planet', m.position,
-      p.name,
-      'a='+p.a.toFixed(3)+' AU  T='+((p.T*365.25).toFixed(0))+' d');
-  }
-  // Maneuver nodes
-  if (NODES.n1) {
-    const res = ST.result;
-    const dv1str = res ? (res.dv1/1000).toFixed(3)+' km/s' : '—';
-    updateLabel('node1', 'node', NODES.n1.position, 'N1 · Δv₁', dv1str);
-  } else hideLabel('node1');
-
-  if (NODES.n2) {
-    const res = ST.result;
-    const dv2str = res ? (res.dv2/1000).toFixed(3)+' km/s' : '—';
-    updateLabel('node2', 'node', NODES.n2.position, 'N2 · Δv₂', dv2str);
-  } else hideLabel('node2');
-
-  // SOI labels - find Earth and target positions
-  if (ST.result) {
-    const ep = planetPos3D(PLANET_DATA.earth, SIM_T);
-    updateLabel('soi_earth', 'soi', ep.clone().add(new THREE.Vector3(0.7,0,0)),
-      'SOI Tierra', '925 000 km*');
-    const tp = planetPos3D(PLANET_DATA[ST.target]||PLANET_DATA.mars, SIM_T + ST.result.tof/365.25);
-    updateLabel('soi_target', 'soi', tp.clone().add(new THREE.Vector3(0.6,0,0)),
-      'SOI '+PLANET_DATA[ST.target]?.name, PLANET_DATA[ST.target]?.soi_au!=null?(PLANET_DATA[ST.target].soi_au*AU_M/1e6).toFixed(0)+' 000 km*':'');
-  }
-
-  // Arc midpoint label
-  if (NODES.n1 && NODES.n2 && ST.result) {
-    const mid = NODES.n1.position.clone().lerp(NODES.n2.position, 0.5);
-    mid.y += 0.3;
-    updateLabel('arc_mid','arc', mid, 'T = '+ST.result.tof.toFixed(0)+' d', 'Δv_total = '+(ST.result.dv_total/1000).toFixed(3)+' km/s');
-  }
-
-  // Sail label
-  if (NODES.sailPath && ST.result) {
-    const sp = NODES.sailPath.geometry.attributes.position;
-    const midI = Math.floor(sp.count/2);
-    const midPos = new THREE.Vector3(sp.getX(midI), sp.getY(midI)+0.3, sp.getZ(midI));
-    updateLabel('sail_lbl','sail', midPos, '☀ Trayectoria Vela', 'η='+ST.sailEff+' A='+ST.sailArea+'m²');
-  } else hideLabel('sail_lbl');
-
-  // Centrifugal launcher label
-  if (NODES.centLauncher && ST.centrifuge) {
-    const ep = planetPos3D(PLANET_DATA.earth, SIM_T);
-    const eDir = ep.clone().normalize();
-    const labelPos = ep.clone().addScaledVector(eDir, 0.5);
-    updateLabel('cent_lbl','launch', labelPos, '⚙ Lanzador Centrífugo', '(Lanzamiento superficial)');
-  } else hideLabel('cent_lbl');
-}
-
-// ── ANIMATION LOOP ────────────────────────────────────────────────
-let _lastT = performance.now(), _frames=0, _fpsT=0;
-
-function animate(now) {
-  requestAnimationFrame(animate);
-
-  const dt_ms = now - _lastT; _lastT = now;
-  _frames++; _fpsT += dt_ms;
-  if (_fpsT > 1000) {
-    document.querySelector('#sb-fps span').textContent = _frames;
-    _frames=0; _fpsT=0;
-  }
-
-  // Advance sim time
-  if (!SIM_PAUSED) {
-    const days_per_s = SIM_SCALE;
-    SIM_T += (dt_ms/1000) * days_per_s / 365.25;
-    document.getElementById('sb-time').textContent = SIM_T.toFixed(3)+' yr';
-  }
-
-  // Update planet positions
-  updatePlanetPositions(SIM_T);
-
-  // Rebuild transfer scene every few frames (cheap enough for node positions)
-  if (ST.result && Math.floor(now/200) !== Math.floor((now-dt_ms)/200)) {
-    buildTransferScene(SIM_T);
-  }
-
-  // Pulse maneuver nodes
-  if (NODES.n1) {
-    NODES.n1._pulse = (NODES.n1._pulse||0) + dt_ms*0.002;
-    const s = 1 + 0.18*Math.sin(NODES.n1._pulse);
-    NODES.n1.children[1].scale.setScalar(s);
-    NODES.n1.children[2].scale.setScalar(s*1.1);
-  }
-  if (NODES.n2) {
-    NODES.n2._pulse = (NODES.n2._pulse||0) + dt_ms*0.0018;
-    const s = 1 + 0.18*Math.sin(NODES.n2._pulse+1);
-    NODES.n2.children[1].scale.setScalar(s);
-    NODES.n2.children[2].scale.setScalar(s*1.1);
-  }
-
-  updateLabels();
-  renderer.render(scene, camera);
-}
-
-// ── RUN ───────────────────────────────────────────────────────────
-function run() {
-  buildOrbitRings();
-  buildPlanetMeshes();
-  computeMission();
-  buildTransferScene(SIM_T);
-  updateUI();
-  requestAnimationFrame(animate);
-}
-
-// ── EVENT HANDLERS ────────────────────────────────────────────────
-function recompute() {
-  computeMission();
-  buildTransferScene(SIM_T);
-  updateUI();
-}
-
-document.getElementById('sel-target').addEventListener('change', function() {
-  ST.target = this.value;
-  buildOrbitRings(); // refresh orbit highlights
-  recompute();
-});
-document.getElementById('sel-origin').addEventListener('change', function() {
-  ST.origin = this.value;
-  recompute();
-});
-document.getElementById('inp-dry').addEventListener('input', recompute);
-document.getElementById('r-prop').addEventListener('input', function() {
-  ST.propFrac = parseFloat(this.value);
-  document.getElementById('v-prop').textContent = (ST.propFrac*100).toFixed(0)+'%';
-  recompute();
-});
-document.getElementById('r-isp').addEventListener('input', function() {
-  ST.isp = parseInt(this.value);
-  document.getElementById('v-isp').textContent = ST.isp+' s';
-  recompute();
-});
-document.getElementById('r-sail-a').addEventListener('input', function() {
-  ST.sailArea = parseInt(this.value);
-  document.getElementById('v-sail-a').textContent = ST.sailArea;
-  recompute();
-});
-document.getElementById('r-sail-e').addEventListener('input', function() {
-  ST.sailEff = parseFloat(this.value);
-  document.getElementById('v-sail-e').textContent = ST.sailEff.toFixed(2);
-  recompute();
-});
-document.getElementById('inp-sail-m').addEventListener('input', recompute);
-
-// Toggles
-function setupToggle(id, key, onCb) {
-  const el = document.getElementById(id);
-  el.addEventListener('click', function() {
-    ST[key] = !ST[key];
-    this.classList.toggle('on', ST[key]);
-    if (onCb) onCb(ST[key]);
-  });
-}
-setupToggle('tgl-sail', 'sailOn', on => {
-  document.getElementById('sail-section').classList.toggle('visible', on);
-  document.getElementById('sail-results-lbl').style.display = on?'flex':'none';
-  document.getElementById('sail-results').style.display = on?'block':'none';
-  recompute();
-});
-setupToggle('tgl-cent', 'centrifuge', () => recompute());
-
-// Mode tabs
-document.querySelectorAll('.hdr-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.hdr-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    ST.mode = tab.dataset.mode;
-    if (ST.mode === 'sail') {
-      ST.sailOn = true;
-      document.getElementById('tgl-sail').classList.add('on');
-      document.getElementById('sail-section').classList.add('visible');
-    } else if (ST.mode === 'centrifuge') {
-      ST.centrifuge = true;
-      ST.origin = 'earth_surf';
-      document.getElementById('tgl-cent').classList.add('on');
-      document.getElementById('sel-origin').value = 'earth_surf';
+    // Dynamic pressure from simulation
+    if(res&&res.traj.length){
+      const qPts=res.traj.map(p=>({x:PAD.l+(p.q/qMax)*pw*0.5,y:py(p.h/1e3)})); // right half
+      ctx.save();ctx.strokeStyle='rgba(232,74,58,.8)';ctx.lineWidth=1.5;if(qPts.length){ctx.beginPath();ctx.moveTo(qPts[0].x,qPts[0].y);qPts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke();}ctx.restore();
+      // MaxQ line
+      if(res.maxQ>0){const yMQ=py(res.maxQ_h/1e3);ctx.save();ctx.strokeStyle='rgba(232,74,58,.4)';ctx.lineWidth=.8;ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(PAD.l,yMQ);ctx.lineTo(W-PAD.r,yMQ);ctx.stroke();ctx.setLineDash([]);ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='#e84a3a';ctx.fillText('MaxQ '+res.maxQ_h.toFixed(0)+'m',W-PAD.r-60,yMQ-3);ctx.restore();}
     }
-    recompute();
-  });
-});
 
-// Sim speed
-let _simSpeeds = [1, 7, 30, 90, 365, 1825];
-let _simSpdIdx = 0;
-function updateSimSpeed() {
-  SIM_SCALE = _simSpeeds[_simSpdIdx];
-  const labels = ['×1d/s','×1sem','×1m/s','×3m/s','×1a/s','×5a/s'];
-  document.getElementById('ss-val').textContent = labels[_simSpdIdx];
+    // Target orbit line
+    ctx.save();ctx.strokeStyle='rgba(58,232,130,.4)';ctx.lineWidth=.8;ctx.setLineDash([3,6]);
+    const y_orb=py(h_tgt/1e3);ctx.beginPath();ctx.moveTo(PAD.l,y_orb);ctx.lineTo(W-PAD.r,y_orb);ctx.stroke();ctx.setLineDash([]);ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='rgba(58,232,130,.7)';ctx.fillText('Órbita '+Math.round(h_tgt/1e3)+'km',W-PAD.r-70,y_orb-3);ctx.restore();
+
+    // Altitude axis
+    ctx.save();ctx.font=`${7.5*DPR}px JetBrains Mono,monospace`;ctx.fillStyle='rgba(82,90,120,.85)';
+    const step=H_MAX>400?100:H_MAX>150?50:20;for(let h=0;h<=H_MAX;h+=step){const y=py(h);ctx.fillText(h+'km',2,y+3);}
+    ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText('Densidad atm. ISA →',PAD.l+pw*0.1,H-4);
+    if(res)ctx.fillText('← Presión dinámica q',PAD.l+pw*0.45,H-4);
+    ctx.save();ctx.translate(11,PAD.t+ph/2+20);ctx.rotate(-Math.PI/2);ctx.fillText('Altitud →',0,0);ctx.restore();
+    ctx.restore();
+
+    // Legend
+    ctx.save();ctx.font=`${8*DPR}px JetBrains Mono,monospace`;
+    ctx.strokeStyle='rgba(74,144,232,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W-PAD.r-90,PAD.t+8);ctx.lineTo(W-PAD.r-75,PAD.t+8);ctx.stroke();ctx.fillStyle='rgba(82,90,120,.8)';ctx.fillText('ρ(h) ISA',W-PAD.r-70,PAD.t+11);
+    if(res){ctx.strokeStyle='rgba(232,74,58,.8)';ctx.beginPath();ctx.moveTo(W-PAD.r-90,PAD.t+21);ctx.lineTo(W-PAD.r-75,PAD.t+21);ctx.stroke();ctx.fillText('q(t)',W-PAD.r-70,PAD.t+24);}
+    ctx.restore();
+  }
 }
-document.getElementById('ss-up').addEventListener('click', () => {
-  _simSpdIdx = Math.min(_simSpeeds.length-1, _simSpdIdx+1); updateSimSpeed();
+// ══ TOOLTIP ════════════════════════════════════════════════════
+function showTip(id,cx,cy,...lines){const el=document.getElementById(id);el.style.left=cx+'px';el.style.top=cy+'px';el.innerHTML=lines.map(l=>`<div class="tip-row"><b>${l.split(':')[0]}:</b>${l.split(':').slice(1).join(':')}</div>`).join('');el.classList.add('vis');}
+function hideTip(id){document.getElementById(id).classList.remove('vis');}
+function setv(id,txt,cls){const el=document.getElementById(id);if(!el)return;el.textContent=txt;el.className='dv'+(cls?' '+cls:'');}
+function fkm(v,d=3){return isFinite(v)?(v/1e3).toFixed(d)+' km/s':'—';}
+function fkg(kg){if(!isFinite(kg))return'—';return kg>=1e6?(kg/1e6).toFixed(2)+' Mt':kg>=1e3?(kg/1e3).toFixed(2)+' t':kg.toFixed(0)+' kg';}
+
+// ══ HOHMANN RIGHT PANEL ════════════════════════════════════════
+function updateHohRight(){
+  const mf=parseFloat(document.getElementById('inp-mf').value)||5000;
+  const m0a=mf/(1-ST.fp),dvcap=rocketDv(m0a,mf,ST.isp);
+  setv('d-m0',fkg(m0a));setv('d-dvcap',fkm(dvcap),'gn');setv('r-m0a',fkg(m0a),'wh');
+  const sel=ST.sel;
+  if(!sel){['r-dep','r-arr','r-tof','r-vinf1','r-c3','r-dvesc','r-vpark','r-ehyp1','r-at','r-et','r-vper','r-vapo','r-phase','r-vinf2','r-dvcap2','r-dvtot','r-m0r','r-mpr','r-margin','r-eps','r-period','r-rpera'].forEach(id=>setv(id,'—'));return;}
+  setv('r-dep',yrToDate(ST.epochYr+sel.t_dep_d/365.25));setv('r-arr',yrToDate(ST.epochYr+sel.t_arr_d/365.25));setv('r-tof',sel.tof_d.toFixed(0)+' d','am');
+  setv('r-vinf1',fkm(sel.vi1));setv('r-c3',sel.c3.toFixed(2)+' km²/s²','bl');setv('r-dvesc',sel.h1?fkm(sel.h1.dv):'—');setv('r-vpark',sel.h1?(sel.h1.v_circ/1e3).toFixed(3)+' km/s':'—');setv('r-ehyp1',sel.h1?sel.h1.e.toFixed(4):'—');
+  const r1=sel.s1.r,r2=sel.s2.r,at=(r1+r2)/2,et=Math.abs(r2-r1)/(r1+r2);
+  const vper=Math.sqrt(MU_S_AU*(2/r1-1/at))*AUyr/1e3,vapo=Math.sqrt(MU_S_AU*(2/r2-1/at))*AUyr/1e3;
+  const Thalf_d=365.25*Math.PI*Math.sqrt(at**3/MU_S_AU),eps_MJ=-MU_S/(2*at*AU)/1e6;
+  const phase=((Math.PI-(TAU/(PL[ST.dest].T/365.25))*sel.tof_d/365.25)*180/Math.PI+360)%360;
+  setv('r-at',at.toFixed(5)+' AU','am');setv('r-et',et.toFixed(6),'am');setv('r-vper',vper.toFixed(3)+' km/s','am');setv('r-vapo',vapo.toFixed(3)+' km/s','am');setv('r-phase',phase.toFixed(2)+'°','am');
+  setv('r-vinf2',fkm(sel.vi2),'pu');setv('r-dvcap2',sel.h2?fkm(sel.h2.dv):'—','pu');
+  const dvtot=sel.dv_esc+sel.dv_cap;setv('r-dvtot',fkm(dvtot),'rd');
+  const{m0:m0r,mp,mr}=rocketM0(dvtot,ST.isp,mf);setv('r-m0r',fkg(m0r));setv('r-mpr',fkg(mp),'rd');const margin=dvcap-dvtot;setv('r-margin',fkm(margin),margin>=0?'gn':'rd');
+  const fp_pct=Math.min(99,mp/m0r*100);document.getElementById('efill').style.width=fp_pct.toFixed(1)+'%';document.getElementById('el').textContent=fp_pct.toFixed(1)+'% prop.';document.getElementById('er').textContent=(100-fp_pct).toFixed(1)+'% struct.';
+  setv('r-eps',eps_MJ.toFixed(3)+' MJ/kg');setv('r-period',Thalf_d.toFixed(1)+' d');setv('r-rpera',r1.toFixed(4)+' / '+r2.toFixed(4)+' AU','am');
+}
+
+// ══ ASCENT LEFT / RIGHT PANEL UPDATE ══════════════════════════
+function updateAscLeft(){
+  const h_tgt=parseFloat(document.getElementById('asc-htgt').value)*1e3||400e3;
+  const vcirc=Math.sqrt(MU_E/(R_E+h_tgt));
+  const{total:dvRef}=dvOrbit(h_tgt/1e3);
+  setv('a-vcirc',(vcirc/1e3).toFixed(3)+' km/s','cy');
+  setv('a-dvref',(dvRef/1e3).toFixed(3)+' km/s','am');
+}
+
+function readAscCfg(){
+  return{
+    stages:[
+      {ms:parseFloat(document.getElementById('s1-ms').value)||8500,mp:parseFloat(document.getElementById('s1-mp').value)||95000,isp:parseFloat(document.getElementById('s1-isp').value)||280,thrust:parseFloat(document.getElementById('s1-thr').value)*1e3||1500e3},
+      {ms:parseFloat(document.getElementById('s2-ms').value)||1800,mp:parseFloat(document.getElementById('s2-mp').value)||18000,isp:parseFloat(document.getElementById('s2-isp').value)||350,thrust:parseFloat(document.getElementById('s2-thr').value)*1e3||180e3},
+    ],
+    m_pay:parseFloat(document.getElementById('asc-pay').value)||3000,
+    Cd:parseFloat(document.getElementById('asc-cd').value)||0.3,
+    A_ref:parseFloat(document.getElementById('asc-ar').value)||12,
+    kick_deg:parseFloat(document.getElementById('asc-kick').value)||5,
+    h_tgt:parseFloat(document.getElementById('asc-htgt').value)*1e3||400e3,
+  };
+}
+
+function updateAscRight(res){
+  if(!res){setv('a-status','Sin simular','gn');['a-ttime','a-range','a-hmax','a-dv1','a-tw1','a-dvcap1','a-maxqh','a-maxq','a-dv2','a-tw2','a-dvcap2','a-vfx','a-vfy','a-vtot','a-vcreq','a-vdef','a-gloss','a-dloss','a-tloss','a-eff','a-m0','a-morb','a-lambda','a-eps1','a-eps2','a-dvtot'].forEach(id=>setv(id,'—'));return;}
+  const cfg=readAscCfg();
+  const orb=res.events.find(e=>e.type==='orbit');
+  setv('a-status',orb?'Órbita alcanzada':'Trayectoria sub-orbital',orb?'gn':'rd');
+  setv('a-ttime',res.t_total.toFixed(0)+' s');
+  setv('a-range',(res.x_final/1e3).toFixed(0)+' km','am');
+  setv('a-hmax',(res.hmax/1e3).toFixed(1)+' km','cy');
+  // Stage 1
+  setv('a-dv1',(res.dv1/1e3).toFixed(3)+' km/s','am');
+  const m0=res.m0,tw1=cfg.stages[0].thrust/(m0*9.80665);setv('a-tw1',tw1.toFixed(3),'am');
+  const dvcap1=rocketDv(cfg.stages[0].ms+cfg.stages[0].mp,cfg.stages[0].ms,cfg.stages[0].isp);setv('a-dvcap1',(dvcap1/1e3).toFixed(3)+' km/s','am');
+  setv('a-maxqh',(res.maxQ_h/1e3).toFixed(1)+' km','am');setv('a-maxq',res.maxQ.toFixed(0)+' Pa','rd');
+  // Stage 2
+  setv('a-dv2',(res.dv2/1e3).toFixed(3)+' km/s','pu');
+  const m0_2=cfg.stages[1].ms+cfg.stages[1].mp+cfg.m_pay,tw2=cfg.stages[1].thrust/(m0_2*9.80665);setv('a-tw2',tw2.toFixed(3),'pu');
+  const dvcap2=rocketDv(cfg.stages[1].ms+cfg.stages[1].mp,cfg.stages[1].ms,cfg.stages[1].isp);setv('a-dvcap2',(dvcap2/1e3).toFixed(3)+' km/s','pu');
+  // Orbit achieved
+  const vfx=res.vfx,vfy=res.vfy,vtot=Math.sqrt(vfx**2+vfy**2);
+  setv('a-vfx',(vfx/1e3).toFixed(3)+' km/s','cy');setv('a-vfy',(vfy/1e3).toFixed(3)+' km/s','cy');setv('a-vtot',(vtot/1e3).toFixed(3)+' km/s','cy');
+  setv('a-vcreq',(res.v_circ_tgt/1e3).toFixed(3)+' km/s');
+  const vdef=vtot-res.v_circ_tgt;setv('a-vdef',(vdef>=0?'+':'')+( vdef/1e3).toFixed(3)+' km/s',vdef>=0?'gn':'rd');
+  // Losses
+  setv('a-gloss',(res.grav_loss/1e3).toFixed(3)+' km/s','rd');setv('a-dloss',(res.drag_loss/1e3).toFixed(3)+' km/s','rd');const tloss=res.grav_loss+res.drag_loss;setv('a-tloss',(tloss/1e3).toFixed(3)+' km/s','rd');
+  const dvtot_=res.dv1+res.dv2;const eff=res.v_circ_tgt/Math.max(dvtot_,1)*100;setv('a-eff',eff.toFixed(1)+'%','gn');
+  // Mass
+  setv('a-m0',fkg(m0));setv('a-morb',fkg(res.m_fin),'gn');const lambda=cfg.m_pay/m0*100;setv('a-lambda',lambda.toFixed(2)+'%','cy');
+  const eps1=cfg.stages[0].ms/(cfg.stages[0].ms+cfg.stages[0].mp)*100;const eps2=cfg.stages[1].ms/(cfg.stages[1].ms+cfg.stages[1].mp)*100;
+  setv('a-eps1',eps1.toFixed(1)+'%','am');setv('a-eps2',eps2.toFixed(1)+'%','pu');
+  // Δv budget bar
+  const dv_orb=res.v_circ_tgt,dv_total_est=dv_orb+res.grav_loss+res.drag_loss;
+  const fo=dv_orb/dv_total_est*100,fg=res.grav_loss/dv_total_est*100,fd=res.drag_loss/dv_total_est*100;
+  document.getElementById('dvb-orb').style.width=fo.toFixed(1)+'%';document.getElementById('dvb-grav').style.width=fg.toFixed(1)+'%';document.getElementById('dvb-drag').style.width=fd.toFixed(1)+'%';
+  document.getElementById('dvb-orb-l').textContent=(dv_orb/1e3).toFixed(2)+'km/s';document.getElementById('dvb-grav-l').textContent=(res.grav_loss/1e3).toFixed(2)+'km/s';document.getElementById('dvb-drag-l').textContent=(res.drag_loss/1e3).toFixed(2)+'km/s';
+  setv('a-dvtot',(dv_total_est/1e3).toFixed(3)+' km/s','rd');
+}
+
+// ══ VIEWPORT INSTANCES ════════════════════════════════════════
+const vpSS=new SolarVP();
+const vpPK=new PorkchopVP();
+const vpDep=new PlanetVP('c2','dep');
+const vpArr=new PlanetVP('c3','arr');
+const vpEarth=new EarthVP();
+const vpVelAlt=new VelAltVP();
+const vpAtm=new AtmVP();
+// Carpet uses vpPK (same canvas c1, mode-switched)
+
+function fitHohPlanets(){vpDep.autoFit();vpArr.autoFit();}
+function fitAscent(){vpEarth.autoFit();}
+
+function drawAllVps(){
+  if(ST.mode==='hohmann'){vpSS.draw();vpDep.draw();vpArr.draw();if(ST.sel)vpPK.draw();}
+  else{vpEarth.draw();vpPK.draw();vpVelAlt.draw();vpAtm.draw();}
+}
+
+// ══ ANIMATION LOOP ════════════════════════════════════════════
+let _lf=0,_fc=0,_ft=0;
+function frame(now){
+  requestAnimationFrame(frame);const dt=Math.min((now-_lf)/1000,.1);_lf=now;
+  _fc++;_ft+=dt*1000;if(_ft>1000){document.querySelector('#sb-fps span').textContent=_fc;_fc=0;_ft=0;}
+  if(ST.mode==='hohmann'){const spd=parseFloat(document.getElementById('sel-spd').value||7);ST.simT+=dt*spd/365.25;document.getElementById('sb-t').textContent=ST.simT.toFixed(3)+' yr';}
+  drawAllVps();
+}
+
+// ══ MODE SWITCHING ════════════════════════════════════════════
+function setMode(mode){
+  ST.mode=mode;
+  document.querySelectorAll('.htab').forEach(t=>t.classList.toggle('on',t.dataset.mode===mode));
+  // Panels
+  document.getElementById('lp-hoh').style.display=mode==='hohmann'?'block':'none';
+  document.getElementById('lp-asc').style.display=mode==='ascent'?'block':'none';
+  document.getElementById('rp-hoh').style.display=mode==='hohmann'?'block':'none';
+  document.getElementById('rp-asc').style.display=mode==='ascent'?'block':'none';
+  // VP names & badges
+  if(mode==='hohmann'){
+    document.getElementById('vp0-name').textContent='Sistema Solar · Eclíptica';document.getElementById('vp0-badge').textContent='Kepler real';document.getElementById('vp0-badge').className='vpbadge';
+    document.getElementById('vp1-name').textContent='Porkchop Plot';document.getElementById('vp1-badge').textContent='C₃ km²/s²';document.getElementById('vp1-badge').className='vpbadge';
+    document.getElementById('vp1-calc-btn').textContent='⟳ Calcular';
+    document.getElementById('pk-ctrl-hoh').style.display='block';
+    document.getElementById('vp2-name').textContent='Salida · '+PL[ST.orig].name;document.getElementById('vp2-badge').textContent='Hipérbola escape · km';document.getElementById('vp2-badge').className='vpbadge';
+    document.getElementById('vp3-name').textContent='Llegada · '+PL[ST.dest].name;document.getElementById('vp3-badge').textContent='Hipérbola captura · km';document.getElementById('vp3-badge').className='vpbadge';
+    document.getElementById('sb-info1').innerHTML='T_sim: <span id="sb-t">0.000 yr</span>';
+    document.getElementById('sb-info2').innerHTML='Origen: <span id="sb-or">'+PL[ST.orig].name+'</span>';
+  }else{
+    document.getElementById('vp0-name').textContent='Tierra · Perfil trayectoria';document.getElementById('vp0-badge').textContent='Lat-lon eclíptica';document.getElementById('vp0-badge').className='vpbadge am';
+    document.getElementById('vp1-name').textContent='Carpet Plot · Fracción payload';document.getElementById('vp1-badge').textContent='λ (%) vs alt / Isp₁';document.getElementById('vp1-badge').className='vpbadge gn';
+    document.getElementById('vp1-calc-btn').textContent='⟳ Carpet';
+    document.getElementById('pk-ctrl-hoh').style.display='none';
+    document.getElementById('vp2-name').textContent='Perfil v(h) · Fases';document.getElementById('vp2-badge').textContent='km/s vs km altitud';document.getElementById('vp2-badge').className='vpbadge am';
+    document.getElementById('vp3-name').textContent='Atmósfera ISA + q(t)';document.getElementById('vp3-badge').textContent='ρ log10 + presión dinámica';document.getElementById('vp3-badge').className='vpbadge pu';
+    document.getElementById('sb-info1').textContent='';document.getElementById('sb-info2').textContent='';
+  }
+  document.getElementById('sb-mode').textContent=mode==='hohmann'?'Hohmann':'Ascenso';
+  setTimeout(()=>{[vpSS,vpPK,vpDep,vpArr,vpEarth,vpVelAlt,vpAtm].forEach(v=>v._resize?.());},80);
+}
+
+// ══ EVENT HANDLERS ════════════════════════════════════════════
+// Tabs
+document.querySelectorAll('.htab').forEach(t=>t.addEventListener('click',function(){setMode(this.dataset.mode);}));
+
+// HOH controls
+function recomputeHoh(){ST.sel=null;document.getElementById('selpt').classList.remove('vis');updateHohRight();computePK();}
+document.getElementById('inp-epoch').addEventListener('change',function(){ST.epochYr=epochYr(this.value);ST.simT=0;document.getElementById('sb-ep').textContent=this.value;recomputeHoh();});
+document.getElementById('sel-orig').addEventListener('change',function(){ST.orig=this.value;document.getElementById('vp2-name').textContent='Salida · '+PL[ST.orig].name;vpDep.autoFit();recomputeHoh();});
+document.getElementById('sel-dest').addEventListener('change',function(){ST.dest=this.value;document.getElementById('vp3-name').textContent='Llegada · '+PL[ST.dest].name;vpArr.autoFit();recomputeHoh();});
+document.getElementById('r-hp').addEventListener('input',function(){ST.h_park=+this.value*1e3;document.getElementById('v-hp').textContent=this.value+' km';vpDep.autoFit();updateHohRight();});
+document.getElementById('r-hc').addEventListener('input',function(){ST.h_cap=+this.value*1e3;document.getElementById('v-hc').textContent=this.value+' km';vpArr.autoFit();updateHohRight();});
+document.getElementById('r-isp').addEventListener('input',function(){ST.isp=+this.value;document.getElementById('v-isp').textContent=this.value+' s';updateHohRight();});
+document.getElementById('r-fp').addEventListener('input',function(){ST.fp=+this.value;document.getElementById('v-fp').textContent=(ST.fp*100).toFixed(0)+'%';updateHohRight();});
+document.getElementById('inp-mf').addEventListener('input',updateHohRight);
+document.getElementById('vp1-calc-btn').addEventListener('click',()=>{if(ST.mode==='hohmann')recomputeHoh();else{const cfg=readAscCfg();computeCarpet(+document.getElementById('s2-isp').value,+document.getElementById('s1-ms').value/(+document.getElementById('s1-ms').value+ +document.getElementById('s1-mp').value),+document.getElementById('s2-ms').value/(+document.getElementById('s2-ms').value+ +document.getElementById('s2-mp').value));}});
+document.getElementById('btn-reset-hoh').addEventListener('click',()=>{document.getElementById('vpa').classList.remove('solo');document.querySelectorAll('.vp').forEach(v=>v.classList.remove('active'));vpSS.reset();fitHohPlanets();setTimeout(()=>[vpSS,vpPK,vpDep,vpArr].forEach(v=>v._resize?.()),80);});
+
+// ASC controls
+['s1-isp','s2-isp'].forEach(id=>{document.getElementById(id).addEventListener('input',function(){document.getElementById('v-'+id.replace('-','')).textContent=this.value+' s';});});
+document.getElementById('asc-az').addEventListener('input',function(){document.getElementById('v-az').textContent=this.value+'°';});
+document.getElementById('asc-htgt').addEventListener('input',function(){document.getElementById('v-htgt').textContent=this.value+' km';updateAscLeft();vpEarth.draw();vpVelAlt.draw();vpAtm.draw();});
+document.getElementById('asc-cd').addEventListener('input',function(){document.getElementById('v-cd').textContent=(+this.value).toFixed(2);});
+document.getElementById('asc-ar').addEventListener('input',function(){document.getElementById('v-ar').textContent=this.value+' m²';});
+document.getElementById('asc-kick').addEventListener('input',function(){document.getElementById('v-kick').textContent=this.value+'°';});
+document.getElementById('btn-sim').addEventListener('click',()=>{
+  const cfg=readAscCfg();
+  const res=simAscent(cfg);
+  ST.asc_result=res;
+  updateAscRight(res);
+  vpEarth.draw();vpVelAlt.draw();vpAtm.draw();
 });
-document.getElementById('ss-down').addEventListener('click', () => {
-  _simSpdIdx = Math.max(0, _simSpdIdx-1); updateSimSpeed();
-});
-document.getElementById('ss-pause').addEventListener('click', function() {
-  SIM_PAUSED = !SIM_PAUSED;
-  this.textContent = SIM_PAUSED ? '▶' : '⏸';
+document.getElementById('btn-reset-asc').addEventListener('click',()=>{
+  document.getElementById('vpa').classList.remove('solo');document.querySelectorAll('.vp').forEach(v=>v.classList.remove('active'));
+  vpEarth.autoFit();setTimeout(()=>[vpEarth,vpPK,vpVelAlt,vpAtm].forEach(v=>v._resize?.()),80);
 });
 
-updateSimSpeed();
-run();
+// Viewport solo/reset buttons
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-vi]');if(!btn)return;
+  const vi=parseInt(btn.dataset.vi),act=btn.dataset.a;
+  const vpa=document.getElementById('vpa');const allVP=document.querySelectorAll('.vp');
+  if(act==='solo'){if(vpa.classList.contains('solo')&&allVP[vi].classList.contains('active')){vpa.classList.remove('solo');allVP.forEach(v=>v.classList.remove('active'));}else{vpa.classList.add('solo');allVP.forEach((v,i)=>v.classList.toggle('active',i===vi));}setTimeout(()=>{[vpSS,vpPK,vpDep,vpArr,vpEarth,vpVelAlt,vpAtm].forEach(v=>v._resize?.());},80);}
+  else if(act==='reset'){if(ST.mode==='hohmann'){[vpSS,null,vpDep,vpArr][vi]?.reset();if(vi===2)vpDep.autoFit();if(vi===3)vpArr.autoFit();}else{[vpEarth,null,vpVelAlt,vpAtm][vi]?.reset();if(vi===0)vpEarth.autoFit();}}
+});
+
+// HOH pk metric toggle - reuse vp1-extra-btn in hohmann mode
+// Dynamically create if needed:
+document.getElementById('vp1-extra-btn').addEventListener('click',()=>{pkMetric=pkMetric==='c3'?'dv':'c3';document.getElementById('vp1-extra-btn').textContent=pkMetric==='c3'?'→ Δv_tot':'→ C₃';vpPK.draw();});
+
+// ── INIT ─────────────────────────────────────────────────────
+// Fix DPR_ reference in PlanetVP
+const DPR_=Math.min(devicePixelRatio||1,2);
+document.getElementById('vp2-name').textContent='Salida · '+PL[ST.orig].name;
+document.getElementById('vp3-name').textContent='Llegada · '+PL[ST.dest].name;
+// Show hohm pk metric btn
+document.getElementById('vp1-extra-btn').textContent='→ Δv_tot';
+document.getElementById('vp1-extra-btn').style.display='inline';
+fitHohPlanets();fitAscent();
+updateHohRight();updateAscLeft();updateAscRight(null);
+computePK();
+requestAnimationFrame(frame);
 </script>
 </body>
 </html>
