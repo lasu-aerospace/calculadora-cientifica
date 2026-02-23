@@ -424,31 +424,22 @@ input,textarea{font:inherit;color:inherit;}
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
 
-<script type="importmap">
-{
-  "imports": {
-    "yjs": "https://esm.sh/yjs@13.6.18?bundle",
-    "y-webrtc": "https://esm.sh/y-webrtc@10.3.0?bundle",
-    "y-indexeddb": "https://esm.sh/y-indexeddb@9.0.12?bundle"
-  }
-}
-</script>
+<!-- importmap eliminado: se usan URLs absolutas en loadYjs() -->
 
 <script type="module">
-let Y, WebrtcProvider, IndexeddbPersistence;
+let Y, IndexeddbPersistence;
 
 async function loadYjs() {
   try {
-    // Usar URLs absolutas con bundle para evitar problemas con importmap dinámico
-    const yjsMod    = await import('https://esm.sh/yjs@13.6.18?bundle')
-    const webrtcMod = await import('https://esm.sh/y-webrtc@10.3.0?bundle')
-    const idbMod    = await import('https://esm.sh/y-indexeddb@9.0.12?bundle')
+    const [yjsMod, idbMod] = await Promise.all([
+      import('https://esm.sh/yjs@13.6.18?bundle'),
+      import('https://esm.sh/y-indexeddb@9.0.12?bundle'),
+    ])
     Y = yjsMod
-    WebrtcProvider = webrtcMod.WebrtcProvider
     IndexeddbPersistence = idbMod.IndexeddbPersistence
     return true
   } catch(e) {
-    console.error('Error cargando librerías colaborativas:', e)
+    console.error('Error cargando librerías:', e)
     return false
   }
 }
@@ -457,7 +448,10 @@ async function loadYjs() {
    CONSTANTS & STATE
 ════════════════════════════════════════════════ */
 const PEER_COLORS = ['#4ade80','#60a5fa','#a78bfa','#fbbf24','#f87171','#34d399','#fb923c','#e879f9']
-const SIGNALING_SERVERS = ['wss://signaling.yjs.dev','wss://y-webrtc-eu.fly.dev','wss://y-webrtc-us.fly.dev']
+
+// ▼▼▼ CAMBIA ESTO con la URL de tu Cloudflare Worker después del deploy ▼▼▼
+const RELAY_URL = 'wss://labcolab-relay.ezesouto2.workers.dev'
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 const DEFAULT_DOC = `# Nuevo documento científico
 
 Bienvenido a **LabColab** — editor colaborativo descentralizado. Comparte el código de sala con tus colaboradores.
@@ -541,17 +535,198 @@ function download(filename, content, mime='text/plain') {
    YJS CORE
 ════════════════════════════════════════════════ */
 let ydoc, yText, yStrokes, yChat, ySession, yMeta
-let provider, awareness, idb, undoManager
+let idb, undoManager
 let lastEditorValue = ''
+let awareness = null  // awareness simulado local
+
+// ── Capa de sincronización propia (reemplaza y-webrtc) ──────────────────────
+let relayWS = null
+let cryptoKey = null  // CryptoKey AES-GCM derivada de la contraseña
+
+// Deriva una CryptoKey AES-256-GCM a partir de la contraseña y roomId (PBKDF2)
+async function deriveKey(password, roomId) {
+  const enc = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password || 'labcolab-default'),
+    { name: 'PBKDF2' }, false, ['deriveKey']
+  )
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: enc.encode('labcolab-' + roomId), iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false, ['encrypt', 'decrypt']
+  )
+}
+
+async function encryptMsg(data) {
+  if (!cryptoKey) return data
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, data)
+  // Formato: [12 bytes IV][ciphertext]
+  const out = new Uint8Array(12 + ct.byteLength)
+  out.set(iv, 0)
+  out.set(new Uint8Array(ct), 12)
+  return out.buffer
+}
+
+async function decryptMsg(data) {
+  if (!cryptoKey) return data
+  try {
+    const buf = data instanceof ArrayBuffer ? data : await data.arrayBuffer()
+    const arr = new Uint8Array(buf)
+    const iv = arr.slice(0, 12)
+    const ct = arr.slice(12)
+    return await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, ct)
+  } catch {
+    return null  // mensaje con clave incorrecta o corrupto
+  }
+}
+
+// Conecta al Worker y sincroniza el ydoc por WebSocket
+function connectRelay(roomId, password, onOpen) {
+  const url = RELAY_URL.replace(/\/+$/, '') + '/room/' + roomId
+  relayWS = new WebSocket(url)
+  relayWS.binaryType = 'arraybuffer'
+
+  relayWS.addEventListener('open', () => {
+    $('status-dot').className = 'status-dot connected'
+    $('status-text').textContent = 'Conectado'
+    S.connected = true
+    if (onOpen) onOpen()
+  })
+
+  relayWS.addEventListener('message', async (e) => {
+    const raw = await decryptMsg(e.data)
+    if (!raw) return  // descifrado fallido = clave incorrecta, ignorar
+    const msg = Y.decodeUpdate !== undefined
+      ? tryParseMsg(new Uint8Array(raw))
+      : tryParseMsg(new Uint8Array(raw))
+    if (!msg) return
+
+    if (msg.type === 'sync') {
+      // Actualización del documento Yjs
+      Y.applyUpdate(ydoc, msg.update, 'remote')
+    } else if (msg.type === 'awareness') {
+      // Estado de awareness de otro peer
+      handleRemoteAwareness(msg)
+    }
+  })
+
+  relayWS.addEventListener('close', () => {
+    $('status-dot').className = 'status-dot disconnected'
+    $('status-text').textContent = 'Desconectado — reconectando...'
+    S.connected = false
+    setTimeout(() => connectRelay(roomId, password, () => {
+      const fullUpdate = Y.encodeStateAsUpdate(ydoc)
+      sendRelay('sync', fullUpdate)
+      awareness.setLocalState({
+        name: S.name, role: S.role,
+        color: peerColor(S.peerId),
+        cursor: null, boardStroke: null
+      })
+    }), 3000)
+  })
+
+  relayWS.addEventListener('error', () => {
+    $('status-dot').className = 'status-dot disconnected'
+    $('status-text').textContent = 'Error de conexión'
+  })
+}
+
+// Codifica un mensaje para enviar por el relay
+function encodeMsg(type, payload) {
+  // Formato simple: 1 byte tipo + payload
+  // tipo: 0x01 = sync (Yjs update), 0x02 = awareness
+  const typeMap = { sync: 0x01, awareness: 0x02 }
+  const t = typeMap[type]
+  const out = new Uint8Array(1 + payload.length)
+  out[0] = t
+  out.set(payload, 1)
+  return out
+}
+
+function tryParseMsg(arr) {
+  if (arr.length < 1) return null
+  const typeMap = { 0x01: 'sync', 0x02: 'awareness' }
+  const type = typeMap[arr[0]]
+  if (!type) return null
+  return { type, update: arr.slice(1) }
+}
+
+async function sendRelay(type, payload) {
+  if (!relayWS || relayWS.readyState !== WebSocket.OPEN) return
+  const msg = encodeMsg(type, payload)
+  const encrypted = await encryptMsg(msg.buffer)
+  relayWS.send(encrypted)
+}
+
+// ── Awareness simulado ───────────────────────────────────────────────────────
+const awarenessStates = new Map()  // clientId → state
+const awarenessCallbacks = []
+
+function onAwarenessChange(cb) { awarenessCallbacks.push(cb) }
+function fireAwarenessChange() { awarenessCallbacks.forEach(cb => cb()) }
+
+function broadcastAwareness() {
+  if (!relayWS || relayWS.readyState !== WebSocket.OPEN) return
+  const myState = awarenessStates.get(S.peerId) || {}
+  const payload = new TextEncoder().encode(JSON.stringify({
+    clientId: S.peerId,
+    state: myState
+  }))
+  sendRelay('awareness', payload)
+}
+
+function handleRemoteAwareness(msg) {
+  try {
+    const { clientId, state } = JSON.parse(new TextDecoder().decode(msg.update))
+    if (state === null) {
+      awarenessStates.delete(clientId)
+    } else {
+      awarenessStates.set(clientId, state)
+    }
+    fireAwarenessChange()
+    updatePeersUI()
+    updatePeersBar()
+  } catch {}
+}
+
+// Polyfill del objeto awareness que usaba el código original
+function makeAwareness() {
+  return {
+    getStates: () => {
+      const m = new Map(awarenessStates)
+      // Incluir el estado local
+      const localState = awarenessStates.get(S.peerId)
+      if (localState) m.set(parseInt(S.peerId) || S.peerId, localState)
+      return m
+    },
+    setLocalState: (state) => {
+      awarenessStates.set(S.peerId, state)
+      broadcastAwareness()
+    },
+    setLocalStateField: (field, value) => {
+      const cur = awarenessStates.get(S.peerId) || {}
+      cur[field] = value
+      awarenessStates.set(S.peerId, cur)
+      broadcastAwareness()
+    },
+    on: (event, cb) => { if (event === 'change') onAwarenessChange(cb) }
+  }
+}
 
 async function initYjs(roomId, password, isHost) {
   const loaded = await loadYjs()
   if (!loaded) {
-    toast('Error: no se pudieron cargar las librerías de red. Modo local activo.')
+    toast('Error: no se pudieron cargar las librerías. Modo local activo.')
     $('status-dot').className = 'status-dot disconnected'
     $('status-text').textContent = 'Sin conexión'
     return
   }
+
+  // Derivar clave de cifrado AES-GCM a partir de contraseña + roomId
+  cryptoKey = await deriveKey(password, roomId)
+
   ydoc = new Y.Doc()
   yText    = ydoc.getText('editor')
   yStrokes = ydoc.getArray('strokes')
@@ -559,12 +734,12 @@ async function initYjs(roomId, password, isHost) {
   ySession = ydoc.getMap('session')
   yMeta    = ydoc.getMap('meta')
 
+  S.peerId = ydoc.clientID.toString()
+  awareness = makeAwareness()
+
   const roomKey = `labcolab-${roomId}`
 
-  // IndexedDB persistence
-  idb = new IndexeddbPersistence(roomKey, ydoc)
-
-  // Helper: vuelca yText al editor y actualiza UI
+  // Helper: vuelca yText al editor
   function syncEditorFromYjs() {
     const ta = $('editor-textarea')
     const newVal = yText.toString()
@@ -577,86 +752,53 @@ async function initYjs(roomId, password, isHost) {
     }
   }
 
+  // IndexedDB persistence (caché local)
+  idb = new IndexeddbPersistence(roomKey, ydoc)
   idb.on('synced', () => {
-    // Host: si IDB está vacío, insertar doc por defecto
     if (isHost && yText.length === 0) {
       ydoc.transact(() => yText.insert(0, DEFAULT_DOC), 'init')
     }
     syncEditorFromYjs()
-    if (!S.connected) {
-      $('status-dot').className = 'status-dot connected'
-      $('status-text').textContent = isHost ? 'Listo' : 'Conectando...'
-      if (isHost) S.connected = true
-    }
   })
 
-  // WebRTC provider
-  try {
-    provider = new WebrtcProvider(roomKey, ydoc, {
-      signaling: SIGNALING_SERVERS,
-      password: password || undefined,
-      maxConns: 20,
-      filterBcConns: true,
-    })
-    awareness = provider.awareness
-    S.peerId = ydoc.clientID.toString()
+  // Enviar actualizaciones locales al relay
+  ydoc.on('update', (update, origin) => {
+    if (origin === 'remote') return  // no re-enviar lo que llegó del relay
+    sendRelay('sync', update)
+  })
 
+  // Cuando llegue una actualización remota, refrescar el editor
+  ydoc.on('update', (update, origin) => {
+    if (origin !== 'remote') return
+    syncEditorFromYjs()
+  })
+
+  // Conectar al relay; al abrir: enviar snapshot + anunciar presencia
+  connectRelay(roomId, password, () => {
+    // Enviar estado completo para que cualquier peer sincronice al conectarse
+    const fullUpdate = Y.encodeStateAsUpdate(ydoc)
+    sendRelay('sync', fullUpdate)
+    // Anunciar presencia
     awareness.setLocalState({
       name: S.name, role: S.role,
       color: peerColor(S.peerId),
       cursor: null, boardStroke: null
     })
+  })
 
-    // 'synced' se dispara cuando WebRTC intercambia estado con al menos un peer
-    provider.on('synced', () => {
-      $('status-dot').className = 'status-dot connected'
-      $('status-text').textContent = 'Conectado'
-      S.connected = true
-      // Forzar volcado del editor al recibir sincronización WebRTC
-      syncEditorFromYjs()
-    })
-
-    // Fallback para el host solo (sin peers nunca habrá 'synced')
-    setTimeout(() => {
-      if (!S.connected) {
-        $('status-dot').className = 'status-dot connected'
-        $('status-text').textContent = isHost ? 'Listo (sin peers)' : 'Sin conexión con peers'
-        S.connected = true
-        syncEditorFromYjs()
-      }
-    }, 6000)
-
-    provider.on('peers', ({ added, removed }) => {
-      updatePeersUI()
-      // Cuando un nuevo peer se conecta, re-forzar sync del editor
-      if (added && added.length > 0) {
-        setTimeout(syncEditorFromYjs, 500)
-      }
-    })
-
-    awareness.on('change', () => {
-      updatePeersUI()
-      updatePeersBar()
-      renderBoardAwareness()
-    })
-  } catch(e) {
-    console.warn('WebRTC no disponible:', e)
-    toast('Modo local: WebRTC no disponible en este contexto')
-    $('status-dot').className = 'status-dot disconnected'
-    $('status-text').textContent = 'Local only'
-    S.connected = true
-  }
+  onAwarenessChange(() => {
+    updatePeersUI()
+    updatePeersBar()
+    renderBoardAwareness()
+  })
 
   // Undo manager
   undoManager = new Y.UndoManager(yText, { captureTimeout: 500 })
 
-  // Editor sync
   setupEditorSync()
-  // Chat sync
   setupChatSync()
-  // Board sync
   setupBoardSync()
-  // Session metadata
+
   if (isHost) {
     ySession.set('host', S.peerId)
     ySession.set('hostName', S.name)
@@ -754,7 +896,7 @@ function insertAtCursor(text) {
 }
 
 function broadcastCursor() {
-  if (!awareness) return
+  if (!S.peerId) return
   const ta = $('editor-textarea')
   awareness.setLocalStateField('cursor', { pos: ta.selectionStart, name: S.name })
 }
@@ -979,11 +1121,9 @@ function scheduleRedraw() {
 }
 
 function renderBoardAwareness() {
-  if (!awareness) return
-  const states = awareness.getStates()
   awarenessStrokes = {}
-  states.forEach((state, clientId) => {
-    if (clientId.toString() !== S.peerId && state.boardStroke) {
+  awarenessStates.forEach((state, clientId) => {
+    if (clientId.toString() !== S.peerId && state && state.boardStroke) {
       awarenessStrokes[clientId] = state.boardStroke
     }
   })
@@ -1139,19 +1279,18 @@ function escHtml(s) {
 // Typing awareness
 let typingTimer = null
 $('chat-input').addEventListener('input', () => {
-  if (!awareness) return
+  if (!S.peerId) return
   awareness.setLocalStateField('typing', true)
   clearTimeout(typingTimer)
   typingTimer = setTimeout(() => {
-    if (awareness) awareness.setLocalStateField('typing', false)
+    if (S.peerId) awareness.setLocalStateField('typing', false)
   }, 2000)
 })
 
 function updateTypingIndicator() {
-  if (!awareness) return
   const typing = []
-  awareness.getStates().forEach((state, id) => {
-    if (id.toString() !== S.peerId && state.typing && state.name)
+  awarenessStates.forEach((state, id) => {
+    if (id.toString() !== S.peerId && state && state.typing && state.name)
       typing.push(state.name.split(' ')[0])
   })
   const el = $('typing-indicator')
@@ -1162,17 +1301,20 @@ function updateTypingIndicator() {
    PEERS & ROLES MODULE
 ════════════════════════════════════════════════ */
 function updatePeersUI() {
-  if (!awareness) return
-  const states = awareness.getStates()
   const list = $('peers-list')
   list.innerHTML = ''
   let count = 0
 
-  states.forEach((state, clientId) => {
+  // Incluir propio estado
+  const allStates = new Map(awarenessStates)
+  const myState = awarenessStates.get(S.peerId)
+  if (myState) allStates.set(S.peerId, myState)
+
+  allStates.forEach((state, clientId) => {
     if (!state || !state.name) return
     count++
     const cid = clientId.toString()
-    const isMe = cid === ydoc.clientID.toString()
+    const isMe = cid === S.peerId
     const color = state.color || peerColor(cid)
     const role = state.role || 'editor'
 
@@ -1193,12 +1335,14 @@ function updatePeersUI() {
     list.appendChild(div)
   })
 
-  $('status-peers').textContent = count + (count === 1 ? ' peer' : ' peers')
+  // +1 para incluirse a uno mismo si no está ya en allStates
+  const displayCount = allStates.has(S.peerId) ? count : count + 1
+  $('status-peers').textContent = displayCount + (displayCount === 1 ? ' peer' : ' peers')
   updateTypingIndicator()
 }
 
 window.setRole = function(clientId, role) {
-  if (!awareness || S.role !== 'host') return
+  if (S.role !== 'host' || !ySession) return
   const signals = ySession.get('roleSignals') || {}
   signals[clientId.toString()] = { role, ts: Date.now() }
   ySession.set('roleSignals', {...signals})
@@ -1206,12 +1350,11 @@ window.setRole = function(clientId, role) {
 }
 
 function updatePeersBar() {
-  if (!awareness) return
   const bar = $('peers-bar')
   bar.innerHTML = ''
-  const states = awareness.getStates()
+  const allStates = new Map(awarenessStates)
   let i = 0
-  states.forEach((state, clientId) => {
+  allStates.forEach((state, clientId) => {
     if (!state.name || i >= 6) return
     i++
     const color = state.color || peerColor(clientId.toString())
