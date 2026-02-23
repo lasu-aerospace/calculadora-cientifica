@@ -571,6 +571,12 @@ async function initYjs(roomId, password, isHost) {
     updatePreview()
     updateWordCount()
     computeAndShowHash()
+    // Si IndexedDB ya sincronizó, marcar como "listo" aunque no haya peers
+    if (!S.connected) {
+      $('status-dot').className = 'status-dot connected'
+      $('status-text').textContent = 'Listo (local)'
+      S.connected = true
+    }
   })
 
   // WebRTC provider
@@ -596,6 +602,14 @@ async function initYjs(roomId, password, isHost) {
       $('status-text').textContent = 'Conectado'
       S.connected = true
     })
+    // Fallback: si en 5s no hay sync de WebRTC pero hay IndexedDB, no quedarse en "Conectando"
+    setTimeout(() => {
+      if ($('status-text').textContent === 'Conectando...') {
+        $('status-dot').className = 'status-dot connected'
+        $('status-text').textContent = 'Listo (sin peers)'
+        S.connected = true
+      }
+    }, 5000)
 
     provider.on('peers', () => updatePeersUI())
 
@@ -691,19 +705,30 @@ function wrapSelection(before, after) {
   const s = ta.selectionStart, e = ta.selectionEnd
   const selected = ta.value.slice(s, e) || 'texto'
   const newText = before + selected + after
-  ta.value = ta.value.slice(0,s) + newText + ta.value.slice(e)
+  const full = ta.value.slice(0,s) + newText + ta.value.slice(e)
+  ta.value = full
   ta.selectionStart = s + before.length
   ta.selectionEnd = s + before.length + selected.length
-  ta.dispatchEvent(new Event('input'))
+  if (yText) {
+    applyDiff(yText, lastEditorValue, full, ydoc)
+    lastEditorValue = full
+  }
+  updatePreview()
+  updateWordCount()
 }
 
 function insertAtCursor(text) {
   const ta = $('editor-textarea')
   const s = ta.selectionStart
-  ta.value = ta.value.slice(0,s) + text + ta.value.slice(ta.selectionEnd)
+  const full = ta.value.slice(0,s) + text + ta.value.slice(ta.selectionEnd)
+  ta.value = full
   ta.selectionStart = ta.selectionEnd = s + text.length
-  ta.dispatchEvent(new Event('input'))
-  ta.focus()
+  if (yText) {
+    applyDiff(yText, lastEditorValue, full, ydoc)
+    lastEditorValue = full
+  }
+  updatePreview()
+  updateWordCount()
 }
 
 function broadcastCursor() {
@@ -739,35 +764,58 @@ marked.setOptions({ breaks: true, gfm: true })
 
 function renderMarkdownWithKaTeX(md) {
   const mathBlocks = []
+  // Usamos un placeholder con caracteres que marked nunca escapa ni modifica
+  const mkId = i => `MATH${i}`
+
+  // Primero proteger bloques de código para no procesar $ dentro de ellos
+  const codeBlocks = []
+  let s = md
+    .replace(/(```[\s\S]*?```|`[^`]+`)/g, (m) => {
+      const ci = `CODE${codeBlocks.length}`
+      codeBlocks.push(m)
+      return ci
+    })
 
   // Extract display math $$...$$
-  let s = md.replace(/\$\$([\s\S]+?)\$\$/g, (_, latex) => {
-    const id = `__MATH_D_${mathBlocks.length}__`
-    mathBlocks.push({ id, latex, display: true })
-    return `\n\n${id}\n\n`
+  s = s.replace(/\$\$([\s\S]+?)\$\$/g, (_, latex) => {
+    const i = mathBlocks.length
+    mathBlocks.push({ latex, display: true })
+    return `\n\n${mkId(i)}\n\n`
   })
 
-  // Extract inline math $...$
-  s = s.replace(/(?<![\\$])\$([^$\n]+?)\$/g, (_, latex) => {
-    const id = `__MATH_I_${mathBlocks.length}__`
-    mathBlocks.push({ id, latex, display: false })
-    return id
+  // Extract inline math $...$  (no escapado, no dentro de código)
+  s = s.replace(/(?<!\\)\$([^$\n]+?)\$/g, (_, latex) => {
+    const i = mathBlocks.length
+    mathBlocks.push({ latex, display: false })
+    return mkId(i)
+  })
+
+  // Restaurar bloques de código antes de parsear markdown
+  codeBlocks.forEach((code, ci) => {
+    s = s.split(`CODE${ci}`).join(code)
   })
 
   // Render markdown
   let html = marked.parse(s)
 
-  // Restore math
-  mathBlocks.forEach(({ id, latex, display }) => {
+  // Restaurar math — los placeholders sobreviven intactos porque son caracteres de control
+  mathBlocks.forEach(({ latex, display }, i) => {
+    const placeholder = mkId(i)
+    // marked puede haber envuelto el placeholder de display en <p>
+    const escapedPh = placeholder.replace(/[]/g, c => c) // ya son únicos
     try {
       const rendered = katex.renderToString(latex.trim(), {
         displayMode: display, throwOnError: false, strict: false
       })
-      html = html.split(id).join(display ? `<div class="katex-display">${rendered}</div>` : rendered)
+      const replacement = display ? `</p><div class="katex-display">${rendered}</div><p>` : rendered
+      html = html.split(placeholder).join(replacement)
     } catch(e) {
-      html = html.split(id).join(`<span class="math-error">[Error: ${latex}]</span>`)
+      html = html.split(placeholder).join(`<span class="math-error">[LaTeX: ${latex}]</span>`)
     }
   })
+
+  // Limpiar <p></p> vacíos generados al insertar divs entre párrafos
+  html = html.replace(/<p>\s*<\/p>/g, '')
 
   return html
 }
