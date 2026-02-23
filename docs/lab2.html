@@ -120,7 +120,7 @@ input,textarea{font:inherit;color:inherit;}
 .preview-empty{color:var(--txt3);font-size:13px;font-style:italic;font-family:'Instrument Serif',serif;}
 .preview-wrap h1{font-family:'Instrument Serif',serif;font-size:1.9rem;font-weight:400;color:var(--txt);margin:0 0 14px;line-height:1.15;letter-spacing:-.02em;}
 .preview-wrap h2{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;color:var(--txt);margin:22px 0 10px;font-style:italic;}
-.preview-wrap h3{font-family:'Familjen Grotesk',sans-serif;font-weight:700;color:var(--txt);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.05em;font-size:.85rem;}
+.preview-wrap h3{font-family:'Familjen Grotesk',sans-serif;font-size:.85rem;font-weight:700;color:var(--txt);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.05em;}
 .preview-wrap p{color:var(--txt2);font-size:14.5px;margin-bottom:10px;line-height:1.7;}
 .preview-wrap strong{color:var(--txt);font-weight:700;}
 .preview-wrap em{color:var(--txt);font-style:italic;}
@@ -494,7 +494,12 @@ const S = {
    UTILITIES
 ════════════════════════════════════════════════ */
 const $ = id => document.getElementById(id)
-const rand = (n=16) => Math.random().toString(36).slice(2, 2+n).toUpperCase()
+const rand = (n=16) => {
+  // Loop until we accumulate enough base-36 chars to guarantee length n
+  let s = ''
+  while (s.length < n) s += Math.random().toString(36).slice(2)
+  return s.slice(0, n).toUpperCase()
+}
 const genId = () => rand(8) + '-' + rand(4) + '-' + rand(4)
 const genRoom = () => rand(3) + rand(3)
 const peerColor = peerId => PEER_COLORS[Math.abs(hashStr(peerId)) % PEER_COLORS.length]
@@ -527,10 +532,14 @@ function toast(msg, dur=2800) {
 
 function download(filename, content, mime='text/plain') {
   const a = document.createElement('a')
-  a.href = URL.createObjectURL(new Blob([content], {type: mime}))
+  const url = URL.createObjectURL(new Blob([content], {type: mime}))
+  a.href = url
   a.download = filename
+  a.style.display = 'none'
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(a.href)
+  // Delay revoke so browser has time to initiate the download
+  setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a) }, 200)
 }
 
 /* ═══════════════════════════════════════════════
@@ -623,13 +632,17 @@ function connectRelay(roomId, password, onOpen) {
     $('status-text').textContent = 'Desconectado — reconectando...'
     S.connected = false
     setTimeout(() => connectRelay(roomId, password, () => {
-      const fullUpdate = Y.encodeStateAsUpdate(ydoc)
-      sendRelay('sync', fullUpdate)
-      awareness.setLocalState({
-        name: S.name, role: S.role,
-        color: peerColor(S.peerId),
-        cursor: null, boardStroke: null
-      })
+      if (ydoc) {
+        const fullUpdate = Y.encodeStateAsUpdate(ydoc)
+        sendRelay('sync', fullUpdate)
+      }
+      if (awareness) {
+        awareness.setLocalState({
+          name: S.name, role: S.role,
+          color: peerColor(S.peerId),
+          cursor: null, boardStroke: null
+        })
+      }
     }), 3000)
   })
 
@@ -767,13 +780,17 @@ async function initYjs(roomId, password, isHost) {
     syncEditorFromYjs()
   })
 
-  // Handler para updates del ydoc: sólo enviar cambios locales al relay
-  // (Los cambios remotos los procesa yText.observe en setupEditorSync)
+  // Handler para updates del ydoc:
+  // - 'local': cambio del usuario → enviar al relay
+  // - 'init': inserción del DEFAULT_DOC → enviar al relay
+  // - 'remote': recibido del relay → yText.observe ya actualiza el editor, no duplicar
+  // - null/idb: carga desde IndexedDB → NO enviar al relay (evita flooding al reconectar)
   ydoc.on('update', (update, origin) => {
-    if (origin !== 'remote') {
-      // Cambio local o init: enviar al relay
+    if (origin === 'local' || origin === 'init') {
       sendRelay('sync', update)
     }
+    // origin === 'remote': yText.observe en setupEditorSync maneja el refresco del editor
+    // origin === null (IDB): no hacer nada extra
   })
 
   // Conectar al relay; al abrir: enviar snapshot + anunciar presencia
@@ -850,8 +867,8 @@ function setupEditorSync() {
 
   ta.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey) {
-      if (e.key==='z' && !e.shiftKey) { e.preventDefault(); undoManager.undo() }
-      if ((e.key==='y') || (e.key==='z' && e.shiftKey)) { e.preventDefault(); undoManager.redo() }
+      if (e.key==='z' && !e.shiftKey) { e.preventDefault(); if (undoManager) undoManager.undo() }
+      if ((e.key==='y') || (e.key==='z' && e.shiftKey)) { e.preventDefault(); if (undoManager) undoManager.redo() }
       if (e.key==='b') { e.preventDefault(); wrapSelection('**', '**') }
       if (e.key==='i') { e.preventDefault(); wrapSelection('*', '*') }
       if (e.key==='k') { e.preventDefault(); wrapSelection('$', '$') }
@@ -922,7 +939,7 @@ function insertAtCursor(text) {
 }
 
 function broadcastCursor() {
-  if (!S.peerId) return
+  if (!S.peerId || !awareness) return
   const ta = $('editor-textarea')
   awareness.setLocalStateField('cursor', { pos: ta.selectionStart, name: S.name })
 }
@@ -1135,6 +1152,7 @@ function commitTextTool() {
 
 function setupBoardSync() {
   yStrokes.observe(() => {
+    // yStrokes stores items as [s] arrays; unwrap to plain objects
     S.strokes = yStrokes.toArray().map(item => Array.isArray(item) ? item[0] : item)
     scheduleRedraw()
   })
@@ -1242,6 +1260,7 @@ let chatCount = 0
 function setupChatSync() {
   yChat.observe(event => {
     event.changes.delta.forEach(op => {
+      // op.insert items may be array-wrapped ([msg]) due to yChat.push([msg])
       if (op.insert) op.insert.forEach(item => renderChatMsg(Array.isArray(item) ? item[0] : item))
     })
   })
@@ -1301,19 +1320,6 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-
-// Typing awareness
-let typingTimer = null
-$('chat-input').addEventListener('input', () => {
-  if (!S.peerId || !awareness) return
-  awareness.setLocalStateField('typing', true)
-  clearTimeout(typingTimer)
-  typingTimer = setTimeout(() => {
-    if (S.peerId && awareness) awareness.setLocalStateField('typing', false)
-  }, 2000)
-})
-
 function updateTypingIndicator() {
   const typing = []
   awarenessStates.forEach((state, id) => {
@@ -1324,9 +1330,6 @@ function updateTypingIndicator() {
   el.textContent = typing.length ? `${typing.slice(0,2).join(', ')} está escribiendo...` : ''
 }
 
-/* ═══════════════════════════════════════════════
-   PEERS & ROLES MODULE
-════════════════════════════════════════════════ */
 function updatePeersUI() {
   const list = $('peers-list')
   list.innerHTML = ''
@@ -1368,14 +1371,6 @@ function updatePeersUI() {
   updateTypingIndicator()
 }
 
-window.setRole = function(clientId, role) {
-  if (S.role !== 'host' || !ySession) return
-  const signals = ySession.get('roleSignals') || {}
-  signals[clientId.toString()] = { role, ts: Date.now() }
-  ySession.set('roleSignals', {...signals})
-  toast('Rol asignado: ' + role)
-}
-
 function updatePeersBar() {
   const bar = $('peers-bar')
   bar.innerHTML = ''
@@ -1395,7 +1390,6 @@ function updatePeersBar() {
   })
 }
 
-// Watch for role signals
 function watchRoleSignals() {
   if (!ySession) return
   ySession.observe(event => {
@@ -1422,6 +1416,36 @@ function updateRoleUI() {
   if (S.role === 'observer') ta.style.opacity = '0.6'
   else ta.style.opacity = '1'
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+
+// Typing awareness
+let typingTimer = null
+$('chat-input').addEventListener('input', () => {
+  if (!S.peerId || !awareness) return
+  awareness.setLocalStateField('typing', true)
+  clearTimeout(typingTimer)
+  typingTimer = setTimeout(() => {
+    if (S.peerId && awareness) awareness.setLocalStateField('typing', false)
+  }, 2000)
+})
+
+
+/* ═══════════════════════════════════════════════
+   PEERS & ROLES MODULE
+════════════════════════════════════════════════ */
+
+window.setRole = function(clientId, role) {
+  if (S.role !== 'host' || !ySession) return
+  const signals = ySession.get('roleSignals') || {}
+  signals[clientId.toString()] = { role, ts: Date.now() }
+  ySession.set('roleSignals', {...signals})
+  toast('Rol asignado: ' + role)
+}
+
+
+// Watch for role signals
+
 
 /* ═══════════════════════════════════════════════
    EXPORT MODULE
