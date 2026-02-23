@@ -439,10 +439,12 @@ let Y, WebrtcProvider, IndexeddbPersistence;
 
 async function loadYjs() {
   try {
-    Y = await import('yjs')
-    const webrtcMod = await import('y-webrtc')
+    // Usar URLs absolutas con bundle para evitar problemas con importmap dinámico
+    const yjsMod    = await import('https://esm.sh/yjs@13.6.18?bundle')
+    const webrtcMod = await import('https://esm.sh/y-webrtc@10.3.0?bundle')
+    const idbMod    = await import('https://esm.sh/y-indexeddb@9.0.12?bundle')
+    Y = yjsMod
     WebrtcProvider = webrtcMod.WebrtcProvider
-    const idbMod = await import('y-indexeddb')
     IndexeddbPersistence = idbMod.IndexeddbPersistence
     return true
   } catch(e) {
@@ -540,7 +542,7 @@ function download(filename, content, mime='text/plain') {
 ════════════════════════════════════════════════ */
 let ydoc, yText, yStrokes, yChat, ySession, yMeta
 let provider, awareness, idb, undoManager
-let isLocalEdit = false, lastEditorValue = ''
+let lastEditorValue = ''
 
 async function initYjs(roomId, password, isHost) {
   const loaded = await loadYjs()
@@ -561,21 +563,30 @@ async function initYjs(roomId, password, isHost) {
 
   // IndexedDB persistence
   idb = new IndexeddbPersistence(roomKey, ydoc)
+
+  // Helper: vuelca yText al editor y actualiza UI
+  function syncEditorFromYjs() {
+    const ta = $('editor-textarea')
+    const newVal = yText.toString()
+    if (ta.value !== newVal) {
+      ta.value = newVal
+      lastEditorValue = newVal
+      updatePreview()
+      updateWordCount()
+      computeAndShowHash()
+    }
+  }
+
   idb.on('synced', () => {
+    // Host: si IDB está vacío, insertar doc por defecto
     if (isHost && yText.length === 0) {
       ydoc.transact(() => yText.insert(0, DEFAULT_DOC), 'init')
     }
-    lastEditorValue = yText.toString()
-    const ta = $('editor-textarea')
-    ta.value = lastEditorValue
-    updatePreview()
-    updateWordCount()
-    computeAndShowHash()
-    // Si IndexedDB ya sincronizó, marcar como "listo" aunque no haya peers
+    syncEditorFromYjs()
     if (!S.connected) {
       $('status-dot').className = 'status-dot connected'
-      $('status-text').textContent = 'Listo (local)'
-      S.connected = true
+      $('status-text').textContent = isHost ? 'Listo' : 'Conectando...'
+      if (isHost) S.connected = true
     }
   })
 
@@ -588,7 +599,6 @@ async function initYjs(roomId, password, isHost) {
       filterBcConns: true,
     })
     awareness = provider.awareness
-
     S.peerId = ydoc.clientID.toString()
 
     awareness.setLocalState({
@@ -597,21 +607,32 @@ async function initYjs(roomId, password, isHost) {
       cursor: null, boardStroke: null
     })
 
+    // 'synced' se dispara cuando WebRTC intercambia estado con al menos un peer
     provider.on('synced', () => {
       $('status-dot').className = 'status-dot connected'
       $('status-text').textContent = 'Conectado'
       S.connected = true
+      // Forzar volcado del editor al recibir sincronización WebRTC
+      syncEditorFromYjs()
     })
-    // Fallback: si en 5s no hay sync de WebRTC pero hay IndexedDB, no quedarse en "Conectando"
-    setTimeout(() => {
-      if ($('status-text').textContent === 'Conectando...') {
-        $('status-dot').className = 'status-dot connected'
-        $('status-text').textContent = 'Listo (sin peers)'
-        S.connected = true
-      }
-    }, 5000)
 
-    provider.on('peers', () => updatePeersUI())
+    // Fallback para el host solo (sin peers nunca habrá 'synced')
+    setTimeout(() => {
+      if (!S.connected) {
+        $('status-dot').className = 'status-dot connected'
+        $('status-text').textContent = isHost ? 'Listo (sin peers)' : 'Sin conexión con peers'
+        S.connected = true
+        syncEditorFromYjs()
+      }
+    }, 6000)
+
+    provider.on('peers', ({ added, removed }) => {
+      updatePeersUI()
+      // Cuando un nuevo peer se conecta, re-forzar sync del editor
+      if (added && added.length > 0) {
+        setTimeout(syncEditorFromYjs, 500)
+      }
+    })
 
     awareness.on('change', () => {
       updatePeersUI()
@@ -623,6 +644,7 @@ async function initYjs(roomId, password, isHost) {
     toast('Modo local: WebRTC no disponible en este contexto')
     $('status-dot').className = 'status-dot disconnected'
     $('status-text').textContent = 'Local only'
+    S.connected = true
   }
 
   // Undo manager
@@ -651,7 +673,8 @@ function setupEditorSync() {
 
   // Y.Text → textarea (remote changes)
   yText.observe(event => {
-    if (isLocalEdit) return
+    // Solo ignorar si el cambio vino de nuestra propia edición local
+    if (event.transaction.origin === 'local') return
     const newVal = yText.toString()
     if (ta.value === newVal) return
     const ss = ta.selectionStart, se = ta.selectionEnd
@@ -665,10 +688,9 @@ function setupEditorSync() {
 
   // textarea → Y.Text (local changes)
   ta.addEventListener('input', () => {
+    if (!yText) return
     const newVal = ta.value
-    isLocalEdit = true
     applyDiff(yText, lastEditorValue, newVal, ydoc)
-    isLocalEdit = false
     lastEditorValue = newVal
     updatePreview()
     updateWordCount()
