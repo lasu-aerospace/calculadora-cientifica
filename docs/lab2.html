@@ -88,7 +88,6 @@ input,textarea{font:inherit;color:inherit;}
 .tab-spacer{flex:1;}
 .badge{display:inline-flex;align-items:center;justify-content:center;background:var(--accent);color:#0d0e12;border-radius:8px;min-width:16px;height:16px;padding:0 4px;font-size:9px;font-weight:700;margin-left:4px;}
 .hidden{display:none !important;}
-.badge.hidden{display:none;}
 
 /* ── EDITOR TOOLBAR ── */
 .toolbar{display:flex;align-items:center;gap:2px;padding:0 4px;}
@@ -121,7 +120,7 @@ input,textarea{font:inherit;color:inherit;}
 .preview-empty{color:var(--txt3);font-size:13px;font-style:italic;font-family:'Instrument Serif',serif;}
 .preview-wrap h1{font-family:'Instrument Serif',serif;font-size:1.9rem;font-weight:400;color:var(--txt);margin:0 0 14px;line-height:1.15;letter-spacing:-.02em;}
 .preview-wrap h2{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;color:var(--txt);margin:22px 0 10px;font-style:italic;}
-.preview-wrap h3{font-family:'Familjen Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--txt);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.05em;font-size:.85rem;}
+.preview-wrap h3{font-family:'Familjen Grotesk',sans-serif;font-weight:700;color:var(--txt);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.05em;font-size:.85rem;}
 .preview-wrap p{color:var(--txt2);font-size:14.5px;margin-bottom:10px;line-height:1.7;}
 .preview-wrap strong{color:var(--txt);font-weight:700;}
 .preview-wrap em{color:var(--txt);font-style:italic;}
@@ -768,14 +767,12 @@ async function initYjs(roomId, password, isHost) {
     syncEditorFromYjs()
   })
 
-  // Un solo handler para updates del ydoc
+  // Handler para updates del ydoc: sólo enviar cambios locales al relay
+  // (Los cambios remotos los procesa yText.observe en setupEditorSync)
   ydoc.on('update', (update, origin) => {
     if (origin !== 'remote') {
-      // Cambio local: enviar al relay
+      // Cambio local o init: enviar al relay
       sendRelay('sync', update)
-    } else {
-      // Cambio remoto: refrescar editor
-      syncEditorFromYjs()
     }
   })
 
@@ -995,7 +992,6 @@ function renderMarkdownWithKaTeX(md) {
   mathBlocks.forEach(({ latex, display }, i) => {
     const placeholder = mkId(i)
     // marked puede haber envuelto el placeholder de display en <p>
-    const escapedPh = placeholder.replace(/[]/g, c => c) // ya son únicos
     try {
       const rendered = katex.renderToString(latex.trim(), {
         displayMode: display, throwOnError: false, strict: false
@@ -1139,7 +1135,7 @@ function commitTextTool() {
 
 function setupBoardSync() {
   yStrokes.observe(() => {
-    S.strokes = yStrokes.toArray()
+    S.strokes = yStrokes.toArray().map(item => Array.isArray(item) ? item[0] : item)
     scheduleRedraw()
   })
 }
@@ -1246,7 +1242,7 @@ let chatCount = 0
 function setupChatSync() {
   yChat.observe(event => {
     event.changes.delta.forEach(op => {
-      if (op.insert) op.insert.forEach(msg => renderChatMsg(msg))
+      if (op.insert) op.insert.forEach(item => renderChatMsg(Array.isArray(item) ? item[0] : item))
     })
   })
 }
@@ -1310,11 +1306,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Typing awareness
 let typingTimer = null
 $('chat-input').addEventListener('input', () => {
-  if (!S.peerId) return
+  if (!S.peerId || !awareness) return
   awareness.setLocalStateField('typing', true)
   clearTimeout(typingTimer)
   typingTimer = setTimeout(() => {
-    if (S.peerId) awareness.setLocalStateField('typing', false)
+    if (S.peerId && awareness) awareness.setLocalStateField('typing', false)
   }, 2000)
 })
 
