@@ -12,7 +12,7 @@
   --border:#2a2d3a;--border2:#363a4a;
   --txt:#e4e6f0;--txt2:#8b90a8;--txt3:#52566a;
   --accent:#4ade80;--accent2:#22c55e;
-  --blue:#60a5fa;--violet:#a78bfa;--amber:#fbbf24;--red:#f87171;
+  --blue:#60a5fa;--violet:#a78bfa;--amber:#fbbf24;--red:#f87171;--orange:#fb923c;
   --r:12px;--rsm:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -23,10 +23,10 @@ a{color:var(--accent);text-decoration:none;}
 button{cursor:pointer;border:none;background:none;color:inherit;font:inherit;}
 input,textarea{font:inherit;color:inherit;}
 
-/* ── MODAL ── */
+/* ── MODALS ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
 .modal-overlay.active{opacity:1;pointer-events:all;}
-.modal{background:var(--s0);border:1px solid var(--border);border-radius:20px;padding:36px;width:min(440px,94vw);animation:modalIn .3s ease;}
+.modal{background:var(--s0);border:1px solid var(--border);border-radius:20px;padding:36px;width:min(460px,94vw);animation:modalIn .3s ease;}
 @keyframes modalIn{from{transform:translateY(20px) scale(.96);opacity:0;}to{transform:none;opacity:1;}}
 .modal-logo{font-size:2rem;text-align:center;margin-bottom:12px;color:var(--accent);}
 .modal-title{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;text-align:center;background:linear-gradient(135deg,var(--txt) 30%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
@@ -46,6 +46,18 @@ input,textarea{font:inherit;color:inherit;}
 .modal-header h3{font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;}
 .modal-close{font-size:18px;color:var(--txt3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .modal-close:hover{background:var(--s2);color:var(--txt);}
+
+/* ── COMPAT WARNING MODAL ── */
+#compat-modal{z-index:1100;}
+.compat-issue{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--rsm);border:1px solid var(--border);}
+.compat-issue.compat-error{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.3);}
+.compat-issue.compat-warning{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.3);}
+.compat-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.compat-title{font-weight:700;font-size:13px;color:var(--txt);margin-bottom:3px;}
+.compat-msg{font-size:12px;color:var(--txt2);line-height:1.5;}
+.compat-issues{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+#compat-modal .modal{border-color:rgba(251,191,36,.4);}
+#compat-modal .modal-header h3{color:var(--amber);}
 
 /* ── APP LAYOUT ── */
 .app{display:flex;flex-direction:column;height:100vh;opacity:0;transition:opacity .3s;}
@@ -70,6 +82,7 @@ input,textarea{font:inherit;color:inherit;}
 .role-chip{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid;}
 .role-host{color:var(--accent);border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.07);}
 .role-editor{color:var(--blue);border-color:rgba(96,165,250,.25);background:rgba(96,165,250,.07);}
+.role-co-host{color:var(--amber);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.07);}
 .role-observer{color:var(--txt3);border-color:var(--border);background:transparent;}
 
 /* ── MAIN AREA ── */
@@ -87,11 +100,12 @@ input,textarea{font:inherit;color:inherit;}
 .ptab:hover:not(.active){color:var(--txt2);}
 .tab-spacer{flex:1;}
 .badge{display:inline-flex;align-items:center;justify-content:center;background:var(--accent);color:#0d0e12;border-radius:8px;min-width:16px;height:16px;padding:0 4px;font-size:9px;font-weight:700;margin-left:4px;}
+.badge.badge-amber{background:var(--amber);}
 .hidden{display:none !important;}
 
 /* ── EDITOR TOOLBAR ── */
 .toolbar{display:flex;align-items:center;gap:2px;padding:0 4px;}
-.tool-btn, .btool { user-select: none; }
+.tool-btn,.btool{user-select:none;}
 .tool-btn{background:none;border:1px solid transparent;border-radius:5px;padding:3px 7px;font-size:11px;color:var(--txt3);font-family:'JetBrains Mono',monospace;transition:all .15s;}
 .tool-btn:hover{background:var(--s2);border-color:var(--border);color:var(--txt);}
 .tool-sep{width:1px;height:16px;background:var(--border);margin:0 2px;flex-shrink:0;}
@@ -114,6 +128,11 @@ input,textarea{font:inherit;color:inherit;}
 .editor-textarea::placeholder{color:var(--txt3);font-style:italic;}
 .editor-textarea:read-only{color:var(--txt2);cursor:default;}
 
+/* ── AUTOSAVE INDICATOR ── */
+.autosave-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:4px;opacity:0;transition:opacity .3s;}
+.autosave-dot.saving{opacity:1;animation:pulse .6s ease infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.4);}}
+
 /* ── PREVIEW ── */
 .preview-wrap{padding:22px 26px;flex:1;}
 .preview-empty{color:var(--txt3);font-size:13px;font-style:italic;font-family:'Instrument Serif',serif;}
@@ -129,7 +148,7 @@ input,textarea{font:inherit;color:inherit;}
 .preview-wrap blockquote{border-left:3px solid var(--border2);padding-left:16px;margin:12px 0;color:var(--txt2);font-style:italic;}
 .preview-wrap table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
 .preview-wrap th{background:var(--s2);padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);border:1px solid var(--border);text-align:left;}
-.preview-wrap td{padding:8px 12px;color:var(--txt2);border:1px solid var(--border);font-size:13.5px;}
+.preview-wrap td{padding:8px 12px;color:var(--txt2);border:1px solid var(--border);}
 .preview-wrap tr:hover td{background:rgba(255,255,255,.02);}
 .preview-wrap ul,.preview-wrap ol{padding-left:22px;color:var(--txt2);font-size:14px;margin:8px 0;}
 .preview-wrap li{margin-bottom:4px;}
@@ -166,13 +185,54 @@ input,textarea{font:inherit;color:inherit;}
 .peers-wrap{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto;}
 .peer-item{background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 14px;display:flex;align-items:center;gap:10px;transition:border-color .2s;}
 .peer-item:hover{border-color:var(--border2);}
+.peer-item.peer-colead{border-color:rgba(251,191,36,.3);}
 .peer-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .peer-info{flex:1;min-width:0;}
 .peer-name{font-weight:600;font-size:13.5px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.peer-role-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;padding:1px 5px;border-radius:3px;border:1px solid;margin-left:5px;letter-spacing:.08em;text-transform:uppercase;}
 .peer-status{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.08em;}
-.peer-actions{display:flex;gap:4px;}
+.peer-actions{display:flex;gap:4px;flex-wrap:wrap;}
 .peer-action-btn{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--border);color:var(--txt2);background:var(--s2);font-family:'JetBrains Mono',monospace;transition:all .15s;}
 .peer-action-btn:hover{border-color:var(--accent);color:var(--accent);}
+.peer-action-btn.colead-active{border-color:var(--amber);color:var(--amber);}
+
+/* ── HOST POLICY ── */
+.host-policy{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--s1);display:flex;align-items:center;gap:8px;}
+.host-policy label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);cursor:pointer;user-select:none;}
+.host-policy input[type=checkbox]{accent-color:var(--amber);width:14px;height:14px;cursor:pointer;}
+.host-policy-note{font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace;margin-left:22px;}
+
+/* ── PULL REQUESTS ── */
+.pr-wrap{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.pr-empty{color:var(--txt3);font-size:13px;font-style:italic;text-align:center;padding:20px 0;}
+.pr-item{background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:12px 14px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s;}
+.pr-item.pr-pending{border-left:3px solid var(--amber);}
+.pr-item.pr-accepted{border-left:3px solid var(--accent);opacity:.7;}
+.pr-item.pr-rejected{border-left:3px solid var(--red);opacity:.6;}
+.pr-header{display:flex;align-items:center;gap:8px;font-size:11px;}
+.pr-author{font-weight:700;}
+.pr-ts{color:var(--txt3);font-family:'JetBrains Mono',monospace;font-size:9px;margin-left:auto;}
+.pr-status-badge{font-family:'JetBrains Mono',monospace;font-size:8px;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.08em;}
+.pr-status-badge.s-pending{background:rgba(251,191,36,.12);color:var(--amber);border:1px solid rgba(251,191,36,.3);}
+.pr-status-badge.s-accepted{background:rgba(74,222,128,.1);color:var(--accent);border:1px solid rgba(74,222,128,.25);}
+.pr-status-badge.s-rejected{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+.pr-summary{font-size:13px;color:var(--txt);font-weight:600;}
+.pr-text-preview{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2);background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;white-space:pre-wrap;max-height:120px;overflow-y:auto;line-height:1.6;}
+.pr-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pr-btn{font-size:11px;padding:4px 12px;border-radius:5px;border:1px solid;font-family:'JetBrains Mono',monospace;font-weight:600;transition:all .15s;cursor:pointer;}
+.pr-btn-accept{background:rgba(74,222,128,.1);color:var(--accent);border-color:rgba(74,222,128,.3);}
+.pr-btn-accept:hover{background:rgba(74,222,128,.2);}
+.pr-btn-reject{background:rgba(248,113,113,.08);color:var(--red);border-color:rgba(248,113,113,.25);}
+.pr-btn-reject:hover{background:rgba(248,113,113,.18);}
+.pr-own{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-left:auto;}
+.pr-compose-panel{border-top:1px solid var(--border);padding:12px 16px;display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+.pr-compose-panel.hidden{display:none;}
+.pr-textarea{background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--txt);resize:vertical;min-height:80px;outline:none;transition:border-color .2s;width:100%;}
+.pr-textarea:focus{border-color:var(--accent);}
+.pr-summary-input{background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 12px;font-size:13px;color:var(--txt);outline:none;transition:border-color .2s;width:100%;}
+.pr-summary-input:focus{border-color:var(--accent);}
+.pr-compose-actions{display:flex;gap:8px;align-items:center;}
+.pr-new-bar{padding:8px 16px;border-top:1px solid var(--border);flex-shrink:0;}
 
 /* ── STATUS BAR ── */
 .status-bar{height:26px;background:var(--s0);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);}
@@ -194,17 +254,17 @@ input,textarea{font:inherit;color:inherit;}
 .hash-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;}
 .hash-value{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);word-break:break-all;line-height:1.6;}
 
-/* ── NOTIFICATION TOAST ── */
+/* ── TOAST ── */
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 18px;font-size:13px;color:var(--txt);z-index:2000;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* ── SCROLL STYLES ── */
+/* ── SCROLL ── */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--txt3);}
 
-/* ── PRINT STYLES ── */
+/* ── PRINT ── */
 @media print{
   .topbar,.status-bar,.panel-left,.resize-handle,.panel-tabs{display:none!important;}
   .main-area,.panel-right,.app{display:block!important;height:auto!important;overflow:visible!important;}
@@ -212,21 +272,39 @@ input,textarea{font:inherit;color:inherit;}
   body{background:white;color:black;}
   .preview-wrap h1,.preview-wrap h2,.preview-wrap h3{color:black;}
   .preview-wrap p,.preview-wrap li,.preview-wrap td{color:#333;}
-  .preview-wrap table{border-collapse:collapse;}
-  .preview-wrap th,.preview-wrap td{border:1px solid #ccc;}
   .view-content{overflow:visible!important;}
   #preview-view{display:block!important;}
   .katex{color:black!important;}
 }
 
-/* ── REMOTE CURSOR ── */
+/* ── REMOTE CURSORS ── */
 .remote-cursor-line{position:absolute;width:2px;pointer-events:none;transition:left .05s,top .05s;z-index:10;}
 .remote-cursor-label{position:absolute;top:-20px;left:0;font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 5px;border-radius:3px;white-space:nowrap;color:#0d0e12;font-weight:700;}
+
+/* ── NARROW SCREEN WARNING ── */
+@media (max-width:600px){
+  .panel-left{min-width:100%;border-right:none;}
+  .resize-handle{display:none;}
+}
 </style>
 </head>
 <body>
 
-<!-- SESSION MODAL -->
+<!-- ── COMPAT WARNING (shown before session modal if issues found) ── -->
+<div id="compat-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>⚠ Advertencias de compatibilidad</h3>
+    </div>
+    <div id="compat-issues" class="compat-issues"></div>
+    <button class="btn-primary" id="compat-continue"
+            style="background:var(--amber);color:#0d0e12;">
+      Entendido, continuar →
+    </button>
+  </div>
+</div>
+
+<!-- ── SESSION MODAL ── -->
 <div id="modal-overlay" class="modal-overlay active">
   <div class="modal">
     <div class="modal-logo">⬡</div>
@@ -254,7 +332,8 @@ input,textarea{font:inherit;color:inherit;}
       </div>
       <div class="form-group">
         <label>Código de sala</label>
-        <input type="text" id="join-room" placeholder="ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:.1em;" autocomplete="off">
+        <input type="text" id="join-room" placeholder="ABC123" maxlength="8"
+               style="text-transform:uppercase;letter-spacing:.1em;" autocomplete="off">
       </div>
       <div class="form-group">
         <label>Contraseña</label>
@@ -265,7 +344,7 @@ input,textarea{font:inherit;color:inherit;}
   </div>
 </div>
 
-<!-- EXPORT MODAL -->
+<!-- ── EXPORT MODAL ── -->
 <div id="export-modal" class="modal-overlay">
   <div class="modal">
     <div class="modal-header">
@@ -284,7 +363,7 @@ input,textarea{font:inherit;color:inherit;}
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- ── MAIN APP ── -->
 <div id="app" class="app" style="display:none;">
   <header class="topbar">
     <div class="topbar-logo">⬡ <span>LabColab</span></div>
@@ -293,7 +372,7 @@ input,textarea{font:inherit;color:inherit;}
       <span class="room-label">sala</span>
       <span id="room-code-display" class="room-code">——</span>
     </div>
-    <button id="btn-copy-room" class="btn-icon" title="Copiar código de sala">⎘</button>
+    <button id="btn-copy-room" class="btn-icon" title="Copiar enlace de sala">⎘</button>
     <div class="topbar-sep"></div>
     <div id="peers-bar" class="peers-bar"></div>
     <div class="topbar-right">
@@ -303,47 +382,48 @@ input,textarea{font:inherit;color:inherit;}
   </header>
 
   <div class="main-area">
+    <!-- LEFT PANEL -->
     <div class="panel-left" id="panel-left">
       <div class="panel-tabs" id="left-tabs">
         <button class="ptab active" data-panel="editor-view">✏ Texto</button>
         <button class="ptab" data-panel="board-view">◻ Pizarra</button>
         <div class="tab-spacer"></div>
         <div class="toolbar" id="editor-toolbar">
-          <button class="tool-btn" data-action="bold" title="Negrita Ctrl+B" onmousedown="event.preventDefault()"><b>B</b></button>
-          <button class="tool-btn" data-action="italic" title="Cursiva Ctrl+I" onmousedown="event.preventDefault()"><i>I</i></button>
-          <button class="tool-btn" data-action="code" title="Código" onmousedown="event.preventDefault()">`</button>
+          <button class="tool-btn" data-action="bold"        onmousedown="event.preventDefault()"><b>B</b></button>
+          <button class="tool-btn" data-action="italic"      onmousedown="event.preventDefault()"><i>I</i></button>
+          <button class="tool-btn" data-action="code"        onmousedown="event.preventDefault()">`</button>
           <div class="tool-sep"></div>
-          <button class="tool-btn" data-action="h1" onmousedown="event.preventDefault()">H1</button>
-          <button class="tool-btn" data-action="h2" onmousedown="event.preventDefault()">H2</button>
-          <button class="tool-btn" data-action="h3" onmousedown="event.preventDefault()">H3</button>
+          <button class="tool-btn" data-action="h1"          onmousedown="event.preventDefault()">H1</button>
+          <button class="tool-btn" data-action="h2"          onmousedown="event.preventDefault()">H2</button>
+          <button class="tool-btn" data-action="h3"          onmousedown="event.preventDefault()">H3</button>
           <div class="tool-sep"></div>
-          <button class="tool-btn" data-action="math-inline" title="Ecuación inline" onmousedown="event.preventDefault()">$</button>
-          <button class="tool-btn" data-action="math-block" title="Ecuación bloque" onmousedown="event.preventDefault()">$$</button>
+          <button class="tool-btn" data-action="math-inline" onmousedown="event.preventDefault()">$</button>
+          <button class="tool-btn" data-action="math-block"  onmousedown="event.preventDefault()">$$</button>
           <div class="tool-sep"></div>
-          <button class="tool-btn" data-action="table" title="Tabla" onmousedown="event.preventDefault()">⊞</button>
-          <button class="tool-btn" data-action="ul" title="Lista" onmousedown="event.preventDefault()">≡</button>
-          <button class="tool-btn" data-action="hr" title="Separador" onmousedown="event.preventDefault()">—</button>
+          <button class="tool-btn" data-action="table"       onmousedown="event.preventDefault()">⊞</button>
+          <button class="tool-btn" data-action="ul"          onmousedown="event.preventDefault()">≡</button>
+          <button class="tool-btn" data-action="hr"          onmousedown="event.preventDefault()">—</button>
         </div>
         <div class="board-tools hidden" id="board-toolbar">
-          <button class="btool active" data-btool="pen" title="Lápiz">✒</button>
-          <button class="btool" data-btool="line" title="Línea">╱</button>
-          <button class="btool" data-btool="rect" title="Rectángulo">▭</button>
-          <button class="btool" data-btool="circle" title="Círculo">○</button>
-          <button class="btool" data-btool="arrow" title="Flecha">→</button>
-          <button class="btool" data-btool="text" title="Texto T">T</button>
-          <button class="btool" data-btool="eraser" title="Borrador">⌫</button>
+          <button class="btool active" data-btool="pen">✒</button>
+          <button class="btool" data-btool="line">╱</button>
+          <button class="btool" data-btool="rect">▭</button>
+          <button class="btool" data-btool="circle">○</button>
+          <button class="btool" data-btool="arrow">→</button>
+          <button class="btool" data-btool="text">T</button>
+          <button class="btool" data-btool="eraser">⌫</button>
           <div class="tool-sep"></div>
-          <input type="color" id="board-color" value="#4ade80" class="color-picker" title="Color">
-          <input type="range" id="board-width" min="1" max="20" value="2" class="width-slider" title="Grosor">
+          <input type="color" id="board-color" value="#4ade80" class="color-picker">
+          <input type="range" id="board-width" min="1" max="20" value="2" class="width-slider">
           <div class="tool-sep"></div>
-          <button class="btool" id="btn-clear-board" title="Limpiar pizarra">✕ Limpiar</button>
+          <button class="btool" id="btn-clear-board">✕ Limpiar</button>
         </div>
       </div>
 
       <div id="editor-view" class="view-content">
         <div class="editor-wrap">
           <textarea id="editor-textarea" class="editor-textarea" spellcheck="false"
-            placeholder="# Título del documento&#10;&#10;Escribe en **Markdown** + ecuaciones LaTeX&#10;&#10;Ecuación inline: $E = mc^2$&#10;&#10;Ecuación en bloque:&#10;$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$"></textarea>
+            placeholder="# Título&#10;&#10;Escribe en **Markdown** + LaTeX: $E = mc^2$"></textarea>
           <div id="remote-cursors" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
         </div>
       </div>
@@ -358,34 +438,84 @@ input,textarea{font:inherit;color:inherit;}
 
     <div id="resize-handle" class="resize-handle"></div>
 
+    <!-- RIGHT PANEL -->
     <div class="panel-right" id="panel-right">
       <div class="panel-tabs">
         <button class="ptab active" data-panel="preview-view">👁 Vista previa</button>
-        <button class="ptab" data-panel="chat-view">💬 Chat <span id="chat-badge" class="badge hidden">0</span></button>
+        <button class="ptab" data-panel="chat-view">
+          💬 Chat <span id="chat-badge" class="badge hidden">0</span>
+        </button>
         <button class="ptab" data-panel="peers-view">👥 Peers</button>
+        <button class="ptab" data-panel="pr-view">
+          ⤵ Propuestas <span id="pr-badge" class="badge badge-amber hidden">0</span>
+        </button>
       </div>
+
+      <!-- Preview -->
       <div id="preview-view" class="view-content">
         <div class="preview-wrap">
-          <div id="preview-content"><p class="preview-empty">La vista previa aparecerá mientras escribes...</p></div>
+          <div id="preview-content">
+            <p class="preview-empty">La vista previa aparecerá mientras escribes...</p>
+          </div>
         </div>
       </div>
+
+      <!-- Chat -->
       <div id="chat-view" class="view-content hidden">
         <div class="chat-wrap">
           <div id="chat-messages" class="chat-messages"></div>
           <div id="typing-indicator" class="typing-indicator"></div>
           <div class="chat-input-area">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Mensaje... (Enter para enviar)" maxlength="500" autocomplete="off">
+            <input type="text" id="chat-input" class="chat-input"
+                   placeholder="Mensaje... (Enter para enviar)" maxlength="500" autocomplete="off">
             <button id="btn-send" class="btn-send">↑</button>
           </div>
         </div>
       </div>
+
+      <!-- Peers -->
       <div id="peers-view" class="view-content hidden">
+        <!-- Host-only policy panel -->
+        <div id="host-policy-panel" class="host-policy hidden">
+          <div>
+            <label>
+              <input type="checkbox" id="chk-revoke-on-disconnect">
+              Revocar co-liderazgo si me desconecto
+            </label>
+            <div class="host-policy-note">El post-líder pasará a editor automáticamente</div>
+          </div>
+        </div>
         <div class="peers-wrap" id="peers-list"></div>
+      </div>
+
+      <!-- Pull Requests -->
+      <div id="pr-view" class="view-content hidden">
+        <div class="pr-wrap" id="pr-list">
+          <p class="pr-empty">No hay propuestas de cambio aún.</p>
+        </div>
+        <!-- Compose panel (editors/co-hosts see this) -->
+        <div id="pr-compose-panel" class="pr-compose-panel hidden">
+          <textarea id="pr-text" class="pr-textarea"
+                    placeholder="Texto que propones agregar o reemplazar..."></textarea>
+          <input type="text" id="pr-summary" class="pr-summary-input"
+                 placeholder="Descripción breve del cambio (obligatoria)" maxlength="140">
+          <div class="pr-compose-actions">
+            <button class="btn-primary" id="pr-submit"
+                    style="width:auto;padding:8px 20px;margin-top:0;">Enviar propuesta ↑</button>
+            <button class="btn-small" id="pr-cancel">Cancelar</button>
+          </div>
+        </div>
+        <div id="pr-new-bar" class="pr-new-bar hidden">
+          <button class="btn-small" id="pr-new-btn" style="width:100%;justify-content:center;">
+            + Nueva propuesta de cambio
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="status-bar">
+    <span class="autosave-dot" id="autosave-dot"></span>
     <div id="status-dot" class="status-dot disconnected"></div>
     <span id="status-text">Desconectado</span>
     <span class="status-sep">·</span>
@@ -410,27 +540,23 @@ input,textarea{font:inherit;color:inherit;}
 
 /* ═══════════════════════════════════════════════════════════════════
    CONFIG
-   Constantes que el operador puede cambiar antes del deploy.
 ═══════════════════════════════════════════════════════════════════ */
 const CONFIG = Object.freeze({
-  // ▼▼▼ Cambia esto con la URL de tu Cloudflare Worker ▼▼▼
   RELAY_URL:       'wss://labcolab-relay.TU_USUARIO.workers.dev',
   RECONNECT_DELAY: 3000,
+  AUTOSAVE_MS:     3000,
   PEER_COLORS:     ['#4ade80','#60a5fa','#a78bfa','#fbbf24','#f87171','#34d399','#fb923c','#e879f9'],
   DEFAULT_DOC: `# Nuevo documento científico
 
-Bienvenido a **LabColab** — editor colaborativo descentralizado. Comparte el código de sala con tus colaboradores.
+Bienvenido a **LabColab** — editor colaborativo descentralizado.
 
 ## Cómo usar
 
 - Escribe en **Markdown** con soporte para tablas, código y listas
-- Ecuaciones inline con dólar simple: $E = mc^2$
-- Ecuaciones en bloque con doble dólar:
+- Ecuaciones inline: $E = mc^2$
+- Ecuaciones en bloque:
 
 $$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}$$
-
-- Activa la **Pizarra** (tab superior) para diagramas y esquemas
-- El **Chat** permite comunicación en tiempo real
 
 ## Tabla de ejemplo
 
@@ -438,29 +564,20 @@ $$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}$$
 |:---|:---:|---:|
 | Constante de Planck | $h$ | $6.626 \\times 10^{-34}$ J·s |
 | Velocidad de la luz | $c$ | $2.998 \\times 10^8$ m/s |
-| Constante de Boltzmann | $k_B$ | $1.380 \\times 10^{-23}$ J/K |
-
-## Referencias
-
-1. Einstein, A. (1905). *Zur Elektrodynamik bewegter Körper*. Annalen der Physik.
-2. Maxwell, J.C. (1865). *A Dynamical Theory of the Electromagnetic Field*.
 `,
 })
 
 /* ═══════════════════════════════════════════════════════════════════
-   UTILS
-   Funciones puras sin efectos secundarios ni dependencias de DOM.
+   UTILS  — funciones puras sin efectos secundarios
 ═══════════════════════════════════════════════════════════════════ */
 const Utils = (() => {
   const $ = id => document.getElementById(id)
 
-  // Garantiza exactamente n caracteres base-36 en mayúsculas
   const rand = (n = 16) => {
     let s = ''
     while (s.length < n) s += Math.random().toString(36).slice(2)
     return s.slice(0, n).toUpperCase()
   }
-
   const genId   = () => rand(8) + '-' + rand(4) + '-' + rand(4)
   const genRoom = () => rand(3) + rand(3)
 
@@ -475,7 +592,6 @@ const Utils = (() => {
     return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay) }
   }
 
-  // Aplica un diff mínimo entre oldStr y newStr sobre un Y.Text
   const applyDiff = (yt, oldStr, newStr, doc) => {
     let i = 0, j = oldStr.length, k = newStr.length
     while (i < j && i < k && oldStr[i] === newStr[i]) i++
@@ -491,15 +607,11 @@ const Utils = (() => {
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
   }
 
-  // Descarga un archivo cross-browser (Safari/Firefox requieren anchor en el DOM)
   const download = (filename, content, mime = 'text/plain') => {
     const a = document.createElement('a')
     const url = URL.createObjectURL(new Blob([content], { type: mime }))
-    a.href = url
-    a.download = filename
-    a.style.display = 'none'
-    document.body.appendChild(a)
-    a.click()
+    a.href = url; a.download = filename; a.style.display = 'none'
+    document.body.appendChild(a); a.click()
     setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a) }, 300)
   }
 
@@ -511,246 +623,309 @@ const { $, genId, genRoom, peerColor, initials, clamp, escHtml,
         debounce, applyDiff, sha256, download } = Utils
 
 /* ═══════════════════════════════════════════════════════════════════
-   STATE
-   Un único objeto de estado de sesión. Inmutable durante la sesión
-   salvo a través de métodos explícitos de cada módulo.
+   STATE  — único objeto de sesión mutable
 ═══════════════════════════════════════════════════════════════════ */
 const State = (() => {
-  let _s = {
-    // Identidad
-    peerId:    null,
-    name:      'Anónimo',
-    role:      'observer',
-    roomId:    null,
-    // Conexión
+  const _s = {
+    peerId: null, name: 'Anónimo', role: 'observer', roomId: null,
     connected: false,
-    // UI
-    leftPanel:  'editor-view',
-    rightPanel: 'preview-view',
-    unread:     0,
-    _lastRoleTs: 0,
-    // Pizarra
-    boardTool:    'pen',
-    boardColor:   '#4ade80',
-    boardWidth:   2,
-    drawing:      false,
-    activeStroke: null,
-    strokes:      [],
+    leftPanel: 'editor-view', rightPanel: 'preview-view',
+    unread: 0, prUnread: 0, _lastRoleTs: 0,
+    revokeOnDisconnect: false,
+    coHostPeerId: null,
+    boardTool: 'pen', boardColor: '#4ade80', boardWidth: 2,
+    drawing: false, activeStroke: null, strokes: [],
   }
-
-  // Proxy para detectar mutaciones no autorizadas en desarrollo
-  const get = key       => _s[key]
-  const set = (key, v)  => { _s[key] = v }
-  const patch = (obj)   => { Object.assign(_s, obj) }
-  const snapshot = ()   => ({ ..._s })
-
-  return { get, set, patch, snapshot }
+  const get    = key     => _s[key]
+  const set    = (k, v)  => { _s[k] = v }
+  const patch  = obj     => Object.assign(_s, obj)
+  return { get, set, patch }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   EVENT BUS
-   Canal de comunicación desacoplado entre módulos.
-   Ningún módulo llama funciones de otro módulo directamente.
+   EVENT BUS  — desacopla módulos entre sí
 ═══════════════════════════════════════════════════════════════════ */
 const Bus = (() => {
-  const _listeners = {}
-
-  const on = (event, cb) => {
-    if (!_listeners[event]) _listeners[event] = []
-    _listeners[event].push(cb)
-  }
-
-  const off = (event, cb) => {
-    if (!_listeners[event]) return
-    _listeners[event] = _listeners[event].filter(fn => fn !== cb)
-  }
-
-  const emit = (event, data) => {
-    ;(_listeners[event] || []).forEach(cb => {
-      try { cb(data) }
-      catch(e) { console.error(`Bus error [${event}]:`, e) }
-    })
-  }
-
+  const _L = {}
+  const on   = (ev, cb) => { (_L[ev] = _L[ev] || []).push(cb) }
+  const off  = (ev, cb) => { if (_L[ev]) _L[ev] = _L[ev].filter(f => f !== cb) }
+  const emit = (ev, d)  => { (_L[ev] || []).forEach(cb => { try { cb(d) } catch(e) { console.error('Bus', ev, e) } }) }
   return { on, off, emit }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   UI MODULE
-   Todas las actualizaciones del DOM viven aquí.
-   Escucha eventos del Bus para renderizarse.
+   COMPAT  — F6: detección de incompatibilidades
+═══════════════════════════════════════════════════════════════════ */
+const Compat = (() => {
+  const check = () => {
+    const issues = []
+    if (window.innerWidth < 768)
+      issues.push({ level:'warning', icon:'📱', title:'Pantalla angosta',
+        msg:'LabColab está optimizado para pantallas ≥ 768 px. La interfaz puede quedar recortada en dispositivos móviles.' })
+    if (!window.crypto?.subtle)
+      issues.push({ level:'error', icon:'🔓', title:'Sin cifrado disponible',
+        msg:'WebCrypto no está disponible. Abre la app en HTTPS, no HTTP. El cifrado extremo a extremo no funcionará.' })
+    if (!window.WebSocket)
+      issues.push({ level:'error', icon:'🔌', title:'WebSocket no disponible',
+        msg:'Tu navegador no soporta WebSockets. La colaboración en tiempo real no funcionará.' })
+    if (!window.indexedDB)
+      issues.push({ level:'warning', icon:'💾', title:'Sin persistencia local',
+        msg:'IndexedDB no disponible (¿modo privado?). El documento no se guardará localmente entre sesiones.' })
+    const ua = navigator.userAgent
+    if (/Trident|MSIE/.test(ua))
+      issues.push({ level:'error', icon:'🚫', title:'Internet Explorer no compatible',
+        msg:'LabColab requiere Chrome 90+, Firefox 88+, Safari 15+ o Edge 90+.' })
+    else if (/Edge\/\d+/.test(ua) && !/Edg\//.test(ua))
+      issues.push({ level:'warning', icon:'⚠', title:'Edge Legacy detectado',
+        msg:'Se recomienda actualizar a Microsoft Edge (Chromium) para mejor experiencia.' })
+    return issues
+  }
+
+  // Muestra el modal de compat si hay issues; resuelve la promesa al cerrar
+  const showIfNeeded = () => {
+    const issues = check()
+    if (!issues.length) return Promise.resolve()
+    return new Promise(resolve => {
+      const container = $('compat-issues')
+      container.innerHTML = ''
+      issues.forEach(({ level, icon, title, msg }) => {
+        const d = document.createElement('div')
+        d.className = 'compat-issue compat-' + level
+        d.innerHTML = `<span class="compat-icon">${icon}</span>
+          <div><div class="compat-title">${title}</div><div class="compat-msg">${msg}</div></div>`
+        container.appendChild(d)
+      })
+      $('compat-modal').classList.add('active')
+      $('compat-continue').addEventListener('click', () => {
+        $('compat-modal').classList.remove('active')
+        resolve()
+      }, { once: true })
+    })
+  }
+
+  return { check, showIfNeeded }
+})()
+
+/* ═══════════════════════════════════════════════════════════════════
+   UI  — todas las mutaciones del DOM
 ═══════════════════════════════════════════════════════════════════ */
 const UI = (() => {
   // ── Toast ──────────────────────────────────────────────────────
-  let _toastTimer = null
+  let _toastT = null
   const toast = (msg, dur = 2800) => {
     const el = $('toast')
-    el.textContent = msg
-    el.classList.add('show')
-    clearTimeout(_toastTimer)
-    _toastTimer = setTimeout(() => el.classList.remove('show'), dur)
+    el.textContent = msg; el.classList.add('show')
+    clearTimeout(_toastT)
+    _toastT = setTimeout(() => el.classList.remove('show'), dur)
   }
 
-  // ── Connection status ──────────────────────────────────────────
-  const setConnectionStatus = (status) => {
-    // status: 'connected' | 'connecting' | 'disconnected'
-    const dot  = $('status-dot')
-    const text = $('status-text')
-    dot.className = 'status-dot ' + status
-    const labels = {
-      connected:    'Conectado',
-      connecting:   'Conectando...',
-      disconnected: 'Desconectado — reconectando...',
-      error:        'Error de conexión',
-    }
-    text.textContent = labels[status] ?? status
+  // ── Connection ─────────────────────────────────────────────────
+  const setConnectionStatus = status => {
+    $('status-dot').className = 'status-dot ' + status
+    $('status-text').textContent = { connected:'Conectado', connecting:'Conectando...',
+      disconnected:'Desconectado — reconectando...', error:'Error de conexión' }[status] ?? status
+  }
+
+  // ── Autosave dot (F1) ──────────────────────────────────────────
+  let _saveFlash = null
+  const flashSave = ts => {
+    const dot  = $('autosave-dot')
+    const lbl  = $('status-save')
+    const t    = new Date(ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })
+    dot.classList.add('saving')
+    lbl.textContent = '✓ Guardado ' + t
+    clearTimeout(_saveFlash)
+    _saveFlash = setTimeout(() => {
+      dot.classList.remove('saving')
+      lbl.textContent = 'Guardado local'
+    }, 4000)
   }
 
   // ── Role chip ──────────────────────────────────────────────────
-  const setRole = (role) => {
+  const ROLE_LABELS = { host:'host', editor:'editor', 'co-host':'co-líder', observer:'observer' }
+  const setRole = role => {
     const chip = $('role-chip')
     chip.className = 'role-chip role-' + role
-    chip.textContent = role
+    chip.textContent = ROLE_LABELS[role] ?? role
     const ta = $('editor-textarea')
-    ta.readOnly    = (role === 'observer')
+    ta.readOnly      = role === 'observer'
     ta.style.opacity = role === 'observer' ? '0.6' : '1'
+    // Host-policy panel visibility
+    $('host-policy-panel').classList.toggle('hidden', role !== 'host')
+    // PR compose bar: editors and co-hosts can propose
+    const canPropose = role === 'editor' || role === 'co-host'
+    $('pr-new-bar').classList.toggle('hidden', !canPropose)
   }
 
-  // ── Status bar ─────────────────────────────────────────────────
-  const setWordCount = (words) => {
-    $('word-count').textContent = words + ' palabras'
+  // ── Metrics ────────────────────────────────────────────────────
+  const setWordCount = words => { $('word-count').textContent = words + ' palabras' }
+  const setHash      = h     => { $('status-hash').textContent = h ? 'SHA-256: ' + h.slice(0,16) + '...' : '' }
+  const setPeers     = n     => { $('status-peers').textContent = n + (n === 1 ? ' peer' : ' peers') }
+  const setDocHash   = h     => { $('doc-hash').textContent = h }
+
+  // ── Chat badge ─────────────────────────────────────────────────
+  const setChatBadge = n => {
+    const b = $('chat-badge')
+    if (n > 0) { b.textContent = n > 9 ? '9+' : n; b.classList.remove('hidden') }
+    else b.classList.add('hidden')
   }
 
-  const setHash = (h) => {
-    $('status-hash').textContent = h ? 'SHA-256: ' + h.slice(0, 16) + '...' : ''
+  // ── PR badge ───────────────────────────────────────────────────
+  const setPRBadge = n => {
+    const b = $('pr-badge')
+    if (n > 0) { b.textContent = n > 9 ? '9+' : n; b.classList.remove('hidden') }
+    else b.classList.add('hidden')
   }
 
-  const setSaveStatus = (msg) => {
-    $('status-save').textContent = msg
-  }
-
-  const setPeersCount = (n) => {
-    $('status-peers').textContent = n + (n === 1 ? ' peer' : ' peers')
-  }
-
-  // ── Peers bar (avatares en topbar) ─────────────────────────────
-  const renderPeersBar = (states) => {
-    const bar = $('peers-bar')
-    bar.innerHTML = ''
+  // ── Peers bar (topbar avatars) ─────────────────────────────────
+  const renderPeersBar = states => {
+    const bar = $('peers-bar'); bar.innerHTML = ''
     let i = 0
-    states.forEach((state, clientId) => {
-      if (!state || !state.name || i >= 6) return
-      i++
-      const color = state.color || peerColor(clientId.toString())
+    states.forEach((state, id) => {
+      if (!state?.name || i >= 6) return; i++
       const el = document.createElement('div')
-      el.className   = 'peer-avatar'
-      el.style.background = color
+      el.className = 'peer-avatar'
+      el.style.background = state.color || peerColor(id.toString())
       el.style.color = '#0d0e12'
       el.textContent = initials(state.name)
-      el.title = state.name + (clientId.toString() === State.get('peerId') ? ' (tú)' : '')
+      el.title = state.name + (id.toString() === State.get('peerId') ? ' (tú)' : '')
       bar.appendChild(el)
     })
   }
 
-  // ── Peers list (panel) ─────────────────────────────────────────
-  const renderPeersList = (states) => {
-    const list = $('peers-list')
-    list.innerHTML = ''
-    let count = 0
-    const myPeerId = State.get('peerId')
+  // ── Peers list ─────────────────────────────────────────────────
+  const renderPeersList = states => {
+    const list     = $('peers-list'); list.innerHTML = ''
+    const myPeer   = State.get('peerId')
     const myRole   = State.get('role')
+    const coHostId = State.get('coHostPeerId')
+    let count = 0
 
-    states.forEach((state, clientId) => {
-      if (!state || !state.name) return
-      count++
-      const cid   = clientId.toString()
-      const isMe  = cid === myPeerId
-      const color = state.color || peerColor(cid)
-      const role  = state.role || 'editor'
+    states.forEach((state, id) => {
+      if (!state?.name) return; count++
+      const cid    = id.toString()
+      const isMe   = cid === myPeer
+      const isCoH  = cid === coHostId
+      const color  = state.color || peerColor(cid)
+      const role   = state.role || 'editor'
 
       const div = document.createElement('div')
-      div.className = 'peer-item'
+      div.className = 'peer-item' + (isCoH ? ' peer-colead' : '')
+
+      const roleTag = isCoH
+        ? '<span class="peer-role-tag" style="color:var(--amber);border-color:rgba(251,191,36,.35)">co-líder</span>'
+        : role === 'host'
+          ? '<span class="peer-role-tag" style="color:var(--accent);border-color:rgba(74,222,128,.3)">host</span>'
+          : ''
+
+      const coLeadBtn = (myRole === 'host' && !isMe)
+        ? `<button class="peer-action-btn${isCoH ? ' colead-active' : ''}"
+             onclick="App.toggleCoHost('${cid}')" title="${isCoH ? 'Quitar co-liderazgo' : 'Designar como post-líder'}">
+             ${isCoH ? '★ Post-líder' : '☆ Post-líder'}
+           </button>` : ''
+
+      const hostActions = (myRole === 'host' && !isMe)
+        ? `<button class="peer-action-btn" onclick="App.setRole('${cid}','editor')">Editor</button>
+           <button class="peer-action-btn" onclick="App.setRole('${cid}','observer')">Obs.</button>
+           ${coLeadBtn}` : ''
+
       div.innerHTML = `
         <div class="peer-dot" style="background:${color}"></div>
         <div class="peer-info">
-          <div class="peer-name">${escHtml(state.name)}${isMe ? ' <span style="color:var(--txt3);font-size:11px;">(tú)</span>' : ''}</div>
+          <div class="peer-name">${escHtml(state.name)}${roleTag}${isMe ? '<span style="color:var(--txt3);font-size:11px;"> (tú)</span>' : ''}</div>
           <div class="peer-status">${role} · ${isMe ? 'local' : 'remoto'}</div>
         </div>
-        ${myRole === 'host' && !isMe ? `
-          <div class="peer-actions">
-            <button class="peer-action-btn" onclick="App.setRole(${JSON.stringify(cid)}, 'editor')">Editor</button>
-            <button class="peer-action-btn" onclick="App.setRole(${JSON.stringify(cid)}, 'observer')">Obs.</button>
-          </div>` : ''}
+        ${hostActions ? '<div class="peer-actions">' + hostActions + '</div>' : ''}
       `
       list.appendChild(div)
     })
 
-    setPeersCount(states.has(myPeerId) ? count : count + 1)
+    setPeers(states.has(myPeer) ? count : count + 1)
     renderTypingIndicator(states)
   }
 
   // ── Typing indicator ───────────────────────────────────────────
-  const renderTypingIndicator = (states) => {
-    const myPeerId = State.get('peerId')
+  const renderTypingIndicator = states => {
+    const myPeer = State.get('peerId')
     const typing = []
-    states.forEach((state, id) => {
-      if (id.toString() !== myPeerId && state && state.typing && state.name)
-        typing.push(state.name.split(' ')[0])
+    states.forEach((s, id) => {
+      if (id.toString() !== myPeer && s?.typing && s?.name) typing.push(s.name.split(' ')[0])
     })
-    $('typing-indicator').textContent =
-      typing.length ? `${typing.slice(0, 2).join(', ')} está escribiendo...` : ''
+    $('typing-indicator').textContent = typing.length
+      ? typing.slice(0, 2).join(', ') + ' está escribiendo...' : ''
   }
 
   // ── Chat message ───────────────────────────────────────────────
-  const appendChatMsg = (msg) => {
-    const container  = $('chat-messages')
-    const atBottom   = container.scrollHeight - container.scrollTop - container.clientHeight < 40
-    const myPeerId   = State.get('peerId')
-
+  const appendChatMsg = msg => {
+    const c = $('chat-messages')
+    const atBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 40
     if (msg.type === 'system') {
       const el = document.createElement('div')
-      el.className   = 'chat-sys'
-      el.textContent = msg.text
-      container.appendChild(el)
+      el.className = 'chat-sys'; el.textContent = msg.text; c.appendChild(el)
     } else {
-      const isOwn = msg.peerId === myPeerId
+      const isOwn = msg.peerId === State.get('peerId')
       const div   = document.createElement('div')
       div.className = 'chat-msg' + (isOwn ? ' own' : '')
-      const time  = new Date(msg.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const time = new Date(msg.ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
       div.innerHTML = `
         <div class="msg-meta">
-          <span class="msg-author" style="color:${msg.color || 'var(--accent)'}">${escHtml(msg.name || '?')}</span>
+          <span class="msg-author" style="color:${msg.color||'var(--accent)'}">${escHtml(msg.name||'?')}</span>
           <span>${time}</span>
         </div>
-        <div class="msg-bubble">${escHtml(msg.text)}</div>
-      `
-      container.appendChild(div)
-
-      // Badge de no leídos cuando el panel de chat no está activo
+        <div class="msg-bubble">${escHtml(msg.text)}</div>`
+      c.appendChild(div)
       if (State.get('rightPanel') !== 'chat-view' && !isOwn) {
-        const unread = State.get('unread') + 1
-        State.set('unread', unread)
-        const badge = $('chat-badge')
-        badge.textContent = unread > 9 ? '9+' : unread
-        badge.classList.remove('hidden')
+        const u = State.get('unread') + 1
+        State.set('unread', u); setChatBadge(u)
       }
     }
+    if (atBottom) c.scrollTop = c.scrollHeight
+  }
 
-    if (atBottom) container.scrollTop = container.scrollHeight
+  // ── PR list (F2) ───────────────────────────────────────────────
+  const renderPRList = prs => {
+    const wrap   = $('pr-list'); wrap.innerHTML = ''
+    const myPeer = State.get('peerId')
+    const myRole = State.get('role')
+    const canAct = myRole === 'host' || myRole === 'co-host'
+
+    if (!prs?.length) {
+      wrap.innerHTML = '<p class="pr-empty">No hay propuestas de cambio aún.</p>'; return
+    }
+    ;[...prs].sort((a, b) => b.ts - a.ts).forEach(pr => {
+      const isOwn    = pr.authorId === myPeer
+      const isPend   = pr.status  === 'pending'
+      const badgeCls = { pending:'s-pending', accepted:'s-accepted', rejected:'s-rejected' }[pr.status]
+      const badgeTxt = { pending:'pendiente',  accepted:'aceptada',   rejected:'rechazada'  }[pr.status]
+      const div = document.createElement('div')
+      div.className = 'pr-item pr-' + pr.status
+      div.innerHTML = `
+        <div class="pr-header">
+          <span class="pr-author" style="color:${peerColor(pr.authorId)}">${escHtml(pr.authorName)}</span>
+          <span class="pr-status-badge ${badgeCls}">${badgeTxt}</span>
+          <span class="pr-ts">${new Date(pr.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="pr-summary">${escHtml(pr.summary)}</div>
+        <pre class="pr-text-preview">${escHtml(pr.text)}</pre>
+        <div class="pr-footer">
+          ${canAct && isPend
+            ? `<button class="pr-btn pr-btn-accept" onclick="App.acceptPR('${pr.id}')">✅ Aceptar</button>
+               <button class="pr-btn pr-btn-reject" onclick="App.rejectPR('${pr.id}')">❌ Rechazar</button>`
+            : ''}
+          ${isOwn ? '<span class="pr-own">Tu propuesta</span>' : ''}
+        </div>`
+      wrap.appendChild(div)
+    })
   }
 
   // ── Panel switching ────────────────────────────────────────────
   const switchPanel = (target, side) => {
     const panelId = side === 'left' ? 'panel-left' : 'panel-right'
     const panel   = $(panelId)
-
-    panel.querySelectorAll('[data-panel]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.panel === target)
-    })
-    panel.querySelectorAll('.view-content').forEach(v => {
-      v.classList.toggle('hidden', v.id !== target)
-    })
-
+    panel.querySelectorAll('[data-panel]').forEach(b =>
+      b.classList.toggle('active', b.dataset.panel === target))
+    panel.querySelectorAll('.view-content').forEach(v =>
+      v.classList.toggle('hidden', v.id !== target))
     if (side === 'left') {
       State.set('leftPanel', target)
       $('editor-toolbar').classList.toggle('hidden', target !== 'editor-view')
@@ -758,22 +933,22 @@ const UI = (() => {
     } else {
       State.set('rightPanel', target)
       if (target === 'chat-view') {
-        State.set('unread', 0)
-        $('chat-badge').classList.add('hidden')
+        State.set('unread', 0); setChatBadge(0)
         $('chat-messages').scrollTop = $('chat-messages').scrollHeight
         $('chat-input').focus()
       }
+      if (target === 'pr-view') {
+        State.set('prUnread', 0); setPRBadge(0)
+      }
     }
-
     Bus.emit('panel:switched', { target, side })
   }
 
-  // ── App visibility ─────────────────────────────────────────────
-  const showApp = (roomId) => {
+  // ── App show ───────────────────────────────────────────────────
+  const showApp = roomId => {
     $('modal-overlay').classList.remove('active')
     $('room-code-display').textContent = roomId
-    const app = $('app')
-    app.style.display = 'flex'
+    const app = $('app'); app.style.display = 'flex'
     setTimeout(() => app.classList.add('visible'), 50)
     setConnectionStatus('connecting')
     const url = new URL(location.href)
@@ -781,1028 +956,888 @@ const UI = (() => {
     history.pushState({}, '', url)
   }
 
-  // ── Preview ────────────────────────────────────────────────────
-  const renderPreview = (html) => {
+  const renderPreview = html => {
     $('preview-content').innerHTML = html ||
       '<p class="preview-empty">La vista previa aparecerá mientras escribes...</p>'
   }
 
-  // ── Hash display in export modal ───────────────────────────────
-  const setDocHash = (h) => {
-    $('doc-hash').textContent = h
-  }
-
   // ── Bus subscriptions ──────────────────────────────────────────
-  Bus.on('awareness:changed',  ({ states }) => { renderPeersBar(states); renderPeersList(states) })
-  Bus.on('connection:status',  ({ status }) => setConnectionStatus(status))
-  Bus.on('editor:wordcount',   ({ words })  => setWordCount(words))
-  Bus.on('editor:hash',        ({ hash })   => setHash(hash))
-  Bus.on('editor:saved',       ()           => { setSaveStatus('✓ Guardado'); setTimeout(() => setSaveStatus('Guardado local'), 2000) })
-  Bus.on('role:changed',       ({ role })   => setRole(role))
-  Bus.on('chat:message',       ({ msg })    => appendChatMsg(msg))
-  Bus.on('preview:rendered',   ({ html })   => renderPreview(html))
+  Bus.on('connection:status', ({ status })  => setConnectionStatus(status))
+  Bus.on('editor:wordcount',  ({ words })   => setWordCount(words))
+  Bus.on('editor:hash',       ({ hash })    => setHash(hash))
+  Bus.on('editor:saved',      ({ ts })      => flashSave(ts))
+  Bus.on('role:changed',      ({ role })    => setRole(role))
+  Bus.on('chat:message',      ({ msg })     => appendChatMsg(msg))
+  Bus.on('preview:rendered',  ({ html })    => renderPreview(html))
+  Bus.on('pr:rendered',       ({ prs })     => renderPRList(prs))
+  Bus.on('pr:badge',          ({ count })   => setPRBadge(count))
+  Bus.on('colead:changed',    ()            => {
+    const states = Awareness.getStates()
+    renderPeersBar(states); renderPeersList(states)
+  })
+  Bus.on('awareness:changed', ({ states }) => {
+    renderPeersBar(states); renderPeersList(states)
+  })
 
-  return { toast, setRole, setConnectionStatus, showApp, switchPanel,
-           renderPeersBar, renderPeersList, setDocHash, setHash }
+  return { toast, showApp, switchPanel, setDocHash, setRole, renderPRList, renderPeersBar }
 })()
 
-// Exponer toast globalmente para conveniencia interna
 const toast = UI.toast
 
 /* ═══════════════════════════════════════════════════════════════════
-   CRYPTO MODULE
-   Encriptación AES-256-GCM para mensajes del relay.
+   CRYPTO  — AES-256-GCM end-to-end
 ═══════════════════════════════════════════════════════════════════ */
 const Crypto = (() => {
   let _key = null
-
   const init = async (password, roomId) => {
     const enc = new TextEncoder()
-    const material = await crypto.subtle.importKey(
-      'raw', enc.encode(password || 'labcolab-default'),
-      { name: 'PBKDF2' }, false, ['deriveKey']
-    )
+    const mat = await crypto.subtle.importKey('raw', enc.encode(password || 'labcolab-default'),
+      { name:'PBKDF2' }, false, ['deriveKey'])
     _key = await crypto.subtle.deriveKey(
-      { name: 'PBKDF2', salt: enc.encode('labcolab-' + roomId), iterations: 100000, hash: 'SHA-256' },
-      material,
-      { name: 'AES-GCM', length: 256 },
-      false, ['encrypt', 'decrypt']
-    )
+      { name:'PBKDF2', salt:enc.encode('labcolab-'+roomId), iterations:100000, hash:'SHA-256' },
+      mat, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt'])
   }
-
-  const encrypt = async (data) => {
-    if (!_key) {
-      // Sin clave: pasar los bytes tal cual como ArrayBuffer
-      return data instanceof Uint8Array
-        ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
-        : data
-    }
+  const encrypt = async data => {
+    if (!_key) return data instanceof Uint8Array
+      ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) : data
     const iv  = crypto.getRandomValues(new Uint8Array(12))
     const buf = data instanceof Uint8Array
-      ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
-      : data
-    const ct  = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, _key, buf)
+      ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) : data
+    const ct  = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, _key, buf)
     const out = new Uint8Array(12 + ct.byteLength)
-    out.set(iv, 0)
-    out.set(new Uint8Array(ct), 12)
-    return out.buffer
+    out.set(iv, 0); out.set(new Uint8Array(ct), 12); return out.buffer
   }
-
-  const decrypt = async (data) => {
+  const decrypt = async data => {
     if (!_key) return data
     try {
       const buf = data instanceof ArrayBuffer ? data : await data.arrayBuffer()
       const arr = new Uint8Array(buf)
-      return await crypto.subtle.decrypt({ name: 'AES-GCM', iv: arr.slice(0, 12) }, _key, arr.slice(12))
-    } catch {
-      return null // clave incorrecta o mensaje corrupto
-    }
+      return await crypto.subtle.decrypt({ name:'AES-GCM', iv:arr.slice(0,12) }, _key, arr.slice(12))
+    } catch { return null }
   }
-
   return { init, encrypt, decrypt }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   RELAY MODULE
-   WebSocket con reconexión automática y codec binario propio.
-   Protocolo: 1 byte tipo (0x01=sync, 0x02=awareness) + payload.
+   RELAY  — WebSocket con codec binario y reconexión automática
+   Protocolo: byte 0x01=sync, 0x02=awareness + payload
 ═══════════════════════════════════════════════════════════════════ */
 const Relay = (() => {
-  let _ws       = null
-  let _roomId   = null
-  let _password = null
-
-  const TYPE = { sync: 0x01, awareness: 0x02 }
-  const TYPE_INV = { [TYPE.sync]: 'sync', [TYPE.awareness]: 'awareness' }
+  let _ws, _room, _pass
+  const T = { sync:0x01, awareness:0x02 }
+  const TI = { [0x01]:'sync', [0x02]:'awareness' }
 
   const _encode = (type, payload) => {
-    // payload debe ser Uint8Array
     const out = new Uint8Array(1 + payload.length)
-    out[0] = TYPE[type]
-    out.set(payload, 1)
-    return out
+    out[0] = T[type]; out.set(payload, 1); return out
   }
-
-  const _decode = (arr) => {
+  const _decode = arr => {
     if (!arr || arr.length < 2) return null
-    const type = TYPE_INV[arr[0]]
+    const type = TI[arr[0]]
     return type ? { type, payload: arr.slice(1) } : null
   }
 
   const send = async (type, payload) => {
     if (!_ws || _ws.readyState !== WebSocket.OPEN) return
-    const encoded   = _encode(type, payload)
-    const encrypted = await Crypto.encrypt(encoded)
-    _ws.send(encrypted)
+    _ws.send(await Crypto.encrypt(_encode(type, payload)))
   }
 
-  const _connect = (onOpen) => {
-    const url = CONFIG.RELAY_URL.replace(/\/+$/, '') + '/room/' + _roomId
-    _ws = new WebSocket(url)
+  const _connect = onOpen => {
+    _ws = new WebSocket(CONFIG.RELAY_URL.replace(/\/+$/, '') + '/room/' + _room)
     _ws.binaryType = 'arraybuffer'
-
     _ws.addEventListener('open', () => {
-      Bus.emit('connection:status', { status: 'connected' })
-      State.set('connected', true)
+      Bus.emit('connection:status', { status:'connected' }); State.set('connected', true)
       if (onOpen) onOpen()
     })
-
-    _ws.addEventListener('message', async (e) => {
+    _ws.addEventListener('message', async e => {
       const raw = await Crypto.decrypt(e.data)
       if (!raw) return
       const msg = _decode(new Uint8Array(raw))
-      if (!msg) return
-      Bus.emit('relay:message', msg)
+      if (msg) Bus.emit('relay:message', msg)
     })
-
     _ws.addEventListener('close', () => {
-      Bus.emit('connection:status', { status: 'disconnected' })
-      State.set('connected', false)
-      setTimeout(() => _connect(() => {
-        Bus.emit('relay:reconnected')
-      }), CONFIG.RECONNECT_DELAY)
+      Bus.emit('connection:status', { status:'disconnected' }); State.set('connected', false)
+      setTimeout(() => _connect(() => Bus.emit('relay:reconnected')), CONFIG.RECONNECT_DELAY)
     })
-
-    _ws.addEventListener('error', () => {
-      Bus.emit('connection:status', { status: 'error' })
-    })
+    _ws.addEventListener('error', () => Bus.emit('connection:status', { status:'error' }))
   }
 
-  const connect = (roomId, password, onOpen) => {
-    _roomId   = roomId
-    _password = password
-    _connect(onOpen)
-  }
-
+  const connect = (room, pass, onOpen) => { _room = room; _pass = pass; _connect(onOpen) }
   return { connect, send }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   AWARENESS MODULE
-   Implementación propia de awareness Yjs compatible con el relay.
+   AWARENESS  — presencia de peers sin y-protocols
 ═══════════════════════════════════════════════════════════════════ */
 const Awareness = (() => {
-  const _states    = new Map()  // clientId (string) → state
-  const _listeners = []
+  const _states = new Map()
 
   const getStates = () => new Map(_states)
 
-  const setLocalState = (state) => {
-    const id = State.get('peerId')
-    if (!id) return
-    _states.set(id, state)
-    _broadcast()
-  }
-
-  const setLocalField = (field, value) => {
-    const id  = State.get('peerId')
-    if (!id) return
-    const cur = _states.get(id) || {}
-    cur[field] = value
-    _states.set(id, cur)
-    _broadcast()
-  }
-
   const _broadcast = () => {
-    const id = State.get('peerId')
-    if (!id) return
-    const payload = new TextEncoder().encode(JSON.stringify({
-      clientId: id,
-      state:    _states.get(id) || {}
-    }))
-    Relay.send('awareness', payload)
+    const id = State.get('peerId'); if (!id) return
+    Relay.send('awareness', new TextEncoder().encode(
+      JSON.stringify({ clientId: id, state: _states.get(id) || {} })))
   }
 
-  // Mensaje de awareness recibido del relay
-  const handleIncoming = (payloadBytes) => {
+  const setLocalState = state => {
+    const id = State.get('peerId'); if (!id) return
+    _states.set(id, state); _broadcast()
+  }
+  const setLocalField = (field, value) => {
+    const id = State.get('peerId'); if (!id) return
+    const cur = _states.get(id) || {}; cur[field] = value
+    _states.set(id, cur); _broadcast()
+  }
+
+  Bus.on('relay:message', msg => {
+    if (msg.type !== 'awareness') return
     try {
-      const { clientId, state } = JSON.parse(new TextDecoder().decode(payloadBytes))
-      if (state === null) {
-        _states.delete(clientId)
-      } else {
-        _states.set(clientId, state)
-      }
+      const { clientId, state } = JSON.parse(new TextDecoder().decode(msg.payload))
+      if (state === null) _states.delete(clientId)
+      else                _states.set(clientId, state)
       Bus.emit('awareness:changed', { states: getStates() })
-    } catch(e) {
-      console.warn('Awareness parse error:', e)
-    }
-  }
-
-  // Objeto compatible con el API awareness de Yjs (para UndoManager etc.)
-  const yjsCompat = {
-    getStates,
-    setLocalState,
-    setLocalStateField: setLocalField,
-    on: (event, cb) => { if (event === 'change') _listeners.push(cb) },
-  }
-
-  Bus.on('relay:message', (msg) => {
-    if (msg.type === 'awareness') handleIncoming(msg.payload)
+    } catch {}
   })
 
-  return { getStates, setLocalState, setLocalField, yjsCompat }
+  return { getStates, setLocalState, setLocalField }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   YJS MODULE
-   Gestiona el documento CRDT, persistencia IDB, y sincronización.
+   YJS  — CRDT, IDB persistence, relay sync
 ═══════════════════════════════════════════════════════════════════ */
 const Yjs = (() => {
-  let _Y, _IndexeddbPersistence
-  let _doc, _text, _strokes, _chat, _session, _meta
-  let _undoManager
-  let _idb
+  let _Y, _IDB
+  let _doc, _text, _strokes, _chat, _session, _meta, _undo
 
   const load = async () => {
     try {
-      const yjsMod = await import('https://esm.sh/yjs@13.6.18?bundle')
-      _Y = yjsMod.default ? { ...yjsMod.default, ...yjsMod } : yjsMod
-      const idbMod = await import('https://esm.sh/y-indexeddb@9.0.12?deps=yjs@13.6.18&bundle')
-      _IndexeddbPersistence = idbMod.IndexeddbPersistence
-      return true
-    } catch(e) {
-      console.error('Error cargando librerías Yjs:', e)
-      return false
-    }
+      const ym = await import('https://esm.sh/yjs@13.6.18?bundle')
+      _Y = ym.default ? { ...ym.default, ...ym } : ym
+      const im = await import('https://esm.sh/y-indexeddb@9.0.12?deps=yjs@13.6.18&bundle')
+      _IDB = im.IndexeddbPersistence; return true
+    } catch(e) { console.error(e); return false }
   }
 
   const init = async (roomId, password, isHost) => {
-    const ok = await load()
-    if (!ok) {
-      toast('Error: no se pudieron cargar las librerías. Modo local activo.')
-      Bus.emit('connection:status', { status: 'disconnected' })
-      return false
+    if (!await load()) {
+      toast('Error cargando librerías. Modo local activo.')
+      Bus.emit('connection:status', { status:'disconnected' }); return false
     }
-
     await Crypto.init(password, roomId)
-
     _doc     = new _Y.Doc()
     _text    = _doc.getText('editor')
     _strokes = _doc.getArray('strokes')
     _chat    = _doc.getArray('chat')
     _session = _doc.getMap('session')
     _meta    = _doc.getMap('meta')
-
     State.set('peerId', _doc.clientID.toString())
 
-    // Persistencia local IDB
-    _idb = new _IndexeddbPersistence(`labcolab-${roomId}`, _doc)
-    _idb.on('synced', () => {
-      if (isHost && _text.length === 0) {
+    new _IDB('labcolab-' + roomId, _doc).on('synced', () => {
+      if (isHost && _text.length === 0)
         _doc.transact(() => _text.insert(0, CONFIG.DEFAULT_DOC), 'init')
-      }
       Bus.emit('yjs:synced')
     })
 
-    // Reenviar al relay solo cambios generados localmente
-    // 'local' = edición del usuario
-    // 'init'  = inserción del DEFAULT_DOC por el host
-    // No reenviar: 'remote' (eco), null/idb (flood desde IndexedDB)
+    // Forward only locally-generated changes; never IDB (null) or remote echoes
     _doc.on('update', (update, origin) => {
-      if (origin === 'local' || origin === 'init') {
-        Relay.send('sync', update)
-      }
+      if (origin === 'local' || origin === 'init') Relay.send('sync', update)
     })
 
-    // Aplicar updates remotos recibidos del relay
-    Bus.on('relay:message', (msg) => {
-      if (msg.type === 'sync') {
-        try { _Y.applyUpdate(_doc, msg.payload, 'remote') }
-        catch(e) { console.warn('Error aplicando update Yjs:', e) }
-      }
+    Bus.on('relay:message', msg => {
+      if (msg.type !== 'sync') return
+      try { _Y.applyUpdate(_doc, msg.payload, 'remote') } catch(e) { console.warn(e) }
     })
 
-    // Al reconectar: reenviar snapshot completo y re-anunciar presencia
     Bus.on('relay:reconnected', () => {
       Relay.send('sync', _Y.encodeStateAsUpdate(_doc))
-      Awareness.setLocalState({
-        name: State.get('name'), role: State.get('role'),
-        color: Utils.peerColor(State.get('peerId')),
-        cursor: null, boardStroke: null,
-      })
+      Awareness.setLocalState({ name:State.get('name'), role:State.get('role'),
+        color:peerColor(State.get('peerId')), cursor:null, boardStroke:null })
     })
 
-    // Conectar relay y anunciar presencia al abrir
     Relay.connect(roomId, password, () => {
       Relay.send('sync', _Y.encodeStateAsUpdate(_doc))
-      Awareness.setLocalState({
-        name: State.get('name'), role: State.get('role'),
-        color: Utils.peerColor(State.get('peerId')),
-        cursor: null, boardStroke: null,
-      })
+      Awareness.setLocalState({ name:State.get('name'), role:State.get('role'),
+        color:peerColor(State.get('peerId')), cursor:null, boardStroke:null })
     })
 
-    _undoManager = new _Y.UndoManager(_text, { captureTimeout: 500 })
+    _undo = new _Y.UndoManager(_text, { captureTimeout:500 })
 
     if (isHost) {
-      _session.set('host',     State.get('peerId'))
-      _session.set('hostName', State.get('name'))
-      _session.set('created',  Date.now())
+      _session.set('host',       State.get('peerId'))
+      _session.set('hostName',   State.get('name'))
+      _session.set('created',    Date.now())
+      _session.set('hostPolicy', { revokeOnDisconnect: false })
       _meta.set('title', 'Nuevo documento')
     }
-
     return true
   }
 
-  // Escucha cambios del ySession para señales de rol
+  // Role signals (existing mechanism)
   const watchRoleSignals = () => {
     if (!_session) return
-    _session.observe(event => {
-      if (!event.keysChanged.has('roleSignals')) return
-      const signals = _session.get('roleSignals') || {}
-      const myId    = _doc.clientID.toString()
-      const signal  = signals[myId]
-      if (signal && signal.ts > State.get('_lastRoleTs')) {
-        State.set('_lastRoleTs', signal.ts)
-        State.set('role', signal.role)
-        Bus.emit('role:changed', { role: signal.role })
-        Awareness.setLocalField('role', signal.role)
-        toast('Tu rol cambió a: ' + signal.role)
+    _session.observe(ev => {
+      // ── roleSignals ──
+      if (ev.keysChanged.has('roleSignals')) {
+        const sigs = _session.get('roleSignals') || {}
+        const myId = _doc.clientID.toString()
+        const sig  = sigs[myId]
+        if (sig && sig.ts > State.get('_lastRoleTs')) {
+          State.set('_lastRoleTs', sig.ts)
+          State.set('role', sig.role)
+          Bus.emit('role:changed', { role: sig.role })
+          Awareness.setLocalField('role', sig.role)
+          toast('Tu rol cambió a: ' + sig.role)
+        }
+      }
+      // ── coHost ──
+      if (ev.keysChanged.has('coHost')) {
+        const coHost = _session.get('coHost')
+        State.set('coHostPeerId', coHost ? coHost.peerId : null)
+        Bus.emit('colead:changed', coHost)
+        if (coHost && coHost.peerId === State.get('peerId')) {
+          State.set('role', 'co-host')
+          Bus.emit('role:changed', { role:'co-host' })
+          Awareness.setLocalField('role', 'co-host')
+          toast('⭐ Eres el nuevo post-líder')
+        }
+        // If we were co-host and it was removed, revert to editor
+        if (!coHost && State.get('role') === 'co-host') {
+          State.set('role', 'editor')
+          Bus.emit('role:changed', { role:'editor' })
+          Awareness.setLocalField('role', 'editor')
+          toast('Co-liderazgo revocado — eres editor')
+        }
+      }
+      // ── hostPolicy ──
+      if (ev.keysChanged.has('hostPolicy')) {
+        const pol = _session.get('hostPolicy') || {}
+        State.set('revokeOnDisconnect', !!pol.revokeOnDisconnect)
+        $('chk-revoke-on-disconnect').checked = !!pol.revokeOnDisconnect
       }
     })
   }
 
+  // ── F5: Watch host presence ──────────────────────────────────
+  const watchHostPresence = () => {
+    Bus.on('awareness:changed', ({ states }) => {
+      if (!_session) return
+      const hostId = _session.get('host')
+      const coHost = _session.get('coHost')
+      const myPeer = State.get('peerId')
+      if (!hostId || !coHost || coHost.peerId !== myPeer) return
+      if (!State.get('revokeOnDisconnect')) return
+      const hostPresent = states.has(hostId) || states.has(parseInt(hostId))
+      if (!hostPresent && State.get('role') === 'co-host') {
+        State.set('role', 'editor')
+        Bus.emit('role:changed', { role:'editor' })
+        Awareness.setLocalField('role', 'editor')
+        toast('⚠ Host desconectado — co-liderazgo revocado automáticamente')
+      }
+    })
+  }
+
+  // ── Set role via roleSignals ───────────────────────────────────
   const setRole = (clientId, role) => {
     if (State.get('role') !== 'host' || !_session) return
-    const signals = _session.get('roleSignals') || {}
-    signals[clientId.toString()] = { role, ts: Date.now() }
-    _session.set('roleSignals', { ...signals })
+    const sigs = _session.get('roleSignals') || {}
+    sigs[clientId.toString()] = { role, ts: Date.now() }
+    _session.set('roleSignals', { ...sigs })
     toast('Rol asignado: ' + role)
   }
 
-  // Accesores para otros módulos
+  // ── F4: Toggle co-host ────────────────────────────────────────
+  const toggleCoHost = clientId => {
+    if (State.get('role') !== 'host' || !_session) return
+    const current = _session.get('coHost')
+    const cid     = clientId.toString()
+    if (current && current.peerId === cid) {
+      // Remove co-host — revert them to editor
+      _session.set('coHost', null)
+      setRole(cid, 'editor')
+      toast('Co-liderazgo revocado')
+    } else {
+      // Revoke previous co-host if any
+      if (current) setRole(current.peerId, 'editor')
+      const states = Awareness.getStates()
+      const state  = states.get(cid) || states.get(parseInt(cid))
+      const name   = state?.name ?? 'Desconocido'
+      _session.set('coHost', { peerId: cid, name, ts: Date.now() })
+      setRole(cid, 'co-host')
+      toast('Post-líder designado: ' + name)
+    }
+  }
+
+  // ── F5: Host policy ───────────────────────────────────────────
+  const setHostPolicy = revokeOnDisconnect => {
+    if (State.get('role') !== 'host' || !_session) return
+    State.set('revokeOnDisconnect', revokeOnDisconnect)
+    _session.set('hostPolicy', { revokeOnDisconnect })
+    toast(revokeOnDisconnect
+      ? '🔒 Co-líder perderá permisos si te desconectas'
+      : '🔓 Co-líder mantiene permisos aunque te desconectes')
+  }
+
   const getText    = () => _text
   const getStrokes = () => _strokes
   const getChat    = () => _chat
   const getDoc     = () => _doc
-  const getUndo    = () => _undoManager
+  const getUndo    = () => _undo
+  const getSession = () => _session
 
-  return { init, watchRoleSignals, setRole,
-           getText, getStrokes, getChat, getDoc, getUndo }
+  return { init, watchRoleSignals, watchHostPresence,
+           setRole, toggleCoHost, setHostPolicy,
+           getText, getStrokes, getChat, getDoc, getUndo, getSession }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   EDITOR MODULE
-   Gestiona textarea ↔ Y.Text y el toolbar de formato.
+   EDITOR  — F1 + F3: autosave cada 3 s, edición en vivo para todos
 ═══════════════════════════════════════════════════════════════════ */
 const Editor = (() => {
-  let _lastValue  = ''
-  let _savedSel   = { start: 0, end: 0 }
+  let _last = '', _sel = { start:0, end:0 }
 
-  const _ta = () => $('editor-textarea')
+  const _ta       = () => $('editor-textarea')
+  const _saveSel  = () => { const t = _ta(); _sel = { start:t.selectionStart, end:t.selectionEnd } }
+  const _getSel   = () => document.activeElement === _ta()
+    ? { s:_ta().selectionStart, e:_ta().selectionEnd }
+    : { s:_sel.start, e:_sel.end }
 
-  const _saveSelection = () => {
-    const ta = _ta()
-    _savedSel = { start: ta.selectionStart, end: ta.selectionEnd }
-  }
-
-  const _getSelection = () => {
-    const ta = _ta()
-    return document.activeElement === ta
-      ? { s: ta.selectionStart, e: ta.selectionEnd }
-      : { s: _savedSel.start,   e: _savedSel.end  }
-  }
-
-  // Aplica un nuevo valor al textarea y sincroniza con Yjs
-  const _applyValue = (newFull, newSelStart, newSelEnd) => {
-    const ta  = _ta()
-    ta.value  = newFull
-    ta.focus()
-    ta.setSelectionRange(newSelStart, newSelEnd)
-    const yText = Yjs.getText()
-    if (yText && Yjs.getDoc()) {
-      try {
-        applyDiff(yText, _lastValue, newFull, Yjs.getDoc())
-      } catch(e) {
-        console.warn('applyDiff falló:', e)
-      }
-    }
-    _lastValue = newFull
-    _updateMetrics()
+  const _apply = (newFull, ss, se) => {
+    const ta = _ta(); ta.value = newFull; ta.focus(); ta.setSelectionRange(ss, se)
+    const yt = Yjs.getText(); const doc = Yjs.getDoc()
+    if (yt && doc) { try { applyDiff(yt, _last, newFull, doc) } catch(e) { console.warn(e) } }
+    _last = newFull; _metrics()
   }
 
   const wrapSelection = (before, after) => {
-    const ta  = _ta()
-    const { s, e } = _getSelection()
+    const ta = _ta(); const { s, e } = _getSel()
     const sel = ta.value.slice(s, e) || 'texto'
     const full = ta.value.slice(0, s) + before + sel + after + ta.value.slice(e)
-    _applyValue(full, s + before.length, s + before.length + sel.length)
+    _apply(full, s + before.length, s + before.length + sel.length)
   }
 
-  const insertAtCursor = (text) => {
-    const ta  = _ta()
-    const { s, e } = _getSelection()
-    const full = ta.value.slice(0, s) + text + ta.value.slice(e)
-    _applyValue(full, s + text.length, s + text.length)
+  const insertAtCursor = text => {
+    const ta = _ta(); const { s, e } = _getSel()
+    _apply(ta.value.slice(0, s) + text + ta.value.slice(e), s + text.length, s + text.length)
   }
 
   const _broadcastCursor = () => {
-    const ta = _ta()
     if (!State.get('peerId')) return
-    Awareness.setLocalField('cursor', { pos: ta.selectionStart, name: State.get('name') })
+    Awareness.setLocalField('cursor', { pos:_ta().selectionStart, name:State.get('name') })
   }
 
   const _debouncedHash = debounce(async () => {
-    const content = Yjs.getText() ? Yjs.getText().toString() : ''
-    const h = await sha256(content)
-    Bus.emit('editor:hash', { hash: h })
-    return h
+    const h = await sha256(Yjs.getText()?.toString() ?? '')
+    Bus.emit('editor:hash', { hash:h }); return h
   }, 2000)
 
-  const _debouncedSave = debounce(() => Bus.emit('editor:saved'), 3000)
+  // F1: autosave every 3 s if document changed
+  let _lastSaved = ''
+  const _debouncedSave = debounce(() => {
+    const cur = _ta().value
+    if (cur === _lastSaved) return
+    _lastSaved = cur
+    Bus.emit('editor:saved', { ts:Date.now() })
+  }, CONFIG.AUTOSAVE_MS)
 
-  const _updateMetrics = () => {
+  const _metrics = () => {
     const text  = (_ta().value || '').replace(/[#*_`$\[\]]/g, '').trim()
-    const words = text ? text.split(/\s+/).length : 0
-    Bus.emit('editor:wordcount', { words })
+    Bus.emit('editor:wordcount', { words: text ? text.split(/\s+/).length : 0 })
     _debouncedHash()
-    Bus.emit('editor:changed', { value: _ta().value })
+    Bus.emit('editor:changed', { value:_ta().value })
+    _debouncedSave()
   }
 
-  const getComputedHash = async () => {
-    const content = Yjs.getText() ? Yjs.getText().toString() : ''
-    const h = await sha256(content)
-    Bus.emit('editor:hash', { hash: h })
-    return h
+  const getHash = async () => {
+    const h = await sha256(Yjs.getText()?.toString() ?? '')
+    Bus.emit('editor:hash', { hash:h }); return h
   }
 
-  // Aplicar cambio remoto de Yjs al textarea, preservando cursor
   const _syncFromYjs = () => {
-    const ta     = _ta()
-    const newVal = Yjs.getText().toString()
-    if (ta.value === newVal) return
+    const ta = _ta(); const nv = Yjs.getText().toString()
+    if (ta.value === nv) return
     const ss = ta.selectionStart, se = ta.selectionEnd
-    ta.value   = newVal
-    _lastValue = newVal
-    ta.setSelectionRange(clamp(ss, 0, newVal.length), clamp(se, 0, newVal.length))
-    _updateMetrics()
+    ta.value = nv; _last = nv
+    ta.setSelectionRange(clamp(ss, 0, nv.length), clamp(se, 0, nv.length))
+    _metrics()
   }
 
   const setup = () => {
-    const ta    = _ta()
-    const yText = Yjs.getText()
+    const ta = _ta()
+    Yjs.getText().observe(ev => { if (ev.transaction.origin !== 'local') _syncFromYjs() })
+    Bus.on('yjs:synced', _syncFromYjs)
 
-    // Y.Text → textarea (cambios remotos)
-    yText.observe(event => {
-      if (event.transaction.origin === 'local') return
-      _syncFromYjs()
-    })
-
-    // Sincronizar desde IDB al cargar
-    Bus.on('yjs:synced', () => _syncFromYjs())
-
-    // textarea → Y.Text (cambios locales)
+    // F3: textarea → Yjs for ALL non-observer roles
     ta.addEventListener('input', () => {
-      _saveSelection()
+      _saveSel()
+      if (State.get('role') === 'observer') return
       if (!Yjs.getText()) return
-      const newVal = ta.value
-      applyDiff(Yjs.getText(), _lastValue, newVal, Yjs.getDoc())
-      _lastValue = newVal
-      _updateMetrics()
-      _debouncedSave()
-      _broadcastCursor()
+      const nv = ta.value
+      applyDiff(Yjs.getText(), _last, nv, Yjs.getDoc())
+      _last = nv; _metrics(); _broadcastCursor()
     })
 
-    ta.addEventListener('focus',  _saveSelection)
-    ta.addEventListener('keyup',  () => { _saveSelection(); _broadcastCursor() })
-    ta.addEventListener('click',  () => { _saveSelection(); _broadcastCursor() })
-    ta.addEventListener('select', () => { _saveSelection(); _broadcastCursor() })
+    ta.addEventListener('focus',  _saveSel)
+    ta.addEventListener('keyup',  () => { _saveSel(); _broadcastCursor() })
+    ta.addEventListener('click',  () => { _saveSel(); _broadcastCursor() })
+    ta.addEventListener('select', () => { _saveSel(); _broadcastCursor() })
 
     ta.addEventListener('keydown', e => {
-      _saveSelection()
-
+      _saveSel()
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); Yjs.getUndo()?.undo() }
-        if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) { e.preventDefault(); Yjs.getUndo()?.redo() }
-        if (e.key === 'b') { e.preventDefault(); wrapSelection('**', '**') }
-        if (e.key === 'i') { e.preventDefault(); wrapSelection('*', '*') }
-        if (e.key === 'k') { e.preventDefault(); wrapSelection('$', '$') }
-        if (e.key === 's') { e.preventDefault(); toast('✓ Guardado localmente') }
+        if (e.key==='z' && !e.shiftKey) { e.preventDefault(); Yjs.getUndo()?.undo() }
+        if (e.key==='y' || (e.key==='z' && e.shiftKey)) { e.preventDefault(); Yjs.getUndo()?.redo() }
+        if (e.key==='b') { e.preventDefault(); wrapSelection('**','**') }
+        if (e.key==='i') { e.preventDefault(); wrapSelection('*','*') }
+        if (e.key==='k') { e.preventDefault(); wrapSelection('$','$') }
+        if (e.key==='s') { e.preventDefault(); toast('✓ Guardado localmente') }
       }
-
-      if (e.key === 'Tab') {
+      if (e.key==='Tab') {
         e.preventDefault()
-        const s    = ta.selectionStart
-        const full = ta.value.slice(0, s) + '  ' + ta.value.slice(ta.selectionEnd)
-        _applyValue(full, s + 2, s + 2)
+        const s = ta.selectionStart
+        _apply(ta.value.slice(0,s) + '  ' + ta.value.slice(ta.selectionEnd), s+2, s+2)
       }
     })
 
-    // Toolbar de formato
+    // Editor toolbar
     document.querySelectorAll('[data-action]').forEach(btn => {
       btn.addEventListener('click', () => {
         if (State.get('role') === 'observer') return
-        const ACTIONS = {
-          'bold':        () => wrapSelection('**', '**'),
-          'italic':      () => wrapSelection('*', '*'),
-          'code':        () => wrapSelection('`', '`'),
+        const A = {
+          'bold':        () => wrapSelection('**','**'),
+          'italic':      () => wrapSelection('*','*'),
+          'code':        () => wrapSelection('`','`'),
           'h1':          () => insertAtCursor('\n# '),
           'h2':          () => insertAtCursor('\n## '),
           'h3':          () => insertAtCursor('\n### '),
-          'math-inline': () => wrapSelection('$', '$'),
+          'math-inline': () => wrapSelection('$','$'),
           'math-block':  () => insertAtCursor('\n\n$$\n\n$$\n\n'),
           'ul':          () => insertAtCursor('\n- '),
           'hr':          () => insertAtCursor('\n---\n'),
-          'table':       () => insertAtCursor('\n| Columna 1 | Columna 2 | Columna 3 |\n|:---|:---:|---:|\n| Dato | Dato | Dato |\n'),
+          'table':       () => insertAtCursor('\n| Col 1 | Col 2 | Col 3 |\n|:---|:---:|---:|\n| Dato | Dato | Dato |\n'),
         }
-        ACTIONS[btn.dataset.action]?.()
+        A[btn.dataset.action]?.()
       })
     })
   }
 
-  return { setup, wrapSelection, insertAtCursor, getComputedHash }
+  return { setup, wrapSelection, insertAtCursor, getHash }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   PREVIEW MODULE
-   Renderiza Markdown + KaTeX. Sin efectos secundarios de red.
+   PREVIEW  — Markdown + KaTeX renderer
 ═══════════════════════════════════════════════════════════════════ */
 const Preview = (() => {
-  marked.setOptions({ breaks: true, gfm: true })
+  marked.setOptions({ breaks:true, gfm:true })
+  const mkM = i => '\x02MATH' + i + '\x03'
+  const mkC = i => '\x02CODE' + i + '\x03'
 
-  // Separador de placeholders único para esta sesión
-  const MATH_PFX = '\x02MATH'
-  const MATH_SFX = '\x03'
-  const CODE_PFX = '\x02CODE'
-  const CODE_SFX = '\x03'
-  const mkMath = i => `${MATH_PFX}${i}${MATH_SFX}`
-  const mkCode = i => `${CODE_PFX}${i}${CODE_SFX}`
-
-  const render = (md) => {
-    if (!md || !md.trim()) return ''
-
-    const mathBlocks = []
-    const codeBlocks = []
-
-    // 1) Proteger bloques de código (no procesar $ dentro)
-    let s = md.replace(/(```[\s\S]*?```|`[^`]+`)/g, (m) => {
-      const i = codeBlocks.length
-      codeBlocks.push(m)
-      return mkCode(i)
-    })
-
-    // 2) Extraer matemáticas en bloque $$...$$
-    s = s.replace(/\$\$([\s\S]+?)\$\$/g, (_, latex) => {
-      const i = mathBlocks.length
-      mathBlocks.push({ latex, display: true })
-      return `\n\n${mkMath(i)}\n\n`
-    })
-
-    // 3) Extraer matemáticas inline $...$
-    s = s.replace(/(?<!\\)\$([^$\n]+?)\$/g, (_, latex) => {
-      const i = mathBlocks.length
-      mathBlocks.push({ latex, display: false })
-      return mkMath(i)
-    })
-
-    // 4) Restaurar bloques de código
-    codeBlocks.forEach((code, i) => { s = s.split(mkCode(i)).join(code) })
-
-    // 5) Renderizar Markdown
+  const render = md => {
+    if (!md?.trim()) return ''
+    const math = [], code = []
+    let s = md.replace(/(```[\s\S]*?```|`[^`]+`)/g, m => { const i=code.length; code.push(m); return mkC(i) })
+    s = s.replace(/\$\$([\s\S]+?)\$\$/g, (_, l) => { const i=math.length; math.push({l,d:true});  return '\n\n'+mkM(i)+'\n\n' })
+    s = s.replace(/(?<!\\)\$([^$\n]+?)\$/g, (_, l) => { const i=math.length; math.push({l,d:false}); return mkM(i) })
+    code.forEach((c, i) => { s = s.split(mkC(i)).join(c) })
     let html = marked.parse(s)
-
-    // 6) Restaurar y renderizar matemáticas
-    mathBlocks.forEach(({ latex, display }, i) => {
-      const ph = mkMath(i)
+    math.forEach(({ l, d }, i) => {
       try {
-        const rendered    = katex.renderToString(latex.trim(), { displayMode: display, throwOnError: false, strict: false })
-        const replacement = display ? `</p><div class="katex-display">${rendered}</div><p>` : rendered
-        html = html.split(ph).join(replacement)
-      } catch {
-        html = html.split(ph).join(`<span class="math-error">[LaTeX: ${escHtml(latex)}]</span>`)
-      }
+        const r = katex.renderToString(l.trim(), { displayMode:d, throwOnError:false, strict:false })
+        html = html.split(mkM(i)).join(d ? '</p><div class="katex-display">'+r+'</div><p>' : r)
+      } catch { html = html.split(mkM(i)).join('<span class="math-error">[LaTeX: '+escHtml(l)+']</span>') }
     })
-
-    // 7) Limpiar <p></p> vacíos por inserción de divs
     return html.replace(/<p>\s*<\/p>/g, '')
   }
 
-  const setup = () => {
-    Bus.on('editor:changed', ({ value }) => {
-      Bus.emit('preview:rendered', { html: render(value) })
-    })
-  }
+  const setup = () => Bus.on('editor:changed', ({ value }) =>
+    Bus.emit('preview:rendered', { html:render(value) }))
 
   return { setup, render }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   BOARD MODULE
-   Pizarra colaborativa con canvas 2D y herramientas de dibujo.
+   BOARD  — whiteboard collaborative canvas
 ═══════════════════════════════════════════════════════════════════ */
 const Board = (() => {
-  let _canvas, _ctx, _dpr = 1
-  let _initialized = false
-  let _peersStrokes = {}  // strokes en vuelo de otros peers (awareness)
-  let _rafId = null
+  let _c, _ctx, _dpr=1, _init=false, _peers={}, _raf=null
 
-  // ── Ciclo de redibujado con requestAnimationFrame ──────────────
-  const _scheduleRedraw = () => {
-    if (!_rafId) _rafId = requestAnimationFrame(() => { _rafId = null; _redraw() })
-  }
+  const _sched = () => { if (!_raf) _raf = requestAnimationFrame(() => { _raf=null; _draw() }) }
 
-  const _redraw = () => {
+  const _draw = () => {
     if (!_ctx) return
-    const w = _canvas.width / _dpr, h = _canvas.height / _dpr
-    _ctx.fillStyle = '#0d0e12'
-    _ctx.fillRect(0, 0, w, h)
-
-    // Cuadrícula de puntos
-    _ctx.fillStyle = '#1a1c24'
-    for (let x = 20; x < w; x += 20)
-      for (let y = 20; y < h; y += 20) {
-        _ctx.beginPath(); _ctx.arc(x, y, 0.7, 0, Math.PI * 2); _ctx.fill()
-      }
-
-    State.get('strokes').forEach(s => _drawStroke(s))
-
-    Object.values(_peersStrokes).forEach(s => {
-      if (s) { _ctx.globalAlpha = 0.65; _drawStroke(s); _ctx.globalAlpha = 1 }
-    })
-
-    const active = State.get('activeStroke')
-    if (active) _drawStroke(active)
-  }
-
-  // ── Primitivas de dibujo ───────────────────────────────────────
-  const _drawPen = (pts) => {
-    if (!pts || pts.length < 2) return
-    _ctx.beginPath()
-    _ctx.moveTo(pts[0][0], pts[0][1])
-    for (let i = 1; i < pts.length - 1; i++) {
-      const mx = (pts[i][0] + pts[i+1][0]) / 2, my = (pts[i][1] + pts[i+1][1]) / 2
-      _ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my)
+    const w=_c.width/_dpr, h=_c.height/_dpr
+    _ctx.fillStyle='#0d0e12'; _ctx.fillRect(0,0,w,h)
+    _ctx.fillStyle='#1a1c24'
+    for (let x=20;x<w;x+=20) for (let y=20;y<h;y+=20) {
+      _ctx.beginPath(); _ctx.arc(x,y,.7,0,Math.PI*2); _ctx.fill()
     }
-    _ctx.lineTo(pts[pts.length-1][0], pts[pts.length-1][1])
-    _ctx.stroke()
+    State.get('strokes').forEach(s => _stroke(s))
+    Object.values(_peers).forEach(s => { if(s){ _ctx.globalAlpha=.65; _stroke(s); _ctx.globalAlpha=1 } })
+    const active = State.get('activeStroke')
+    if (active) _stroke(active)
   }
 
-  const _drawStroke = (s) => {
-    if (!s || !s.tool) return
+  const _stroke = s => {
+    if (!s?.tool) return
     _ctx.save()
-    _ctx.strokeStyle = s.color || '#4ade80'
-    _ctx.fillStyle   = s.color || '#4ade80'
-    _ctx.lineWidth   = s.width || 2
-    _ctx.lineCap     = 'round'
-    _ctx.lineJoin    = 'round'
-
-    switch (s.tool) {
-      case 'pen': case 'eraser':
-        _drawPen(s.points); break
-      case 'line':
-        _ctx.beginPath(); _ctx.moveTo(s.x1, s.y1); _ctx.lineTo(s.x2, s.y2); _ctx.stroke(); break
-      case 'rect':
-        _ctx.strokeRect(Math.min(s.x1, s.x2), Math.min(s.y1, s.y2), Math.abs(s.x2 - s.x1), Math.abs(s.y2 - s.y1)); break
+    _ctx.strokeStyle=s.color||'#4ade80'; _ctx.fillStyle=s.color||'#4ade80'
+    _ctx.lineWidth=s.width||2; _ctx.lineCap='round'; _ctx.lineJoin='round'
+    switch(s.tool) {
+      case 'pen': case 'eraser': _pen(s.points); break
+      case 'line': _ctx.beginPath(); _ctx.moveTo(s.x1,s.y1); _ctx.lineTo(s.x2,s.y2); _ctx.stroke(); break
+      case 'rect': _ctx.strokeRect(Math.min(s.x1,s.x2),Math.min(s.y1,s.y2),Math.abs(s.x2-s.x1),Math.abs(s.y2-s.y1)); break
       case 'circle': {
-        const cx = (s.x1+s.x2)/2, cy = (s.y1+s.y2)/2, rx = Math.abs(s.x2-s.x1)/2, ry = Math.abs(s.y2-s.y1)/2
-        _ctx.beginPath(); _ctx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI*2); _ctx.stroke(); break
+        const cx=(s.x1+s.x2)/2,cy=(s.y1+s.y2)/2,rx=Math.abs(s.x2-s.x1)/2,ry=Math.abs(s.y2-s.y1)/2
+        _ctx.beginPath(); _ctx.ellipse(cx,cy,Math.max(rx,1),Math.max(ry,1),0,0,Math.PI*2); _ctx.stroke(); break
       }
       case 'arrow': {
-        _ctx.beginPath(); _ctx.moveTo(s.x1, s.y1); _ctx.lineTo(s.x2, s.y2); _ctx.stroke()
-        const angle = Math.atan2(s.y2 - s.y1, s.x2 - s.x1), size = Math.max(10, (s.width || 2) * 4)
-        _ctx.beginPath()
-        _ctx.moveTo(s.x2, s.y2)
-        _ctx.lineTo(s.x2 - size * Math.cos(angle - Math.PI/6), s.y2 - size * Math.sin(angle - Math.PI/6))
-        _ctx.lineTo(s.x2 - size * Math.cos(angle + Math.PI/6), s.y2 - size * Math.sin(angle + Math.PI/6))
+        _ctx.beginPath(); _ctx.moveTo(s.x1,s.y1); _ctx.lineTo(s.x2,s.y2); _ctx.stroke()
+        const a=Math.atan2(s.y2-s.y1,s.x2-s.x1), sz=Math.max(10,(s.width||2)*4)
+        _ctx.beginPath(); _ctx.moveTo(s.x2,s.y2)
+        _ctx.lineTo(s.x2-sz*Math.cos(a-Math.PI/6),s.y2-sz*Math.sin(a-Math.PI/6))
+        _ctx.lineTo(s.x2-sz*Math.cos(a+Math.PI/6),s.y2-sz*Math.sin(a+Math.PI/6))
         _ctx.closePath(); _ctx.fill(); break
       }
       case 'text':
-        _ctx.font = `${s.fontSize || 16}px 'Familjen Grotesk',sans-serif`
-        _ctx.fillText(s.text, s.x1, s.y1); break
+        _ctx.font=(s.fontSize||16)+"px 'Familjen Grotesk',sans-serif"
+        _ctx.fillText(s.text,s.x1,s.y1); break
     }
     _ctx.restore()
   }
 
-  // ── Canvas resize ──────────────────────────────────────────────
+  const _pen = pts => {
+    if (!pts||pts.length<2) return
+    _ctx.beginPath(); _ctx.moveTo(pts[0][0],pts[0][1])
+    for (let i=1;i<pts.length-1;i++) {
+      const mx=(pts[i][0]+pts[i+1][0])/2, my=(pts[i][1]+pts[i+1][1])/2
+      _ctx.quadraticCurveTo(pts[i][0],pts[i][1],mx,my)
+    }
+    _ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]); _ctx.stroke()
+  }
+
   const _resize = () => {
-    if (!_canvas) return
-    _dpr = window.devicePixelRatio || 1
-    const wrap = $('board-wrap')
-    const w = wrap.offsetWidth, h = wrap.offsetHeight
-    _canvas.width  = w * _dpr
-    _canvas.height = h * _dpr
-    _canvas.style.width  = w + 'px'
-    _canvas.style.height = h + 'px'
-    _ctx.scale(_dpr, _dpr)
-    _redraw()
+    if (!_c) return
+    _dpr = window.devicePixelRatio||1
+    const wrap=$('board-wrap'), w=wrap.offsetWidth, h=wrap.offsetHeight
+    _c.width=w*_dpr; _c.height=h*_dpr
+    _c.style.width=w+'px'; _c.style.height=h+'px'
+    _ctx.scale(_dpr,_dpr); _draw()
   }
 
-  const _getPos = (e) => {
-    const r = _canvas.getBoundingClientRect()
-    return { x: e.clientX - r.left, y: e.clientY - r.top }
+  const _pos = e => {
+    const r=_c.getBoundingClientRect()
+    return { x:e.clientX-r.left, y:e.clientY-r.top }
   }
 
-  // ── Texto en pizarra ───────────────────────────────────────────
-  const _commitText = () => {
-    const inp  = $('board-text-input')
-    const text = inp.value.trim()
-    inp.style.display = 'none'
+  const _commit = () => {
+    const inp=$('board-text-input'), text=inp.value.trim(); inp.style.display='none'
     if (!text) return
     Yjs.getStrokes().push([{
-      id: genId(), tool: 'text', color: State.get('boardColor'),
-      fontSize: 16, text,
-      x1: parseFloat(inp.dataset.x), y1: parseFloat(inp.dataset.y),
-      peerId: State.get('peerId'), peerName: State.get('name'), ts: Date.now(),
+      id:genId(), tool:'text', color:State.get('boardColor'), fontSize:16, text,
+      x1:parseFloat(inp.dataset.x), y1:parseFloat(inp.dataset.y),
+      peerId:State.get('peerId'), peerName:State.get('name'), ts:Date.now()
     }])
   }
 
-  // ── Eventos de canvas ──────────────────────────────────────────
-  const _onStart = (e) => {
-    if (State.get('role') === 'observer') return
-    const { x, y } = _getPos(e)
-
-    if (State.get('boardTool') === 'text') {
-      const inp = $('board-text-input')
-      inp.style.display = 'block'
-      inp.style.left = x + 'px'
-      inp.style.top  = (y - 18) + 'px'
-      inp.dataset.x  = x
-      inp.dataset.y  = y
-      inp.value      = ''
-      inp.focus()
-      return
+  const _start = e => {
+    if (State.get('role')==='observer') return
+    const {x,y}=_pos(e)
+    if (State.get('boardTool')==='text') {
+      const inp=$('board-text-input')
+      inp.style.display='block'; inp.style.left=x+'px'; inp.style.top=(y-18)+'px'
+      inp.dataset.x=x; inp.dataset.y=y; inp.value=''; inp.focus(); return
     }
-
-    State.set('drawing', true)
-    State.set('activeStroke', {
-      id: genId(), tool: State.get('boardTool'),
-      color: State.get('boardTool') === 'eraser' ? '#0d0e12' : State.get('boardColor'),
-      width: State.get('boardTool') === 'eraser' ? State.get('boardWidth') * 5 : State.get('boardWidth'),
-      peerId: State.get('peerId'), peerName: State.get('name'),
-      ts: Date.now(), points: [[x, y]], x1: x, y1: y, x2: x, y2: y,
+    State.set('drawing',true)
+    State.set('activeStroke',{
+      id:genId(), tool:State.get('boardTool'),
+      color:State.get('boardTool')==='eraser'?'#0d0e12':State.get('boardColor'),
+      width:State.get('boardTool')==='eraser'?State.get('boardWidth')*5:State.get('boardWidth'),
+      peerId:State.get('peerId'), peerName:State.get('name'),
+      ts:Date.now(), points:[[x,y]], x1:x, y1:y, x2:x, y2:y
     })
   }
 
-  const _onMove = (e) => {
-    if (!State.get('drawing') || !State.get('activeStroke')) return
-    const { x, y } = _getPos(e)
-    const s = State.get('activeStroke')
-    s.x2 = x; s.y2 = y
-    if (s.tool === 'pen' || s.tool === 'eraser') s.points.push([x, y])
-    Awareness.setLocalField('boardStroke', { ...s })
-    _scheduleRedraw()
+  const _move = e => {
+    if (!State.get('drawing')||!State.get('activeStroke')) return
+    const {x,y}=_pos(e), s=State.get('activeStroke')
+    s.x2=x; s.y2=y
+    if (s.tool==='pen'||s.tool==='eraser') s.points.push([x,y])
+    Awareness.setLocalField('boardStroke',{...s}); _sched()
   }
 
-  const _onEnd = () => {
-    if (!State.get('drawing') || !State.get('activeStroke')) return
-    State.set('drawing', false)
-    const s = State.get('activeStroke')
-    State.set('activeStroke', null)
-    if ((s.tool === 'pen' || s.tool === 'eraser') && s.points.length < 2) return
-    if (s.tool !== 'pen' && s.tool !== 'eraser' && Math.abs(s.x2 - s.x1) < 4 && Math.abs(s.y2 - s.y1) < 4) return
+  const _end = () => {
+    if (!State.get('drawing')||!State.get('activeStroke')) return
+    State.set('drawing',false)
+    const s=State.get('activeStroke'); State.set('activeStroke',null)
+    if ((s.tool==='pen'||s.tool==='eraser')&&s.points.length<2) return
+    if (s.tool!=='pen'&&s.tool!=='eraser'&&Math.abs(s.x2-s.x1)<4&&Math.abs(s.y2-s.y1)<4) return
     Yjs.getStrokes().push([s])
-    Awareness.setLocalField('boardStroke', null)
+    Awareness.setLocalField('boardStroke',null)
   }
 
   const init = () => {
-    if (_initialized) { _resize(); return }
-    _initialized = true
-    _canvas = $('board-canvas')
-    _ctx    = _canvas.getContext('2d')
-    _resize()
+    if (_init) { _resize(); return }; _init=true
+    _c=$('board-canvas'); _ctx=_c.getContext('2d'); _resize()
     new ResizeObserver(_resize).observe($('board-wrap'))
-
-    _canvas.addEventListener('mousedown', _onStart)
-    _canvas.addEventListener('mousemove', _onMove)
-    _canvas.addEventListener('mouseup',   _onEnd)
-    _canvas.addEventListener('mouseleave', _onEnd)
-    _canvas.addEventListener('touchstart', e => { e.preventDefault(); _onStart(e.touches[0]) }, { passive: false })
-    _canvas.addEventListener('touchmove',  e => { e.preventDefault(); _onMove(e.touches[0])  }, { passive: false })
-    _canvas.addEventListener('touchend',   e => { e.preventDefault(); _onEnd()               }, { passive: false })
-
-    $('board-text-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter')  _commitText()
-      if (e.key === 'Escape') $('board-text-input').style.display = 'none'
+    _c.addEventListener('mousedown',_start)
+    _c.addEventListener('mousemove',_move)
+    _c.addEventListener('mouseup',_end)
+    _c.addEventListener('mouseleave',_end)
+    _c.addEventListener('touchstart',e=>{e.preventDefault();_start(e.touches[0])},{passive:false})
+    _c.addEventListener('touchmove', e=>{e.preventDefault();_move(e.touches[0])}, {passive:false})
+    _c.addEventListener('touchend',  e=>{e.preventDefault();_end()},              {passive:false})
+    $('board-text-input').addEventListener('keydown',e=>{
+      if (e.key==='Enter') _commit()
+      if (e.key==='Escape') $('board-text-input').style.display='none'
     })
-
-    // Sincronizar strokes desde Yjs
     Yjs.getStrokes().observe(() => {
-      // Los items se guardan como [stroke] (array wrapper de Yjs); desenvolver
-      State.set('strokes', Yjs.getStrokes().toArray().map(item => Array.isArray(item) ? item[0] : item))
-      _scheduleRedraw()
+      State.set('strokes', Yjs.getStrokes().toArray().map(item => Array.isArray(item)?item[0]:item))
+      _sched()
     })
-
-    // Strokes en vuelo de otros peers (awareness)
     Bus.on('awareness:changed', ({ states }) => {
-      _peersStrokes = {}
-      const myId = State.get('peerId')
-      states.forEach((state, clientId) => {
-        if (clientId.toString() !== myId && state?.boardStroke) {
-          _peersStrokes[clientId] = state.boardStroke
-        }
-      })
-      _scheduleRedraw()
+      _peers={}; const myId=State.get('peerId')
+      states.forEach((state,id) => { if (id.toString()!==myId && state?.boardStroke) _peers[id]=state.boardStroke })
+      _sched()
     })
   }
 
-  const resize = _resize
-
-  return { init, resize }
+  return { init, resize:_resize }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   CHAT MODULE
-   Mensajería en tiempo real sobre Y.Array.
+   CHAT
 ═══════════════════════════════════════════════════════════════════ */
 const Chat = (() => {
-  let _typingTimer = null
-
+  let _tt = null
   const send = () => {
-    const inp  = $('chat-input')
-    const text = inp.value.trim()
-    if (!text) return
+    const inp=$('chat-input'), text=inp.value.trim(); if (!text) return
     Yjs.getChat().push([{
-      id: genId(), peerId: State.get('peerId'),
-      name: State.get('name'), color: Utils.peerColor(State.get('peerId')),
-      text, ts: Date.now(),
+      id:genId(), peerId:State.get('peerId'), name:State.get('name'),
+      color:peerColor(State.get('peerId')), text, ts:Date.now()
     }])
-    inp.value = ''
-    Awareness.setLocalField('typing', false)
+    inp.value=''; Awareness.setLocalField('typing',false)
   }
-
   const setup = () => {
-    // Sincronizar mensajes entrantes desde Yjs
-    Yjs.getChat().observe(event => {
-      event.changes.delta.forEach(op => {
+    Yjs.getChat().observe(ev => {
+      ev.changes.delta.forEach(op => {
         if (!op.insert) return
-        // Los items se guardan como [msg] (array wrapper de Yjs); desenvolver
-        op.insert.forEach(item => {
-          const msg = Array.isArray(item) ? item[0] : item
-          Bus.emit('chat:message', { msg })
-        })
+        op.insert.forEach(item => Bus.emit('chat:message', { msg:Array.isArray(item)?item[0]:item }))
       })
     })
-
-    // Indicador de escritura
     $('chat-input').addEventListener('input', () => {
       if (!State.get('peerId')) return
-      Awareness.setLocalField('typing', true)
-      clearTimeout(_typingTimer)
-      _typingTimer = setTimeout(() => {
-        if (State.get('peerId')) Awareness.setLocalField('typing', false)
-      }, 2000)
+      Awareness.setLocalField('typing',true)
+      clearTimeout(_tt)
+      _tt=setTimeout(()=>{ if (State.get('peerId')) Awareness.setLocalField('typing',false) }, 2000)
     })
-
     $('btn-send').addEventListener('click', send)
     $('chat-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
+      if (e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send() }
     })
   }
-
-  return { setup, send }
-})()
-
-/* ═══════════════════════════════════════════════════════════════════
-   EXPORT MODULE
-   Exporta el documento en varios formatos.
-═══════════════════════════════════════════════════════════════════ */
-const Export = (() => {
-  const open = async () => {
-    const h = await Editor.getComputedHash()
-    UI.setDocHash(h)
-    $('export-modal').classList.add('active')
-  }
-
-  const close = () => $('export-modal').classList.remove('active')
-
-  const setup = () => {
-    $('btn-export-open').addEventListener('click', open)
-    $('close-export').addEventListener('click', close)
-    $('export-modal').addEventListener('click', e => { if (e.target === $('export-modal')) close() })
-
-    $('exp-md').addEventListener('click', () => {
-      const content = Yjs.getText()?.toString() ?? ''
-      download(`labcolab-${State.get('roomId') || 'doc'}-${Date.now()}.md`, content, 'text/markdown')
-      toast('Markdown descargado')
-    })
-
-    $('exp-html').addEventListener('click', async () => {
-      const content = $('preview-content').innerHTML
-      const h       = await Editor.getComputedHash()
-      const html = `<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<title>LabColab Export</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:0 24px;line-height:1.7;color:#222;}
-h1,h2,h3{margin-top:1.5em;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px 12px;}
-pre{background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;}
-footer{margin-top:40px;padding-top:16px;border-top:1px solid #ccc;font-size:11px;color:#888;}
-</style></head>
-<body>${content}
-<footer>Sala: ${State.get('roomId')} · Exportado: ${new Date().toISOString()} · SHA-256: ${h}</footer>
-</body></html>`
-      download(`labcolab-${State.get('roomId') || 'doc'}.html`, html, 'text/html')
-      toast('HTML descargado')
-    })
-
-    $('exp-print').addEventListener('click', () => window.print())
-  }
-
   return { setup }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   SESSION MODULE
-   Orquesta el inicio de sesión y coordina todos los módulos.
+   PR MODULE  — F2: pull requests / propuestas de cambio
+═══════════════════════════════════════════════════════════════════ */
+const PR = (() => {
+  // PRs stored as JSON string in ySession['pullRequests']
+  const _get = () => {
+    try { return JSON.parse(Yjs.getSession()?.get('pullRequests') || '[]') } catch { return [] }
+  }
+  const _save = prs => {
+    Yjs.getSession()?.set('pullRequests', JSON.stringify(prs))
+  }
+  const _refresh = prs => {
+    Bus.emit('pr:rendered', { prs })
+    const pending = prs.filter(p => p.status === 'pending').length
+    Bus.emit('pr:badge', { count: pending })
+    if (pending > 0 && State.get('rightPanel') !== 'pr-view') {
+      State.set('prUnread', pending)
+    }
+  }
+
+  const submit = (text, summary) => {
+    if (!text.trim())    { toast('Escribe el texto propuesto'); return }
+    if (!summary.trim()) { toast('Añade una descripción breve'); return }
+    const prs = _get()
+    prs.push({ id:genId(), authorId:State.get('peerId'), authorName:State.get('name'),
+               summary:summary.trim(), text:text.trim(), status:'pending', ts:Date.now() })
+    _save(prs); toast('Propuesta enviada ✓')
+  }
+
+  const accept = id => {
+    const role = State.get('role')
+    if (role !== 'host' && role !== 'co-host') return
+    const prs = _get(), pr = prs.find(p => p.id === id)
+    if (!pr || pr.status !== 'pending') return
+    pr.status = 'accepted'
+    const yt = Yjs.getText(), doc = Yjs.getDoc()
+    if (yt && doc) {
+      doc.transact(() => {
+        const cur = yt.toString()
+        yt.insert(yt.length, (cur.endsWith('\n') ? '' : '\n\n') + pr.text)
+      }, 'local')
+    }
+    _save(prs); toast('✅ Propuesta aceptada e insertada')
+  }
+
+  const reject = id => {
+    const role = State.get('role')
+    if (role !== 'host' && role !== 'co-host') return
+    const prs = _get(), pr = prs.find(p => p.id === id)
+    if (!pr || pr.status !== 'pending') return
+    pr.status = 'rejected'; _save(prs); toast('❌ Propuesta rechazada')
+  }
+
+  const setup = () => {
+    const session = Yjs.getSession(); if (!session) return
+
+    // Observe session for PR updates
+    session.observe(ev => {
+      if (ev.keysChanged.has('pullRequests')) _refresh(_get())
+    })
+    _refresh(_get())
+
+    // UI wiring
+    $('pr-new-btn').addEventListener('click', () => {
+      $('pr-compose-panel').classList.remove('hidden')
+      $('pr-new-bar').classList.add('hidden')
+    })
+    $('pr-cancel').addEventListener('click', () => {
+      $('pr-compose-panel').classList.add('hidden')
+      $('pr-new-bar').classList.remove('hidden')
+    })
+    $('pr-submit').addEventListener('click', () => {
+      submit($('pr-text').value, $('pr-summary').value)
+      $('pr-text').value = ''
+      $('pr-summary').value = ''
+      $('pr-compose-panel').classList.add('hidden')
+      $('pr-new-bar').classList.remove('hidden')
+    })
+  }
+
+  return { setup, accept, reject }
+})()
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════════════════════════════ */
+const Export = (() => {
+  const setup = () => {
+    $('btn-export-open').addEventListener('click', async () => {
+      const h = await Editor.getHash(); UI.setDocHash(h)
+      $('export-modal').classList.add('active')
+    })
+    const close = () => $('export-modal').classList.remove('active')
+    $('close-export').addEventListener('click', close)
+    $('export-modal').addEventListener('click', e => { if (e.target===$('export-modal')) close() })
+    $('exp-md').addEventListener('click', () => {
+      download('labcolab-' + (State.get('roomId')||'doc') + '-' + Date.now() + '.md',
+               Yjs.getText()?.toString() ?? '', 'text/markdown')
+      toast('Markdown descargado')
+    })
+    $('exp-html').addEventListener('click', async () => {
+      const h    = await Editor.getHash()
+      const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>LabColab Export</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:0 24px;line-height:1.7;color:#222;}
+h1,h2,h3{margin-top:1.5em;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px 12px;}
+pre{background:#f5f5f5;padding:12px;border-radius:4px;}footer{margin-top:40px;padding-top:16px;border-top:1px solid #ccc;font-size:11px;color:#888;}</style></head>
+<body>${$('preview-content').innerHTML}
+<footer>Sala: ${State.get('roomId')} · Exportado: ${new Date().toISOString()} · SHA-256: ${h}</footer>
+</body></html>`
+      download('labcolab-' + (State.get('roomId')||'doc') + '.html', html, 'text/html')
+      toast('HTML descargado')
+    })
+    $('exp-print').addEventListener('click', () => window.print())
+  }
+  return { setup }
+})()
+
+/* ═══════════════════════════════════════════════════════════════════
+   SESSION  — orquesta el inicio y conecta todos los módulos
 ═══════════════════════════════════════════════════════════════════ */
 const Session = (() => {
   const start = async (roomId, password, isHost) => {
-    State.patch({ name: State.get('name'), role: isHost ? 'host' : 'editor', roomId })
+    State.patch({ name:State.get('name'), role:isHost?'host':'editor', roomId })
     UI.showApp(roomId)
+    if (!await Yjs.init(roomId, password, isHost)) return
 
-    const ok = await Yjs.init(roomId, password, isHost)
-    if (!ok) return
-
-    // Inicializar módulos que dependen de Yjs
     Editor.setup()
     Preview.setup()
     Chat.setup()
     Board.init()
     Yjs.watchRoleSignals()
+    Yjs.watchHostPresence()
+    PR.setup()
 
-    // Anunciar rol inicial en UI
-    Bus.emit('role:changed', { role: State.get('role') })
+    Bus.emit('role:changed', { role:State.get('role') })
 
-    // Actualizar peers tras inicialización de awareness
+    setTimeout(() => Bus.emit('awareness:changed', { states:Awareness.getStates() }), 300)
+
     setTimeout(() => {
-      const states = Awareness.getStates()
-      Bus.emit('awareness:changed', { states })
-    }, 300)
-
-    // Mensaje de sistema en chat
-    setTimeout(() => {
-      Bus.emit('chat:message', {
-        msg: {
-          type: 'system',
-          text: `Sala ${roomId} — ${isHost ? 'creada' : 'unido'} como ${State.get('name')}`,
-          ts: Date.now(),
-        }
-      })
-      toast(isHost ? `Sala ${roomId} creada ✓` : `Unido a sala ${roomId} ✓`)
+      Bus.emit('chat:message', { msg:{ type:'system',
+        text:'Sala ' + roomId + ' — ' + (isHost?'creada':'unido') + ' como ' + State.get('name'),
+        ts:Date.now() }})
+      toast(isHost ? 'Sala ' + roomId + ' creada ✓' : 'Unido a sala ' + roomId + ' ✓')
     }, 500)
   }
-
   return { start }
 })()
 
 /* ═══════════════════════════════════════════════════════════════════
-   APP MODULE
-   Event handlers de la UI raíz: modales, panel tabs, resize, etc.
-   Punto de entrada único tras DOMContentLoaded.
+   APP  — entry point, wires all UI events
 ═══════════════════════════════════════════════════════════════════ */
 const App = (() => {
-  // Expuesto en window para botones inline de peers (setRole)
-  window.App = { setRole: Yjs.setRole }
+  // Expose to window for inline onclick buttons
+  window.App = {
+    setRole:      Yjs.setRole,
+    toggleCoHost: Yjs.toggleCoHost,
+    acceptPR:     PR.accept,
+    rejectPR:     PR.reject,
+  }
 
   const _init = () => {
+    // ── Compat check first (async, resolves before we show session modal) ──
+    Compat.showIfNeeded()   // non-blocking; modal overlays with higher z-index
+
     // ── Modal tabs ──────────────────────────────────────────────
     $('tab-btn-create').addEventListener('click', () => {
-      $('tab-btn-create').classList.add('active')
-      $('tab-btn-join').classList.remove('active')
-      $('tab-create').classList.add('active')
-      $('tab-join').classList.remove('active')
+      $('tab-btn-create').classList.add('active'); $('tab-btn-join').classList.remove('active')
+      $('tab-create').classList.add('active');     $('tab-join').classList.remove('active')
     })
     $('tab-btn-join').addEventListener('click', () => {
-      $('tab-btn-join').classList.add('active')
-      $('tab-btn-create').classList.remove('active')
-      $('tab-join').classList.add('active')
-      $('tab-create').classList.remove('active')
+      $('tab-btn-join').classList.add('active');   $('tab-btn-create').classList.remove('active')
+      $('tab-join').classList.add('active');       $('tab-create').classList.remove('active')
     })
 
-    // ── Crear sala ──────────────────────────────────────────────
+    // ── Create / join ───────────────────────────────────────────
     $('btn-create').addEventListener('click', () => {
-      const name   = $('create-name').value.trim() || 'Investigador'
-      const pass   = $('create-pass').value
-      const roomId = genRoom()
-      State.patch({ name })
-      Session.start(roomId, pass, true)
+      const name=($('create-name').value.trim()||'Investigador'), pass=$('create-pass').value
+      State.patch({ name }); Session.start(genRoom(), pass, true)
     })
-
-    // ── Unirse a sala ───────────────────────────────────────────
     $('btn-join').addEventListener('click', () => {
-      const name   = $('join-name').value.trim() || 'Investigador'
-      const roomId = $('join-room').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
-      const pass   = $('join-pass').value
-      if (!roomId) { toast('Ingresa un código de sala'); return }
-      State.patch({ name })
-      Session.start(roomId, pass, false)
+      const name=($('join-name').value.trim()||'Investigador')
+      const room=$('join-room').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'')
+      const pass=$('join-pass').value
+      if (!room) { toast('Ingresa un código de sala'); return }
+      State.patch({ name }); Session.start(room, pass, false)
     })
 
-    // Enter en campos del modal
-    ;['create-name', 'create-pass'].forEach(id =>
-      $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-create').click() })
-    )
-    ;['join-name', 'join-room', 'join-pass'].forEach(id =>
-      $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-join').click() })
-    )
+    ;['create-name','create-pass'].forEach(id =>
+      $(id).addEventListener('keydown', e => { if(e.key==='Enter') $('btn-create').click() }))
+    ;['join-name','join-room','join-pass'].forEach(id =>
+      $(id).addEventListener('keydown', e => { if(e.key==='Enter') $('btn-join').click() }))
 
-    // ── Copiar enlace de sala ───────────────────────────────────
+    // ── Copy room link ──────────────────────────────────────────
     $('btn-copy-room').addEventListener('click', () => {
-      const url = `${location.origin}${location.pathname}?room=${State.get('roomId')}`
+      const url = location.origin + location.pathname + '?room=' + State.get('roomId')
       navigator.clipboard.writeText(url)
-        .then(() => toast('Enlace copiado al portapapeles'))
-        .catch(() => navigator.clipboard.writeText(State.get('roomId'))
-          .then(() => toast('Código copiado: ' + State.get('roomId'))))
+        .then(() => toast('Enlace copiado'))
+        .catch(() => navigator.clipboard.writeText(State.get('roomId')).then(() => toast('Código copiado')))
     })
 
     // ── Export ──────────────────────────────────────────────────
@@ -1812,14 +1847,12 @@ const App = (() => {
     document.querySelectorAll('[data-panel]').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.panel
-        const group  = btn.closest('.panel-tabs')
-        const isLeft = group.closest('#panel-left') !== null
+        const isLeft = btn.closest('.panel-tabs').closest('#panel-left') !== null
         UI.switchPanel(target, isLeft ? 'left' : 'right')
         if (isLeft && target === 'board-view') {
           Board.init()
-          // El cursor del canvas se actualiza tras init
-          const canvas = $('board-canvas')
-          if (canvas) canvas.style.cursor = State.get('boardTool') === 'text' ? 'text' : 'crosshair'
+          const c = $('board-canvas')
+          if (c) c.style.cursor = State.get('boardTool')==='text' ? 'text' : 'crosshair'
         }
       })
     })
@@ -1828,58 +1861,54 @@ const App = (() => {
     document.querySelectorAll('[data-btool]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('[data-btool]').forEach(b => b.classList.remove('active'))
-        btn.classList.add('active')
-        State.set('boardTool', btn.dataset.btool)
-        const canvas = $('board-canvas')
-        if (canvas) canvas.style.cursor = State.get('boardTool') === 'text' ? 'text' : 'crosshair'
+        btn.classList.add('active'); State.set('boardTool', btn.dataset.btool)
+        const c = $('board-canvas')
+        if (c) c.style.cursor = State.get('boardTool')==='text' ? 'text' : 'crosshair'
       })
     })
-
     $('board-color').addEventListener('input', e => State.set('boardColor', e.target.value))
     $('board-width').addEventListener('input', e => State.set('boardWidth', +e.target.value))
-
     $('btn-clear-board').addEventListener('click', () => {
-      if (State.get('role') === 'observer') { toast('Sin permisos para limpiar'); return }
+      if (State.get('role')==='observer') { toast('Sin permisos'); return }
       if (!confirm('¿Limpiar toda la pizarra?')) return
-      const yStrokes = Yjs.getStrokes()
-      if (yStrokes) Yjs.getDoc().transact(() => yStrokes.delete(0, yStrokes.length))
-      State.set('strokes', [])
-      Bus.emit('board:cleared')
-      toast('Pizarra limpiada')
+      const ys = Yjs.getStrokes()
+      if (ys) Yjs.getDoc().transact(() => ys.delete(0, ys.length))
+      State.set('strokes', []); toast('Pizarra limpiada')
+    })
+
+    // ── F5: Host policy checkbox ────────────────────────────────
+    $('chk-revoke-on-disconnect').addEventListener('change', e => {
+      Yjs.setHostPolicy(e.target.checked)
     })
 
     // ── Resize handle ───────────────────────────────────────────
-    let _resizing = false, _resizeStartX = 0, _resizeStartW = 0
+    let _rx=false, _rx0=0, _rw0=0
     $('resize-handle').addEventListener('mousedown', e => {
-      _resizing    = true
-      _resizeStartX = e.clientX
-      _resizeStartW = $('panel-left').offsetWidth
+      _rx=true; _rx0=e.clientX; _rw0=$('panel-left').offsetWidth
       $('resize-handle').classList.add('dragging')
-      document.body.style.userSelect = 'none'
-      document.body.style.cursor     = 'col-resize'
+      document.body.style.userSelect='none'; document.body.style.cursor='col-resize'
     })
     document.addEventListener('mousemove', e => {
-      if (!_resizing) return
-      $('panel-left').style.width = clamp(_resizeStartW + (e.clientX - _resizeStartX), 280, window.innerWidth - 280) + 'px'
+      if (!_rx) return
+      $('panel-left').style.width = clamp(_rw0+(e.clientX-_rx0), 280, window.innerWidth-280)+'px'
     })
     document.addEventListener('mouseup', () => {
-      if (!_resizing) return
-      _resizing = false
+      if (!_rx) return; _rx=false
       $('resize-handle').classList.remove('dragging')
-      document.body.style.userSelect = ''
-      document.body.style.cursor     = ''
-      if (State.get('leftPanel') === 'board-view') Board.resize()
+      document.body.style.userSelect=''; document.body.style.cursor=''
+      if (State.get('leftPanel')==='board-view') Board.resize()
     })
 
-    // ── Atajos de teclado globales ──────────────────────────────
+    // ── Global shortcuts ────────────────────────────────────────
     document.addEventListener('keydown', e => {
       if (!e.altKey) return
-      if (e.key === 'b') document.querySelector('[data-panel="board-view"]').click()
-      if (e.key === 'e') document.querySelector('[data-panel="editor-view"]').click()
-      if (e.key === 'c') document.querySelector('[data-panel="chat-view"]').click()
+      if (e.key==='b') document.querySelector('[data-panel="board-view"]').click()
+      if (e.key==='e') document.querySelector('[data-panel="editor-view"]').click()
+      if (e.key==='c') document.querySelector('[data-panel="chat-view"]').click()
+      if (e.key==='p') document.querySelector('[data-panel="pr-view"]').click()
     })
 
-    // ── Auto-fill desde URL ─────────────────────────────────────
+    // ── URL auto-fill ───────────────────────────────────────────
     const urlRoom = new URLSearchParams(location.search).get('room')
     if (urlRoom) {
       $('tab-btn-join').click()
@@ -1890,16 +1919,13 @@ const App = (() => {
     }
   }
 
-  // Esperar al DOM antes de registrar cualquier listener
-  if (document.readyState === 'loading') {
+  if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', _init)
-  } else {
+  else
     _init()
-  }
 
   return {}
 })()
-
 </script>
 </body>
 </html>
