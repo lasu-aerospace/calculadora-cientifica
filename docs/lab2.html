@@ -722,8 +722,13 @@ const UI = (() => {
   // ── Connection ─────────────────────────────────────────────────
   const setConnectionStatus = status => {
     $('status-dot').className = 'status-dot ' + status
-    $('status-text').textContent = { connected:'Conectado', connecting:'Conectando...',
-      disconnected:'Desconectado — reconectando...', error:'Error de conexión' }[status] ?? status
+    $('status-text').textContent = {
+      connected:    'Conectado',
+      'local':      'Local (BroadcastChannel)',
+      connecting:   'Conectando...',
+      disconnected: 'Desconectado — reconectando...',
+      error:        'Sin relay — modo local activo',
+    }[status] ?? status
   }
 
   // ── Autosave dot (F1) ──────────────────────────────────────────
@@ -1037,15 +1042,46 @@ const Relay = (() => {
     return type ? { type, payload: arr.slice(1) } : null
   }
 
-  const send = async (type, payload) => {
-    if (!_ws || _ws.readyState !== WebSocket.OPEN) return
-    _ws.send(await Crypto.encrypt(_encode(type, payload)))
+  // BroadcastChannel: used as local-tab transport when WebSocket is unavailable.
+  // Allows same-origin tabs to collaborate without a relay server.
+  let _bc = null
+
+  const _initBC = () => {
+    if (!window.BroadcastChannel) return
+    try {
+      _bc = new BroadcastChannel('labcolab-' + _room)
+      _bc.onmessage = async e => {
+        if (!e.data || e.data.from === State.get('peerId')) return
+        // Payload is base64 encoded ArrayBuffer
+        const bin = Uint8Array.from(atob(e.data.payload), c => c.charCodeAt(0))
+        const raw = await Crypto.decrypt(bin.buffer)
+        if (!raw) return
+        const msg = _decode(new Uint8Array(raw))
+        if (msg) Bus.emit('relay:message', msg)
+      }
+    } catch(e) { _bc = null }
+  }
+
+  const _sendBC = async (type, payload) => {
+    if (!_bc) return
+    const enc = await Crypto.encrypt(_encode(type, payload))
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(enc)))
+    try { _bc.postMessage({ from: State.get('peerId'), payload: b64 }) } catch {}
   }
 
   const _connect = onOpen => {
+    // Skip WebSocket attempt if URL is still the placeholder
+    if (CONFIG.RELAY_URL.includes('TU_USUARIO')) {
+      _initBC()
+      Bus.emit('connection:status', { status: _bc ? 'local' : 'disconnected' })
+      State.set('connected', !!_bc)
+      if (onOpen) onOpen()
+      return
+    }
     _ws = new WebSocket(CONFIG.RELAY_URL.replace(/\/+$/, '') + '/room/' + _room)
     _ws.binaryType = 'arraybuffer'
     _ws.addEventListener('open', () => {
+      _initBC()  // also open BC for same-origin tabs
       Bus.emit('connection:status', { status:'connected' }); State.set('connected', true)
       if (onOpen) onOpen()
     })
@@ -1059,7 +1095,24 @@ const Relay = (() => {
       Bus.emit('connection:status', { status:'disconnected' }); State.set('connected', false)
       setTimeout(() => _connect(() => Bus.emit('relay:reconnected')), CONFIG.RECONNECT_DELAY)
     })
-    _ws.addEventListener('error', () => Bus.emit('connection:status', { status:'error' }))
+    _ws.addEventListener('error', () => {
+      // Fall back to BroadcastChannel for same-origin testing
+      _initBC()
+      Bus.emit('connection:status', { status: _bc ? 'local' : 'error' })
+      State.set('connected', !!_bc)
+      if (!_ws || _ws.readyState > 1) {
+        setTimeout(() => _connect(() => Bus.emit('relay:reconnected')), CONFIG.RECONNECT_DELAY)
+      }
+    })
+  }
+
+  const send = async (type, payload) => {
+    // Send via WebSocket (if open) AND BroadcastChannel (for same-origin tabs)
+    const enc = _encode(type, payload)
+    if (_ws && _ws.readyState === WebSocket.OPEN) {
+      _ws.send(await Crypto.encrypt(enc))
+    }
+    await _sendBC(type, payload)
   }
 
   const connect = (room, pass, onOpen) => { _room = room; _pass = pass; _connect(onOpen) }
@@ -1083,11 +1136,14 @@ const Awareness = (() => {
   const setLocalState = state => {
     const id = State.get('peerId'); if (!id) return
     _states.set(id, state); _broadcast()
+    // Emit locally so peers list updates immediately without waiting for relay echo
+    Bus.emit('awareness:changed', { states: getStates() })
   }
   const setLocalField = (field, value) => {
     const id = State.get('peerId'); if (!id) return
     const cur = _states.get(id) || {}; cur[field] = value
     _states.set(id, cur); _broadcast()
+    Bus.emit('awareness:changed', { states: getStates() })
   }
 
   Bus.on('relay:message', msg => {
@@ -1133,7 +1189,8 @@ const Yjs = (() => {
     _meta    = _doc.getMap('meta')
     State.set('peerId', _doc.clientID.toString())
 
-    new _IDB('labcolab-' + roomId, _doc).on('synced', () => {
+    const _idb = new _IDB('labcolab-' + roomId, _doc)
+    _idb.on('synced', () => {
       if (isHost && _text.length === 0)
         _doc.transact(() => _text.insert(0, CONFIG.DEFAULT_DOC), 'init')
       Bus.emit('yjs:synced')
@@ -1611,17 +1668,27 @@ const Chat = (() => {
   let _tt = null
   const send = () => {
     const inp=$('chat-input'), text=inp.value.trim(); if (!text) return
-    Yjs.getChat().push([{
+    const msg = {
       id:genId(), peerId:State.get('peerId'), name:State.get('name'),
       color:peerColor(State.get('peerId')), text, ts:Date.now()
-    }])
+    }
+    Yjs.getChat().push([msg])
+    // Show own message immediately (observer skips own messages to avoid duplication)
+    Bus.emit('chat:message', { msg })
     inp.value=''; Awareness.setLocalField('typing',false)
   }
   const setup = () => {
+    // Observe chat array — fires for local and remote inserts
     Yjs.getChat().observe(ev => {
       ev.changes.delta.forEach(op => {
         if (!op.insert) return
-        op.insert.forEach(item => Bus.emit('chat:message', { msg:Array.isArray(item)?item[0]:item }))
+        op.insert.forEach(item => {
+          const msg = Array.isArray(item) ? item[0] : item
+          // Avoid re-rendering own messages that were already sent via local push
+          if (msg && msg.peerId !== State.get('peerId')) {
+            Bus.emit('chat:message', { msg })
+          }
+        })
       })
     })
     $('chat-input').addEventListener('input', () => {
@@ -1776,7 +1843,14 @@ const Session = (() => {
 
     Bus.emit('role:changed', { role:State.get('role') })
 
-    setTimeout(() => Bus.emit('awareness:changed', { states:Awareness.getStates() }), 300)
+    // Set local awareness state immediately — this emits awareness:changed locally
+    // so the peers list shows the current user before relay connects.
+    Awareness.setLocalState({
+      name:  State.get('name'),
+      role:  State.get('role'),
+      color: peerColor(State.get('peerId')),
+      cursor: null, boardStroke: null,
+    })
 
     setTimeout(() => {
       Bus.emit('chat:message', { msg:{ type:'system',
