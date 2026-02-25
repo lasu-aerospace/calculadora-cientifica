@@ -17,6 +17,8 @@
   --txt2:     #8b90a8;
   --txt3:     #52566a;
   --accent:   #4ade80;
+  --unav:   #deb74a;
+  --blocked:   #de4a4a;
   --radius:   16px;
   --radius-sm:10px;
 }
@@ -623,6 +625,8 @@ tfoot td {
 }
 
 .sidenav-link-dot--accent { background: var(--accent); }
+.sidenav-link-dot--unav { background: var(--unav); }
+.sidenav-link-dot--blocked { background: var(--blocked); }
 .sidenav-link:hover .sidenav-link-dot { background: var(--txt2); }
 
 .sidenav-link-name {

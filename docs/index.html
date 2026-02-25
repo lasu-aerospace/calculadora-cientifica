@@ -4,9 +4,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atlasdelta</title>
+  <title>AtlasDelta</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    /* ── Visible sidebar scrollbar ── */
+    .sidenav-inner {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border2) transparent;
+    }
+    .sidenav-inner::-webkit-scrollbar {
+      display: block;
+      width: 4px;
+    }
+    .sidenav-inner::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidenav-inner::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 4px;
+    }
+    .sidenav-inner::-webkit-scrollbar-thumb:hover {
+      background: var(--txt3);
+    }
+
+    /* ── Section title ── */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .22em;
+      color: var(--txt3);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Roadmap ── */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .roadmap-item {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      position: relative;
+    }
+    .roadmap-item .ri-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    .ri-tag--done    { background: rgba(74,222,128,.1); color: #4ade80; border: 1px solid rgba(74,222,128,.3); }
+    .ri-tag--wip     { background: rgba(251,191,36,.1); color: #fbbf24; border: 1px solid rgba(251,191,36,.3); }
+    .ri-tag--correction     { background: rgba(222, 74, 74, 0.1); color:  #de4a4a; border: 1px solid rgba(222, 74, 74, 0.849); }
+    .ri-tag--planned { background: rgba(148,163,184,.08); color: var(--txt3); border: 1px solid var(--border); }
+    .roadmap-item p {
+      font-size: 13px;
+      color: var(--txt2);
+      margin: 0;
+    }
+    .roadmap-item strong {
+      font-size: 13.5px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* ── Changelog ── */
+    .changelog-entry {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .changelog-entry:last-child { border-bottom: none; }
+    .cl-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: .12em;
+      color: var(--txt3);
+      white-space: nowrap;
+      padding-top: 2px;
+      min-width: 72px;
+    }
+    .cl-body { flex: 1; }
+    .cl-version {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .cl-body p {
+      font-size: 13.5px;
+      margin: 0;
+    }
+    .cl-body ul {
+      margin: 6px 0 0;
+      font-size: 13px;
+    }
+    .cl-body li { margin-bottom: 3px; }
+
+    /* ── Ko-Fi ── */
+    .kofi-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .kofi-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .kofi-body { flex: 1; min-width: 180px; }
+    .kofi-body h3 {
+      font-family: 'Familjen Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--txt);
+      margin: 0 0 6px;
+    }
+    .kofi-body p {
+      font-size: 13.5px;
+      color: var(--txt2);
+      margin: 0 0 14px;
+    }
+    .kofi-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,94,91,.12);
+      border: 1px solid rgba(255,94,91,.35);
+      color: #ff7b78;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .kofi-btn:hover {
+      background: rgba(255,94,91,.22);
+      border-color: rgba(255,94,91,.6);
+      color: #ff9a97;
+      text-decoration: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -53,34 +219,40 @@
 
       <div class="sidenav-divider"></div>
       <div class="sidenav-section-label">Herramientas</div>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab2.html" class="sidenav-link" data-label="↗">
-        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <a class="sidenav-link" data-label="01">
+        <span class="sidenav-link-dot sidenav-link-dot--unav"></span>
+        <span class="sidenav-link-name">SEACIM</span>
+      </a>
+      <a class="sidenav-link" data-label="02">
+        <span class="sidenav-link-dot sidenav-link-dot--blocked"></span>
         <span class="sidenav-link-name">OpenLab</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/omp.html" class="sidenav-link" data-label="↗">
-        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+      <a class="sidenav-link" data-label="03">
+        <span class="sidenav-link-dot sidenav-link-dot--blocked"></span>
         <span class="sidenav-link-name">OMP</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/cfd.html" class="sidenav-link" data-label="↗">
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/cfd.html" class="sidenav-link" data-label="04">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">CFD</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/refs.html" class="sidenav-link" data-label="↗">
-        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
-        <span class="sidenav-link-name">Referencias</span>
-      </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/philosophy.html" class="sidenav-link"
-        data-label="↗">
-        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
-        <span class="sidenav-link-name">Filosofía científica</span>
-      </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html" class="sidenav-link" data-label="↗">
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html" class="sidenav-link" data-label="05">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Graficadora</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/ia.html" class="sidenav-link" data-label="↗">
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/ia.html" class="sidenav-link" data-label="06">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Red neuronal</span>
+      </a>
+
+      <div class="sidenav-divider"></div>
+      <div class="sidenav-section-label">Otros</div>
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/refs.html" class="sidenav-link" data-label="01">
+        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+        <span class="sidenav-link-name">Referencias</span>
+      </a>
+      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/philosophy.html" class="sidenav-link" data-label="02">
+        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
+        <span class="sidenav-link-name">Filosofía científica</span>
       </a>
 
       <button class="sidenav-toggle" id="sidenavToggle" aria-label="Colapsar menú">&#10094;</button>
@@ -95,12 +267,89 @@
 
   <div class="page">
 
+    <!-- ── Hero ── -->
     <div class="index-hero">
       <div class="kicker">// Infraestructura científica abierta:</div>
       <h1>Atlas<em>Delta</em></h1>
     </div>
 
-  </div>
+    <!-- ══════════════════════════════════════════
+         ROADMAP
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Roadmap</div>
+    <div class="card" style="margin-bottom: 32px;">
+      <div class="roadmap-grid">
+        <div class="roadmap-item">
+          <span class="ri-tag ri-tag--correction">Correcciones</span>
+          <strong>OMP</strong>
+          <p>Modelo predictivo orbital.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="ri-tag ri-tag--correction">Correcciones</span>
+          <strong>OpenLab</strong>
+          <p>Edición de informes científicos colaborativo.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="ri-tag ri-tag--wip">En progreso</span>
+          <strong>SEACIM</strong>
+          <p>Sistema comparativo de modelos radiográficos motorizado por IA.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="ri-tag ri-tag--planned">Planificado</span>
+          <strong>Simulación Termodinámica</strong>
+          <p>Visualizaciones tridimensionales para termodinámica.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="ri-tag ri-tag--planned">Planificado</span>
+          <strong>App móvil</strong>
+          <p>Acceso offline y experiencia nativa en iOS y Android.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         CHANGELOGS
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Changelogs</div>
+    <div class="card" style="margin-bottom: 32px; padding-bottom: 6px;">
+
+      <div class="changelog-entry">
+        <div class="cl-date">Feb 25, 2025</div>
+        <div class="cl-body">
+          <div class="cl-version">v1.0.0</div>
+          <p>Despliegue inicial.</p>
+          <ul>
+            <li>Scrollbar visible en el sidebar</li>
+            <li>Roadmap y changelog añadidos al índice principal</li>
+            <li>Página Ko-fi agregada</li>
+            <li>Estética del sidebar corregida</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         KO-FI
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Apoyar el proyecto</div>
+    <div class="kofi-card">
+      <div class="kofi-icon">☕</div>
+      <div class="kofi-body">
+        <h3>AtlasDelta es completamente gratuito y de acceso abierto</h3>
+        <p>Si esta plataforma te resultó útil, podés apoyar su desarrollo con un café. Cada contribución ayuda a mantener los servidores, crear nuevo contenido y financiar las herramientas interactivas.</p>
+        <a href="https://ko-fi.com/atlasdelta" target="_blank" rel="noopener" class="kofi-btn">
+          ☕ &nbsp;Invitarnos un café en Ko-Fi
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /.page -->
 
   <script>
     /* ── Sidenav ── */
@@ -136,7 +385,6 @@
       applyPageMargin(false);
     }
 
-    // Set initial margin on load
     applyPageMargin(sidenav.classList.contains('collapsed'));
 
     sidenavToggle.addEventListener('click', () => {
@@ -153,7 +401,6 @@
       overlay.classList.remove('active');
     });
 
-    // Re-apply on resize
     window.addEventListener('resize', () => {
       applyPageMargin(sidenav.classList.contains('collapsed'));
     });
