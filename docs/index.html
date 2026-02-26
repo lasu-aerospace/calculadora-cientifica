@@ -121,6 +121,101 @@
     }
     .cl-body li { margin-bottom: 3px; }
 
+    /* ── Contacto card ── */
+    .contact-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .contact-card-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .contact-card-body { flex: 1; min-width: 180px; }
+    .contact-card-body h3 {
+      font-family: 'Familjen Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--txt);
+      margin: 0 0 6px;
+    }
+    .contact-card-body p {
+      font-size: 13.5px;
+      color: var(--txt2);
+      margin: 0 0 14px;
+    }
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(74,222,128,.1);
+      border: 1px solid rgba(74,222,128,.3);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .contact-btn:hover {
+      background: rgba(74,222,128,.18);
+      border-color: rgba(74,222,128,.55);
+      color: #7ef5a8;
+      text-decoration: none;
+    }
+
+    /* ── Changelog collapsible ── */
+    .changelog-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0 14px;
+      color: var(--txt3);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .changelog-toggle:hover { color: var(--txt2); }
+    .changelog-toggle-icon {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color .2s, transform .25s;
+    }
+    .changelog-toggle-icon svg {
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+    }
+    .changelog-collapsible {
+      overflow: hidden;
+      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s;
+      max-height: 0;
+      opacity: 0;
+    }
+    .changelog-collapsible.open {
+      max-height: 2000px;
+      opacity: 1;
+    }
+
     /* ── Ko-Fi ── */
     .kofi-card {
       background: var(--s1);
@@ -219,44 +314,40 @@
 
       <div class="sidenav-divider"></div>
       <div class="sidenav-section-label">Herramientas</div>
-      <a class="sidenav-link" data-label="01">
-        <span class="sidenav-link-dot sidenav-link-dot--unav"></span>
-        <span class="sidenav-link-name">SEACIM</span>
-      </a>
       <a class="sidenav-link" data-label="02">
-        <span class="sidenav-link-dot sidenav-link-dot--blocked"></span>
+        <span class="sidenav-link-dot sidenav-link-dot--unav"></span>
         <span class="sidenav-link-name">OpenLab</span>
       </a>
-      <a class="sidenav-link" data-label="03">
-        <span class="sidenav-link-dot sidenav-link-dot--blocked"></span>
+      <a href="omp.html" class="sidenav-link" data-label="03">
+        <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">OMP</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/cfd.html" class="sidenav-link" data-label="04">
+      <a href="cfd.html" class="sidenav-link" data-label="04">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">CFD</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/lab.html" class="sidenav-link" data-label="05">
+      <a href="lab.html" class="sidenav-link" data-label="05">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Graficadora</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/ia.html" class="sidenav-link" data-label="06">
+      <a href="ia.html" class="sidenav-link" data-label="06">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Red neuronal</span>
       </a>
 
       <div class="sidenav-divider"></div>
       <div class="sidenav-section-label">Otros</div>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/refs.html" class="sidenav-link" data-label="01">
+      <a href="refs.html" class="sidenav-link" data-label="01">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Referencias</span>
       </a>
-      <a href="https://lasu-aerospace.github.io/calculadora-cientifica/philosophy.html" class="sidenav-link" data-label="02">
+      <a href="philosophy.html" class="sidenav-link" data-label="02">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">Filosofía científica</span>
       </a>
 
-      <button class="sidenav-toggle" id="sidenavToggle" aria-label="Colapsar menú">&#10094;</button>
-    </div>
+    </div><!-- /.sidenav-inner -->
+    <button class="sidenav-toggle" id="sidenavToggle" aria-label="Colapsar menú">&#10094;</button>
   </nav>
 
   <button class="sidenav-open-btn" id="sidenavOpenBtn" aria-label="Abrir menú">
@@ -280,25 +371,19 @@
     <div class="card" style="margin-bottom: 32px;">
       <div class="roadmap-grid">
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--correction">Correcciones</span>
+          <span class="ri-tag ri-tag--done">Hecho</span>
           <strong>OMP</strong>
           <p>Modelo predictivo orbital.</p>
         </div>
 
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--correction">Correcciones</span>
+          <span class="ri-tag ri-tag--wip">En progreso</span>
           <strong>OpenLab</strong>
           <p>Edición de informes científicos colaborativo.</p>
         </div>
 
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--wip">En progreso</span>
-          <strong>SEACIM</strong>
-          <p>Sistema comparativo de modelos radiográficos motorizado por IA.</p>
-        </div>
-
-        <div class="roadmap-item">
-          <span class="ri-tag ri-tag--planned">Planificado</span>
+          <span class="ri-tag ri-tag--done">Hecho</span>
           <strong>Contacto</strong>
           <p>Página para contactar directamente con el equipo de AtlasDelta.</p>
         </div>
@@ -323,48 +408,82 @@
     ══════════════════════════════════════════ -->
     <div class="section-label">Changelogs</div>
     <div class="card" style="margin-bottom: 32px; padding-bottom: 6px;">
+
+      <!-- Entrada más reciente: siempre visible -->
       <div class="changelog-entry">
-        <div class="cl-date">Feb 25, 2026</div>
+        <div class="cl-date">Feb 26, 2026</div>
         <div class="cl-body">
-          <div class="cl-version">v1.0.2.1</div>
-          <p>Cambios menores.</p>
+          <div class="cl-version">v1.1</div>
+          <p>Actualización mayor.</p>
           <ul>
-            <li>Página de contacto agregada al roadmap</li>
+            <li>Herramienta SCA (pre-SEACIM) eliminada</li>
+            <li>Página 404 agregada</li>
+            <li>Página de contacto agregada</li>
+            <li>Captcha agregado a Graficadora, Contacto y OpenLab</li>
+            <li>Errores en Graficadora corregidos para dispositivos moviles</li>
+            <li>Error en la gráfica de fuerza de rozamiento vs ángulo de ataque en CFD corregido</li>
+            <li>Errores en el sidebar corregidos</li>
+            <li>Error en la exportación de CSV en la Red Neuronal corregido</li>
+            <li>Otras correcciones menores</li>
           </ul>
         </div>
       </div>
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 25, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.0.2</div>
-          <p>Cambios menores.</p>
-          <ul>
-            <li>Sección de "known errors" agregada</li>
-            <li>Página hacia GitHub removida</li>
-          </ul>
+
+      <!-- Toggle para versiones anteriores -->
+      <button class="changelog-toggle" id="clToggle" onclick="toggleChangelog()" aria-expanded="false">
+        <span id="clToggleLabel">Ver versiones anteriores</span>
+        <div class="changelog-toggle-icon" id="clToggleIcon">
+          <svg width="9" height="9" viewBox="0 0 9 9" fill="none" id="clToggleArrow">
+            <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-      </div>
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 25, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.0.1</div>
-          <p>Correcciones menores.</p>
-          <ul>
-            <li>Corrección de errores en changelog</li>
-          </ul>
+      </button>
+
+      <!-- Entradas anteriores: colapsadas por defecto -->
+      <div class="changelog-collapsible" id="clCollapsible">
+        <div class="changelog-entry">
+          <div class="cl-date">Feb 25, 2026</div>
+          <div class="cl-body">
+            <div class="cl-version">v1.0.2.1</div>
+            <p>Parche 2B.</p>
+            <ul>
+              <li>Página de contacto agregada al roadmap</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 25, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.0.0</div>
-          <p>Despliegue inicial.</p>
-          <ul>
-            <li>Scrollbar visible en el sidebar</li>
-            <li>Roadmap y changelog añadidos al índice principal</li>
-            <li>Página Ko-fi agregada</li>
-            <li>Estética del sidebar corregida</li>
-          </ul>
+        <div class="changelog-entry">
+          <div class="cl-date">Feb 25, 2026</div>
+          <div class="cl-body">
+            <div class="cl-version">v1.0.2</div>
+            <p>Parche 2A.</p>
+            <ul>
+              <li>Sección de "known errors" agregada</li>
+              <li>Página hacia GitHub removida</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog-entry">
+          <div class="cl-date">Feb 25, 2026</div>
+          <div class="cl-body">
+            <div class="cl-version">v1.0.1</div>
+            <p>Parche 1.</p>
+            <ul>
+              <li>Corrección de errores en changelog</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog-entry">
+          <div class="cl-date">Feb 25, 2026</div>
+          <div class="cl-body">
+            <div class="cl-version">v1.0.0</div>
+            <p>Despliegue inicial.</p>
+            <ul>
+              <li>Scrollbar visible en el sidebar</li>
+              <li>Roadmap y changelog añadidos al índice principal</li>
+              <li>Página Ko-fi agregada</li>
+              <li>Estética del sidebar corregida</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -375,16 +494,22 @@
     ══════════════════════════════════════════ -->
     <div class="section-label">Known Errors</div>
     <div class="card" style="margin-bottom: 32px; padding-bottom: 6px;">
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 25, 2026</div>
-        <div class="cl-body">
-          <ul>
-            <li>Errores prominentes en el desplazamiento interactivo en Graficadora.</li>
-            <li>Errores en la detección de voz en Graficadora para dispositivos móviles o navegadores no compatibles.</li>
-          </ul>
-        </div>
-      </div>
+      <p>No se encontraron errores.</p>
+    </div>
 
+    <!-- ══════════════════════════════════════════
+         CONTACTO
+    ══════════════════════════════════════════ -->
+    <div class="section-label">Contacto</div>
+    <div class="contact-card" style="margin-bottom: 32px;">
+      <div class="contact-card-icon">✉️</div>
+      <div class="contact-card-body">
+        <h3>¿Tenés una consulta, sugerencia o encontraste un error?</h3>
+        <p>Escribinos directamente desde el formulario de contacto. Respondemos en menos de 72 horas hábiles.</p>
+        <a href="contacto.html" class="contact-btn">
+          ✉️ &nbsp;Ir a Contacto
+        </a>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -405,6 +530,18 @@
   </div><!-- /.page -->
 
   <script>
+    /* ── Changelog collapsible ── */
+    function toggleChangelog() {
+      const col   = document.getElementById('clCollapsible');
+      const btn   = document.getElementById('clToggle');
+      const label = document.getElementById('clToggleLabel');
+      const arrow = document.getElementById('clToggleArrow');
+      const open  = col.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      label.textContent = open ? 'Ocultar versiones anteriores' : 'Ver versiones anteriores';
+      arrow.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
     /* ── Sidenav ── */
     const sidenav = document.getElementById('sidenav');
     const sidenavToggle = document.getElementById('sidenavToggle');

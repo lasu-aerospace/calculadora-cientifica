@@ -506,7 +506,7 @@ tfoot td {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  bottom: 0;                        /* inmune al zoom: se ancla al viewport real */
   width: var(--sidenav-w);
   background: var(--s0);
   border-right: 1px solid var(--border);
@@ -521,28 +521,67 @@ tfoot td {
   width: var(--sidenav-w-collapsed);
 }
 
+/* ── Toggle — fuera del scroll, siempre visible al fondo ── */
+.sidenav-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--s1);
+  color: var(--txt3);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  margin: 0 14px 16px;
+  align-self: flex-start;
+}
+.sidenav-toggle:hover {
+  border-color: var(--border2);
+  color: var(--txt);
+  background: var(--s2);
+}
+.sidenav.collapsed .sidenav-toggle {
+  margin-left: auto;
+  margin-right: auto;
+  align-self: center;
+}
+
 /* ── Inner scroll area ── */
 .sidenav-inner {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 20px 0 20px;
+  flex: 1;                          /* ocupa todo el espacio sobre el toggle */
+  min-height: 0;                    /* permite encoger → activa el scroll */
+  padding: 20px 0 8px;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
 }
-.sidenav-inner::-webkit-scrollbar { display: none; }
+.sidenav-inner::-webkit-scrollbar { display: block; width: 3px; }
+.sidenav-inner::-webkit-scrollbar-track { background: transparent; }
+.sidenav-inner::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+.sidenav-inner::-webkit-scrollbar-thumb:hover { background: var(--txt3); }
+.sidenav.collapsed .sidenav-inner { scrollbar-width: none; }
+.sidenav.collapsed .sidenav-inner::-webkit-scrollbar { display: none; }
 
 /* ── Logo ── */
 .sidenav-logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 14px 20px;
+  padding: 0 14px 16px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   white-space: nowrap;
   overflow: hidden;
+  flex-shrink: 0;                   /* nunca se comprime */
+  min-height: 0;
 }
 
 .sidenav-logo-icon {
@@ -562,7 +601,6 @@ tfoot td {
   opacity: 1;
   transition: opacity .2s ease;
 }
-
 .sidenav.collapsed .sidenav-logo-text { opacity: 0; }
 
 /* ── Section labels ── */
@@ -572,13 +610,13 @@ tfoot td {
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--txt3);
-  padding: 0 14px 8px;
+  padding: 0 14px 6px;
   white-space: nowrap;
   overflow: hidden;
+  flex-shrink: 0;                   /* nunca se comprime */
   opacity: 1;
   transition: opacity .2s ease;
 }
-
 .sidenav.collapsed .sidenav-section-label { opacity: 0; }
 
 /* ── Links ── */
@@ -586,7 +624,9 @@ tfoot td {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 9px 14px;
+  padding: 7px 14px;
+  min-height: 32px;                 /* altura mínima constante por ítem */
+  flex-shrink: 0;                   /* nunca se comprime */
   text-decoration: none;
   color: var(--txt2);
   font-size: 13.5px;
@@ -602,7 +642,6 @@ tfoot td {
   text-decoration: none;
 }
 
-/* Show index number on collapsed state via tooltip-like data-label */
 .sidenav.collapsed .sidenav-link::after {
   content: attr(data-label);
   font-family: 'JetBrains Mono', monospace;
@@ -623,9 +662,8 @@ tfoot td {
   flex-shrink: 0;
   transition: background .2s;
 }
-
-.sidenav-link-dot--accent { background: var(--accent); }
-.sidenav-link-dot--unav { background: var(--unav); }
+.sidenav-link-dot--accent  { background: var(--accent); }
+.sidenav-link-dot--unav    { background: var(--unav); }
 .sidenav-link-dot--blocked { background: var(--blocked); }
 .sidenav-link:hover .sidenav-link-dot { background: var(--txt2); }
 
@@ -637,7 +675,6 @@ tfoot td {
 }
 .sidenav.collapsed .sidenav-link-name { opacity: 0; }
 
-/* Locked links */
 .sidenav-link--locked {
   opacity: .35;
   cursor: default;
@@ -648,39 +685,8 @@ tfoot td {
 .sidenav-divider {
   height: 1px;
   background: var(--border);
-  margin: 10px 14px;
-  flex-shrink: 0;
-}
-
-/* ── Collapse/expand toggle button ── */
-.sidenav-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--s1);
-  color: var(--txt3);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all .2s;
-  margin: auto 14px 0;
-  flex-shrink: 0;
-  align-self: flex-start;
-}
-.sidenav-toggle:hover {
-  border-color: var(--border2);
-  color: var(--txt);
-  background: var(--s2);
-}
-
-/* Centered when collapsed */
-.sidenav.collapsed .sidenav-toggle {
-  margin-left: auto;
-  margin-right: auto;
-  align-self: center;
+  margin: 8px 14px;
+  flex-shrink: 0;                   /* nunca se comprime */
 }
 
 /* ── Mobile: hamburger open button ── */
