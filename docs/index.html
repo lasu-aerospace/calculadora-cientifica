@@ -13,17 +13,21 @@
       scrollbar-width: thin;
       scrollbar-color: var(--border2) transparent;
     }
+
     .sidenav-inner::-webkit-scrollbar {
       display: block;
       width: 4px;
     }
+
     .sidenav-inner::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .sidenav-inner::-webkit-scrollbar-thumb {
       background: var(--border2);
       border-radius: 4px;
     }
+
     .sidenav-inner::-webkit-scrollbar-thumb:hover {
       background: var(--txt3);
     }
@@ -40,6 +44,7 @@
       align-items: center;
       gap: 10px;
     }
+
     .section-label::after {
       content: '';
       flex: 1;
@@ -54,6 +59,7 @@
       gap: 10px;
       margin-top: 4px;
     }
+
     .roadmap-item {
       background: var(--s1);
       border: 1px solid var(--border);
@@ -61,6 +67,7 @@
       padding: 14px 16px;
       position: relative;
     }
+
     .roadmap-item .ri-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: 8.5px;
@@ -71,15 +78,37 @@
       margin-bottom: 8px;
       display: inline-block;
     }
-    .ri-tag--done    { background: rgba(74,222,128,.1); color: #4ade80; border: 1px solid rgba(74,222,128,.3); }
-    .ri-tag--wip     { background: rgba(251,191,36,.1); color: #fbbf24; border: 1px solid rgba(251,191,36,.3); }
-    .ri-tag--correction     { background: rgba(222, 74, 74, 0.1); color:  #de4a4a; border: 1px solid rgba(222, 74, 74, 0.849); }
-    .ri-tag--planned { background: rgba(148,163,184,.08); color: var(--txt3); border: 1px solid var(--border); }
+
+    .ri-tag--done {
+      background: rgba(74, 222, 128, .1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, .3);
+    }
+
+    .ri-tag--wip {
+      background: rgba(251, 191, 36, .1);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, .3);
+    }
+
+    .ri-tag--correction {
+      background: rgba(222, 74, 74, 0.1);
+      color: #de4a4a;
+      border: 1px solid rgba(222, 74, 74, 0.849);
+    }
+
+    .ri-tag--planned {
+      background: rgba(148, 163, 184, .08);
+      color: var(--txt3);
+      border: 1px solid var(--border);
+    }
+
     .roadmap-item p {
       font-size: 13px;
       color: var(--txt2);
       margin: 0;
     }
+
     .roadmap-item strong {
       font-size: 13.5px;
       display: block;
@@ -93,7 +122,11 @@
       padding: 14px 0;
       border-bottom: 1px solid var(--border);
     }
-    .changelog-entry:last-child { border-bottom: none; }
+
+    .changelog-entry:last-child {
+      border-bottom: none;
+    }
+
     .cl-date {
       font-family: 'JetBrains Mono', monospace;
       font-size: 9.5px;
@@ -103,7 +136,11 @@
       padding-top: 2px;
       min-width: 72px;
     }
-    .cl-body { flex: 1; }
+
+    .cl-body {
+      flex: 1;
+    }
+
     .cl-version {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -111,15 +148,20 @@
       color: var(--accent);
       margin-bottom: 4px;
     }
+
     .cl-body p {
       font-size: 13.5px;
       margin: 0;
     }
+
     .cl-body ul {
       margin: 6px 0 0;
       font-size: 13px;
     }
-    .cl-body li { margin-bottom: 3px; }
+
+    .cl-body li {
+      margin-bottom: 3px;
+    }
 
     /* ── Contacto card ── */
     .contact-card {
@@ -132,12 +174,18 @@
       align-items: center;
       flex-wrap: wrap;
     }
+
     .contact-card-icon {
       font-size: 36px;
       flex-shrink: 0;
       line-height: 1;
     }
-    .contact-card-body { flex: 1; min-width: 180px; }
+
+    .contact-card-body {
+      flex: 1;
+      min-width: 180px;
+    }
+
     .contact-card-body h3 {
       font-family: 'Familjen Grotesk', sans-serif;
       font-size: 15px;
@@ -145,17 +193,19 @@
       color: var(--txt);
       margin: 0 0 6px;
     }
+
     .contact-card-body p {
       font-size: 13.5px;
       color: var(--txt2);
       margin: 0 0 14px;
     }
+
     .contact-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(74,222,128,.1);
-      border: 1px solid rgba(74,222,128,.3);
+      background: rgba(74, 222, 128, .1);
+      border: 1px solid rgba(74, 222, 128, .3);
       color: var(--accent);
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -166,9 +216,10 @@
       text-decoration: none;
       transition: background .2s, border-color .2s, color .2s;
     }
+
     .contact-btn:hover {
-      background: rgba(74,222,128,.18);
-      border-color: rgba(74,222,128,.55);
+      background: rgba(74, 222, 128, .18);
+      border-color: rgba(74, 222, 128, .55);
       color: #7ef5a8;
       text-decoration: none;
     }
@@ -190,7 +241,11 @@
       text-transform: uppercase;
       transition: color .2s;
     }
-    .changelog-toggle:hover { color: var(--txt2); }
+
+    .changelog-toggle:hover {
+      color: var(--txt2);
+    }
+
     .changelog-toggle-icon {
       width: 18px;
       height: 18px;
@@ -202,15 +257,18 @@
       flex-shrink: 0;
       transition: border-color .2s, transform .25s;
     }
+
     .changelog-toggle-icon svg {
-      transition: transform .25s cubic-bezier(.4,0,.2,1);
+      transition: transform .25s cubic-bezier(.4, 0, .2, 1);
     }
+
     .changelog-collapsible {
       overflow: hidden;
-      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s;
+      transition: max-height .35s cubic-bezier(.4, 0, .2, 1), opacity .3s;
       max-height: 0;
       opacity: 0;
     }
+
     .changelog-collapsible.open {
       max-height: 2000px;
       opacity: 1;
@@ -227,12 +285,18 @@
       align-items: center;
       flex-wrap: wrap;
     }
+
     .kofi-icon {
       font-size: 36px;
       flex-shrink: 0;
       line-height: 1;
     }
-    .kofi-body { flex: 1; min-width: 180px; }
+
+    .kofi-body {
+      flex: 1;
+      min-width: 180px;
+    }
+
     .kofi-body h3 {
       font-family: 'Familjen Grotesk', sans-serif;
       font-size: 15px;
@@ -240,17 +304,19 @@
       color: var(--txt);
       margin: 0 0 6px;
     }
+
     .kofi-body p {
       font-size: 13.5px;
       color: var(--txt2);
       margin: 0 0 14px;
     }
+
     .kofi-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255,94,91,.12);
-      border: 1px solid rgba(255,94,91,.35);
+      background: rgba(255, 94, 91, .12);
+      border: 1px solid rgba(255, 94, 91, .35);
       color: #ff7b78;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -261,9 +327,10 @@
       text-decoration: none;
       transition: background .2s, border-color .2s, color .2s;
     }
+
     .kofi-btn:hover {
-      background: rgba(255,94,91,.22);
-      border-color: rgba(255,94,91,.6);
+      background: rgba(255, 94, 91, .22);
+      border-color: rgba(255, 94, 91, .6);
       color: #ff9a97;
       text-decoration: none;
     }
@@ -322,9 +389,9 @@
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
         <span class="sidenav-link-name">OMP</span>
       </a>
-      <a href="cfd.html" class="sidenav-link" data-label="04">
+      <a href="thermosim.html" class="sidenav-link" data-label="04">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
-        <span class="sidenav-link-name">CFD</span>
+        <span class="sidenav-link-name">ThermoSim</span>
       </a>
       <a href="lab.html" class="sidenav-link" data-label="05">
         <span class="sidenav-link-dot sidenav-link-dot--accent"></span>
@@ -370,29 +437,23 @@
     <div class="section-label">Roadmap</div>
     <div class="card" style="margin-bottom: 32px;">
       <div class="roadmap-grid">
-
+        
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--wip">En progreso</span>
-          <strong>OpenLab</strong>
-          <p>Edición de informes científicos colaborativo.</p>
-        </div>
-
-        <div class="roadmap-item">
-          <span class="ri-tag ri-tag--planned">Planificado</span>
+          <span class="ri-tag ri-tag--done">Hecho</span>
           <strong>Librería</strong>
           <p>Sección de libros transcriptos y editados a PDFs.</p>
         </div>
 
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--planned">Planificado</span>
-          <strong>API</strong>
-          <p>Integración de interfaz para aplicaciones de terceros.</p>
+          <span class="ri-tag ri-tag--done">Hecho</span>
+          <strong>Simulación termodinámica</strong>
+          <p>Visualizaciones tridimensionales para termodinámica.</p>
         </div>
 
         <div class="roadmap-item">
-          <span class="ri-tag ri-tag--planned">Planificado</span>
-          <strong>Simulación termodinámica</strong>
-          <p>Visualizaciones tridimensionales para termodinámica.</p>
+          <span class="ri-tag ri-tag--wip">En progreso</span>
+          <strong>OpenLab</strong>
+          <p>Edición de informes científicos colaborativo.</p>
         </div>
 
         <div class="roadmap-item">
@@ -407,117 +468,22 @@
     <!-- ══════════════════════════════════════════
          CHANGELOGS
     ══════════════════════════════════════════ -->
-    <div class="section-label">Changelogs</div>
+    <div class="section-label">Último changelog</div>
     <div class="card" style="margin-bottom: 32px; padding-bottom: 6px;">
 
       <!-- Entrada más reciente: siempre visible -->
       <div class="changelog-entry">
-        <div class="cl-date">Feb 26, 2026</div>
+        <div class="cl-date">Mar 1, 2026</div>
         <div class="cl-body">
-          <div class="cl-version">v1.1.3</div>
-          <p>Parche 2C.</p>
-          <ul>
-            <li>Bug en "index.html" corregido</li>
-            <li>Link a GitHub en "contacto.html" corregido</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Toggle para versiones anteriores -->
-      <button class="changelog-toggle" id="clToggle" onclick="toggleChangelog()" aria-expanded="false">
-        <span id="clToggleLabel">Ver versiones anteriores</span>
-        <div class="changelog-toggle-icon" id="clToggleIcon">
-          <svg width="9" height="9" viewBox="0 0 9 9" fill="none" id="clToggleArrow">
-            <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </button>
-
-      <!-- Entradas anteriores: colapsadas por defecto -->
-      <div class="changelog-collapsible" id="clCollapsible">
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 26, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.1.2</div>
-          <p>Parche 2B.</p>
-          <ul>
-            <li>"derivadas.html" actualizado</li>
-            <li>Link a GitHub en "advmath.html" eliminado</li>
-          </ul>
-        </div>
-      </div>
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 26, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.1.1</div>
-          <p>Parche 2.</p>
-          <ul>
-            <li>Roadmap y changelog actualizado</li>
-            <li>Links de botón "← Volver" en "functions.html" y "Circuits.html" corregidos</li>
-          </ul>
-        </div>
-      </div>
-      <div class="changelog-entry">
-        <div class="cl-date">Feb 26, 2026</div>
-        <div class="cl-body">
-          <div class="cl-version">v1.1.0</div>
+          <div class="cl-version">v1.2.0</div>
           <p>Actualización mayor.</p>
           <ul>
-            <li>Herramienta SCA (pre-SEACIM) eliminada</li>
-            <li>Página 404 agregada</li>
-            <li>Página de contacto agregada</li>
-            <li>Captcha agregado a Graficadora, Contacto y OpenLab</li>
-            <li>Errores en Graficadora corregidos para dispositivos moviles</li>
-            <li>Error en la gráfica de fuerza de rozamiento vs ángulo de ataque en CFD corregido</li>
-            <li>Errores en el sidebar corregidos</li>
-            <li>Error en la exportación de CSV en la Red Neuronal corregido</li>
-            <li>Otras correcciones menores</li>
+            <li>"lib.html" agregada</li>
+            <li>"cfd.html" modificada y renombrada a "thermosim.html"</li>
+            <li>API eliminada del roadmap</li>
+            <li>"favicon.png" modificado</li>
+            <li>Sección de changelogs anteriores eliminada</li>
           </ul>
-        </div>
-      </div>
-        <div class="changelog-entry">
-          <div class="cl-date">Feb 25, 2026</div>
-          <div class="cl-body">
-            <div class="cl-version">v1.0.3</div>
-            <p>Parche 1C.</p>
-            <ul>
-              <li>Página de contacto agregada al roadmap</li>
-            </ul>
-          </div>
-        </div>
-        <div class="changelog-entry">
-          <div class="cl-date">Feb 25, 2026</div>
-          <div class="cl-body">
-            <div class="cl-version">v1.0.2</div>
-            <p>Parche 1B.</p>
-            <ul>
-              <li>Sección de "known errors" agregada</li>
-              <li>Página hacia GitHub removida</li>
-            </ul>
-          </div>
-        </div>
-        <div class="changelog-entry">
-          <div class="cl-date">Feb 25, 2026</div>
-          <div class="cl-body">
-            <div class="cl-version">v1.0.1</div>
-            <p>Parche 1.</p>
-            <ul>
-              <li>Corrección de errores en changelog</li>
-            </ul>
-          </div>
-        </div>
-        <div class="changelog-entry">
-          <div class="cl-date">Feb 25, 2026</div>
-          <div class="cl-body">
-            <div class="cl-version">v1.0.0</div>
-            <p>Despliegue inicial.</p>
-            <ul>
-              <li>Scrollbar visible en el sidebar</li>
-              <li>Roadmap y changelog añadidos al índice principal</li>
-              <li>Página Ko-fi agregada</li>
-              <li>Estética del sidebar corregida</li>
-            </ul>
-          </div>
         </div>
       </div>
 
@@ -534,6 +500,7 @@
           <ul>
             <li>Error de conexión en "contacto.html"</li>
             <li>Error de conexión con Google en "lab2.html" (OpenLab)</li>
+            <li>Error de detección de voz y compatibilidad en "lab.html" (Graficadora)</li>
           </ul>
         </div>
       </div>
@@ -562,7 +529,8 @@
       <div class="kofi-icon">☕</div>
       <div class="kofi-body">
         <h3>AtlasDelta es completamente gratuito y de acceso abierto</h3>
-        <p>Si esta plataforma te resultó útil, podés apoyar su desarrollo con un café. Cada contribución ayuda a mantener los servidores, crear nuevo contenido y financiar las herramientas interactivas.</p>
+        <p>Si esta plataforma te resultó útil, podés apoyar su desarrollo con un café. Cada contribución ayuda a
+          mantener los servidores, crear nuevo contenido y financiar las herramientas interactivas.</p>
         <a href="https://ko-fi.com/atlasdelta" target="_blank" rel="noopener" class="kofi-btn">
           ☕ &nbsp;Invitarnos un café en Ko-Fi
         </a>
@@ -574,11 +542,11 @@
   <script>
     /* ── Changelog collapsible ── */
     function toggleChangelog() {
-      const col   = document.getElementById('clCollapsible');
-      const btn   = document.getElementById('clToggle');
+      const col = document.getElementById('clCollapsible');
+      const btn = document.getElementById('clToggle');
       const label = document.getElementById('clToggleLabel');
       const arrow = document.getElementById('clToggleArrow');
-      const open  = col.classList.toggle('open');
+      const open = col.classList.toggle('open');
       btn.setAttribute('aria-expanded', open);
       label.textContent = open ? 'Ocultar versiones anteriores' : 'Ver versiones anteriores';
       arrow.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
